@@ -1,30 +1,76 @@
-export default function LoginPage() {
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-black text-white">
+"use client";
 
-      <div className="bg-gray-900 p-10 rounded-xl w-[400px] space-y-4">
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 
-        <h1 className="text-2xl font-bold text-center">
+export default function Login(){
+
+  const router = useRouter();
+
+  const [email,setEmail] = useState("");
+  const [password,setPassword] = useState("");
+
+  const handleLogin = async(e:any)=>{
+    e.preventDefault();
+
+    const res = await fetch("/api/auth/login",{
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json"
+      },
+      body:JSON.stringify({
+        email,
+        password
+      })
+    });
+
+    const data = await res.json();
+
+    if(res.ok){
+      router.push("/dashboard");
+    }
+    else{
+      alert(data.error);
+    }
+  };
+
+  return(
+
+    <main className="min-h-screen bg-black text-white flex items-center justify-center">
+
+      <form
+        onSubmit={handleLogin}
+        className="bg-gray-900 p-10 rounded-xl w-[400px] space-y-4"
+      >
+
+        <h1 className="text-3xl font-bold text-center">
           Login
         </h1>
 
         <input
-          className="w-full p-3 rounded bg-gray-800"
+          type="email"
           placeholder="Email"
+          className="w-full p-3 bg-black border border-gray-700 rounded"
+          value={email}
+          onChange={(e)=>setEmail(e.target.value)}
         />
 
         <input
           type="password"
-          className="w-full p-3 rounded bg-gray-800"
           placeholder="Password"
+          className="w-full p-3 bg-black border border-gray-700 rounded"
+          value={password}
+          onChange={(e)=>setPassword(e.target.value)}
         />
 
-        <button className="w-full bg-purple-600 p-3 rounded">
+        <button
+          className="w-full bg-purple-600 py-3 rounded-lg hover:bg-purple-700"
+        >
           Login
         </button>
 
-      </div>
+      </form>
 
-    </div>
+    </main>
   );
 }
