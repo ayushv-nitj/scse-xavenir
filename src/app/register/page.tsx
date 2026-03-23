@@ -11,6 +11,6 @@ export const metadata: Metadata = {
   },
 };
 
-export default function DashboardPage() {
+export default function Register() {
   return < RegisterPage/>;
 }

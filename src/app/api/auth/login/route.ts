@@ -10,13 +10,18 @@ export async function POST(req: NextRequest) {
     const user = await User.findOne({ email: email });
     if (!user) {
       return NextResponse.json(
-        { error: "Email id does not exists"},
+        { error: "Invalid Credentials"},
         { status: 400 }
       );
     }
     console.log(user.userID);
     const isValid = await bcrypt.compare(password,user.password);
-    if (!isValid) throw new Error("Invalid password");
+    if (!isValid) {
+      return NextResponse.json(
+        { error: "Invalid Credentials"},
+        { status: 400 }
+      );
+    }
     const logtokPayload = {
       userID: user.userID,
       email: user.email,
