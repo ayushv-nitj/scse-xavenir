@@ -1,15 +1,16 @@
 "use client";
 
 import { useState } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 
-export default function ResetPassword() {
-  const searchParams = useSearchParams();
-  const router = useRouter();
+interface ResetPasswordProps {
+  token?: string;
+  email?: string;
+}
 
-  const token = searchParams.get("token") || "";
-  const email = searchParams.get("email") || "";
+export default function ResetPassword({ token = "", email = "" }: ResetPasswordProps) {
+  const router = useRouter();
 
   const [newPassword, setNewPassword]   = useState("");
   const [confirm, setConfirm]           = useState("");
@@ -25,10 +26,6 @@ export default function ResetPassword() {
     e.preventDefault();
     setError("");
 
-    if (newPassword.length < 8) {
-      setError("Password must be at least 8 characters.");
-      return;
-    }
     if (newPassword !== confirm) {
       setError("Passwords do not match.");
       return;
@@ -224,7 +221,7 @@ export default function ResetPassword() {
                     <span style={{ ...s.inputPrefix, color: focusedField === "new" ? "#00f5ff" : "rgba(0,245,255,0.35)" }}>◆</span>
                     <input
                       type={showNew ? "text" : "password"}
-                      placeholder="Min. 8 characters"
+                      placeholder="Enter new password"
                       required
                       value={newPassword}
                       onChange={(e) => { setNewPassword(e.target.value); if (error) setError(""); }}
