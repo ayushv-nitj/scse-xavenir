@@ -417,18 +417,6 @@ export default function Dashboard() {
         )}
       </main>
 
-      {/* FOOTER */}
-      <footer className="dash-footer">
-        <div className="footer-inner">
-          <span className="footer-logo">&lt;/SCSE&gt;</span>
-          <span className="footer-text">© 2026 XAVENIR — NIT JAMSHEDPUR &nbsp;|&nbsp; SCSE WEB TEAM</span>
-          <div className="footer-right">
-            <PulsingDot color="var(--cyan)" />
-            <span className="footer-live">SYSTEM ONLINE</span>
-          </div>
-        </div>
-      </footer>
-
       <DashStyles />
     </div>
   );
