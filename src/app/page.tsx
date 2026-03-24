@@ -38,7 +38,6 @@ function StatNum({ target, prefix = "", suffix = "" }: { target: number; prefix?
 
 
 // ── Three.js 3D Scene ─────────────────────────────────
-// ── Three.js 3D Scene ─────────────────────────────────
 function ThreeScene() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -460,7 +459,6 @@ export default function LandingPage() {
   const [activeComp, setActiveComp] = useState(0);
   const [loaded, setLoaded]       = useState(false);
   const [loaderDone, setLoaderDone] = useState(false);
-  const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled]   = useState(false);
 
   //video autoplay
@@ -536,12 +534,6 @@ useEffect(() => {
       clearInterval(id);
     };
   }, []);
-  useEffect(() => {
-    const handler = () => { if (window.innerWidth > 900) setMobileOpen(false); };
-    window.addEventListener("resize", handler);
-    return () => window.removeEventListener("resize", handler);
-  }, []);
-
   const competitions = [
     { icon: "⌨", title: "Computer Fundamentals Quiz", desc: "Test your grasp on CS basics in a challenging quiz. Think fast, answer faster!", prize: "₹8,000 PRIZE" },
     { icon: "⚡", title: "Typing Speed Challenge",     desc: "Compete to type swiftly and accurately. The fastest fingers claim glory.",          prize: "₹3,000 PRIZE" },
@@ -587,66 +579,6 @@ useEffect(() => {
         <span className="ds-item">CSE // DEPT.NODE</span>
       </div>
 
-      {/* ══ NAVBAR ══════════════════════════════════ */}
-      <nav className={`nav ${scrolled ? "nav-scrolled" : ""}`}>
-        <Link href="/" className="logo">&lt;/SCSE&gt;</Link>
-
-        {/* Desktop links */}
-        <ul className="nav-links">
-          <li><a href="#hero">Home</a></li>
-          <li><a href="/about">About</a></li>
-          <li><a href="/events">Events</a></li>
-          {/* <li><a href="#aftermovie">Media</a></li>
-          <li><a href="#competitions">Compete</a></li> */}
-          <li><a href="/contact">Contact</a></li>
-          <li><a href="/gallery">Gallery</a></li>
-          <li><a href="/sponsors">Sponsors</a></li>
-          <li><a href="/sponsors">Whatsapp</a></li>
-        </ul>
-
-        <div className="nav-right">
-          <Link href="/register" className="nav-cta nav-cta-register">Register</Link>
-          <Link href="/login" className="nav-cta">Login</Link>
-          {/* Hamburger */}
-          <button
-            className={`hamburger ${mobileOpen ? "hamburger-open" : ""}`}
-            onClick={() => setMobileOpen(v => !v)}
-            aria-label="Toggle menu"
-          >
-            <span /><span /><span />
-          </button>
-        </div>
-      </nav>
-
-      {/* Mobile menu */}
-      <div className={`mobile-nav ${mobileOpen ? "mobile-nav-open" : ""}`}>
-        {[
-          ["#hero",         "Home"],
-          ["#about",        "About"],
-          ["#events",       "Events"],
-          ["#aftermovie",   "Media"],
-          ["#competitions", "Compete"],
-          ["#contact",      "Contact"],
-          ["/gallery",      "Gallery"],
-          ["/sponsors",     "Sponsors"],
-        ].map(([href, label], i) => (
-          <a
-            key={label}
-            href={href}
-            className="mob-link"
-            style={{ animationDelay: mobileOpen ? `${i * 55}ms` : "0ms" }}
-            onClick={() => setMobileOpen(false)}
-          >
-            <span className="mob-link-icon">◆</span>{label}
-            <span className="mob-link-arr">›</span>
-          </a>
-        ))}
-        <Link href="/dashboard" className="mob-cta" onClick={() => setMobileOpen(false)}>
-          ▶ &nbsp;DASHBOARD
-        </Link>
-      </div>
-      {mobileOpen && <div className="mob-backdrop" onClick={() => setMobileOpen(false)} />}
-
       {/* ══ HERO ════════════════════════════════════ */}
       <section id="hero" className="hero">
         <div className="hero-content">
@@ -656,7 +588,6 @@ useEffect(() => {
           </div>
 
           <h1 className="hero-title">
-            {/* Reduced neon on "SOCIETY OF" */}
             <span className="ht-society glitch" data-text="SOCIETY OF">SOCIETY OF</span>
             <span className="ht-cs glitch" data-text="COMPUTER SCIENCE">COMPUTER SCIENCE</span>
             <span className="ht-eng glitch" data-text="& ENGINEERING">&amp; ENGINEERING</span>
@@ -842,12 +773,7 @@ useEffect(() => {
       </section>
 
 {/* ══ COMPETITIONS ════════════════════════════════════ */}
-{/* 
-  REPLACE your existing competitions section JSX and CSS with the below.
-  The competitions array at the top of LandingPage() stays unchanged.
-*/}
  
-{/* ── JSX: replace the entire <section id="competitions"> block ── */}
  
 <section id="competitions" className="section comp-section">
   <span className="section-label">// competitions.load()</span>
