@@ -1,8 +1,4 @@
 
-
-
-
-
 import { connectDB } from "@/dbConfig/dbConfig";
 import { NextRequest, NextResponse } from "next/server";
 import User from "@/models/userModel";
@@ -18,13 +14,6 @@ export async function POST(req: NextRequest) {
     if (!token || !email || !newPassword) {
       return NextResponse.json(
         { error: "Token, email, and new password are required." },
-        { status: 400 }
-      );
-    }
-
-    if (newPassword.length < 8) {
-      return NextResponse.json(
-        { error: "Password must be at least 8 characters." },
         { status: 400 }
       );
     }
