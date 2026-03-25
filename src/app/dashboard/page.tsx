@@ -19,10 +19,9 @@ type User = {
   phone?: string;
   gender?: string;
   profilePic?: string;
-  // phoneVerified?: boolean;
 };
 
-type Tab = "overview" | "events" | "profile" | "receipt" | "certificates" | "notifications" | "community";
+type Tab = "overview" | "events" | "profile" | "receipt" | "certificates" | "notifications" | "community" | "teams";
 
 export default function Dashboard() {
   const router = useRouter();
@@ -34,6 +33,7 @@ export default function Dashboard() {
   const [tab, setTab] = useState<Tab>("overview");
   const [events, setEvents] = useState<any[]>([]);
   const [glitch, setGlitch] = useState(false);
+  const [teams, setTeams] = useState<any[]>([]);
 
   // profile edit
   const [editMode, setEditMode] = useState(false);
@@ -41,13 +41,6 @@ export default function Dashboard() {
   const [gender, setGender] = useState("");
   const [saving, setSaving] = useState(false);
   const [saveMsg, setSaveMsg] = useState("");
-
-  // // phone OTP verification
-  // const [otpPhone, setOtpPhone] = useState("");
-  // const [otpSent, setOtpSent] = useState(false);
-  // const [otpValue, setOtpValue] = useState("");
-  // const [otpLoading, setOtpLoading] = useState(false);
-  // const [otpMsg, setOtpMsg] = useState("");
 
   // profile pic
   const [uploading, setUploading] = useState(false);
@@ -57,7 +50,6 @@ export default function Dashboard() {
   useEffect(() => {
     mountTime.current = Date.now();
 
-    // Fetch user data
     fetch("/api/users/getCurrent")
       .then(r => r.ok ? r.json() : Promise.reject())
       .then(d => {
@@ -67,11 +59,8 @@ export default function Dashboard() {
         setPicPreview(d.data.profilePic || "");
         setLoading(false);
 
-        // How long did the fetch take?
         const elapsed = Date.now() - mountTime.current;
         const remaining = Math.max(0, 2000 - elapsed);
-
-        // Wait out the remaining time before showing dashboard
         setTimeout(() => setReady(true), remaining);
       })
       .catch(() => router.push("/login"));
@@ -88,6 +77,7 @@ export default function Dashboard() {
 
   useEffect(() => {
     if (!user) return;
+
     fetch("/api/users/eventRegistrations", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -95,6 +85,15 @@ export default function Dashboard() {
     })
       .then(r => r.json())
       .then(d => setEvents(d.data || []))
+      .catch(() => {});
+
+    fetch("/api/users/teamRegistrations", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ userID: user.userID }),
+    })
+      .then(r => r.json())
+      .then(d => setTeams(d.data || []))
       .catch(() => {});
   }, [user]);
 
@@ -117,47 +116,9 @@ export default function Dashboard() {
     setSaving(false);
   };
 
-  // const handleSendOtp = async () => {
-  //   if (!otpPhone.trim()) { setOtpMsg("Enter a phone number first."); return; }
-  //   setOtpLoading(true); setOtpMsg("");
-  //   try {
-  //     const res = await fetch("/api/users/phone-otp/send", {
-  //       method: "POST",
-  //       headers: { "Content-Type": "application/json" },
-  //       body: JSON.stringify({ phone: otpPhone }),
-  //     });
-  //     const d = await res.json();
-  //     if (res.ok) { setOtpSent(true); setOtpMsg("OTP sent to your registered email."); }
-  //     else { setOtpMsg(d.error || "Failed to send OTP."); }
-  //   } catch { setOtpMsg("Network error."); }
-  //   setOtpLoading(false);
-  // };
-
-  // const handleVerifyOtp = async () => {
-  //   if (!otpValue.trim()) { setOtpMsg("Enter the OTP."); return; }
-  //   setOtpLoading(true); setOtpMsg("");
-  //   try {
-  //     const res = await fetch("/api/users/phone-otp/verify", {
-  //       method: "POST",
-  //       headers: { "Content-Type": "application/json" },
-  //       body: JSON.stringify({ otp: otpValue }),
-  //     });
-  //     const d = await res.json();
-  //     if (res.ok) {
-  //       setUser(prev => ({ ...prev!, phone: otpPhone, phoneVerified: true }));
-  //       setUserData({ ...userData!, phone: otpPhone } as any);
-  //       setPhone(otpPhone);
-  //       setOtpSent(false); setOtpValue(""); setOtpPhone("");
-  //       setOtpMsg("✓ Phone verified and saved!");
-  //     } else { setOtpMsg(d.error || "Verification failed."); }
-  //   } catch { setOtpMsg("Network error."); }
-  //   setOtpLoading(false);
-  // };
-
   const handlePicUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    // show local preview immediately
     const localUrl = URL.createObjectURL(file);
     setPicPreview(localUrl);
     setUploading(true);
@@ -194,6 +155,7 @@ export default function Dashboard() {
     { key: "overview",      label: "OVERVIEW",      icon: "◈" },
     { key: "profile",       label: "PROFILE",       icon: "✦" },
     { key: "events",        label: "EVENTS",        icon: "◆" },
+    { key: "teams",         label: "TEAMS",         icon: "⬡" },
     { key: "receipt",       label: "RECEIPT",       icon: "◉" },
     { key: "certificates",  label: "CERTIFICATES",  icon: "★" },
     { key: "notifications", label: "NOTIFICATIONS", icon: "◎" },
@@ -204,7 +166,6 @@ export default function Dashboard() {
 
   return (
     <div className="db-root">
-      {/* backgrounds matching home page */}
       <div className="db-grid-bg" />
       <div className="db-scanlines" />
       <div className="db-corner-glow" />
@@ -281,7 +242,6 @@ export default function Dashboard() {
             <div className="db-section">
               <div className="db-section-label">// user.status()</div>
 
-              {/* Two-col layout: profile card + payment status */}
               <div className="db-overview-grid">
 
                 {/* Profile card */}
@@ -289,7 +249,6 @@ export default function Dashboard() {
                   <div className="db-card-corner tl" /><div className="db-card-corner br" />
                   <div className="db-card-top-bar" />
 
-                  {/* Avatar */}
                   <div className="db-avatar-wrap" onClick={() => fileRef.current?.click()} title="Change photo">
                     {picPreview
                       ? <img src={picPreview} alt="avatar" className="db-avatar-img" />
@@ -310,7 +269,7 @@ export default function Dashboard() {
                     {[
                       { label: "EMAIL",   val: user?.email },
                       { label: "COLLEGE", val: user?.collegeName },
-                       { label: "PHONE",   val: user?.phone || "—" }, 
+                      { label: "PHONE",   val: user?.phone || "—" },
                       { label: "GENDER",  val: user?.gender || "—" },
                     ].map(f => (
                       <div key={f.label} className="db-pf-row">
@@ -442,8 +401,8 @@ export default function Dashboard() {
 
                   <div className="db-edit-fields">
                     {[
-                      { label: "FULL NAME", val: user?.fullName, editable: false },
-                      { label: "EMAIL",     val: user?.email,    editable: false },
+                      { label: "FULL NAME", val: user?.fullName,    editable: false },
+                      { label: "EMAIL",     val: user?.email,       editable: false },
                       { label: "COLLEGE",   val: user?.collegeName, editable: false },
                     ].map(f => (
                       <div key={f.label} className="db-edit-row">
@@ -459,94 +418,6 @@ export default function Dashboard() {
                         : <span className="db-edit-static">{user?.phone || <span style={{ opacity: 0.35 }}>not set</span>}</span>
                       }
                     </div>
-
-                    {/* ── PHONE OTP VERIFICATION ──
-{editMode && (
-  <div style={{
-    marginTop: 8,
-    padding: "14px 16px",
-    background: "rgba(0,245,255,0.04)",
-    border: "1px solid rgba(0,245,255,0.15)",
-  }}>
-    <div className="db-section-label" style={{ marginBottom: 10, fontSize: "0.72rem" }}>
-      // phone.verify()
-    </div>
-
-    {user?.phoneVerified ? (
-      <p style={{ fontFamily: "'Inter',sans-serif", fontSize: "0.85rem", color: "#00ff88", fontWeight: 600 }}>
-        ✓ PHONE VERIFIED
-      </p>
-    ) : (
-      <>
-        <p style={{ fontFamily: "'Rajdhani',sans-serif", fontSize: "0.85rem", color: "rgba(180,200,255,0.5)", marginBottom: 10 }}>
-          Enter a number and verify via OTP sent to your email.
-        </p>
-
-        <div style={{ display: "flex", gap: 8, marginBottom: 8, flexWrap: "wrap" }}>
-          <input
-            className="db-input"
-            style={{ flex: 1, minWidth: 160 }}
-            value={otpPhone}
-            onChange={e => setOtpPhone(e.target.value)}
-            placeholder="+91 XXXXXXXXXX"
-            disabled={otpSent}
-          />
-          <button
-            className="db-btn-outline"
-            style={{ padding: "6px 14px", fontSize: "0.78rem", whiteSpace: "nowrap" }}
-            onClick={handleSendOtp}
-            disabled={otpLoading || otpSent}
-          >
-            {otpLoading ? "◌ SENDING..." : otpSent ? "✓ OTP SENT" : "SEND OTP"}
-          </button>
-        </div>
-
-        {otpSent && (
-          <div style={{ display: "flex", gap: 8, marginBottom: 8, flexWrap: "wrap" }}>
-            <input
-              className="db-input"
-              style={{ flex: 1, minWidth: 120, letterSpacing: 6, fontWeight: 700 }}
-              value={otpValue}
-              onChange={e => setOtpValue(e.target.value)}
-              placeholder="_ _ _ _ _ _"
-              maxLength={6}
-            />
-            <button
-              className="db-btn-primary"
-              style={{ padding: "6px 14px", fontSize: "0.78rem", whiteSpace: "nowrap" }}
-              onClick={handleVerifyOtp}
-              disabled={otpLoading}
-            >
-              <span>{otpLoading ? "◌ VERIFYING..." : "VERIFY"}</span>
-            </button>
-            <button
-              className="db-btn-outline"
-              style={{ padding: "6px 10px", fontSize: "0.78rem" }}
-              onClick={() => { setOtpSent(false); setOtpValue(""); setOtpMsg(""); }}
-            >
-              ↩
-            </button>
-          </div>
-        )}
-
-        {otpMsg && (
-          <p style={{
-            fontFamily: "'Inter',sans-serif",
-            fontSize: "0.8rem",
-            color: otpMsg.startsWith("✓") ? "#00ff88" : "var(--pink)",
-            marginTop: 4,
-          }}>
-            {otpMsg}
-          </p>
-        )}
-      </>
-    )}
-  </div>
-)} */}
-
-
-
-
 
                     <div className="db-edit-row">
                       <span className="db-edit-label">GENDER</span>
@@ -587,6 +458,112 @@ export default function Dashboard() {
                   </div>
                 </div>
               </div>
+            </div>
+          )}
+
+          {/* TEAMS */}
+          {tab === "teams" && (
+            <div className="db-section">
+              <div className="db-section-label">// teams.registered()</div>
+              {teams.length === 0 ? (
+                <div className="db-empty">
+                  <div className="db-card" style={{ alignItems: "center", textAlign: "center", padding: "3rem 2rem" }}>
+                    <div className="db-card-corner tl" /><div className="db-card-corner br" />
+                    <div style={{ fontSize: "2.5rem", opacity: 0.4, marginBottom: 16 }}>👥</div>
+                    <h3 style={{ fontFamily: "'Orbitron',monospace", fontSize: "0.85rem", letterSpacing: 3, color: "var(--cyan)", marginBottom: 10 }}>
+                      NO TEAMS YET
+                    </h3>
+                    <p style={{ fontFamily: "'Rajdhani',sans-serif", color: "rgba(180,200,255,0.5)", maxWidth: 380, marginBottom: 24 }}>
+                      You haven't joined or created any teams yet. Register for a team event to get started.
+                    </p>
+                    <Link href="/events" className="db-btn-outline">
+                      ◆ EXPLORE TEAM EVENTS ⚡
+                    </Link>
+                  </div>
+                </div>
+              ) : (
+                <div className="db-events-list">
+                  {teams.map((team, i) => (
+                    <div key={i} className="db-card" style={{ marginBottom: 16 }}>
+                      <div className="db-card-corner tl" /><div className="db-card-corner br" />
+                      <div className="db-card-top-bar" style={{ background: "var(--purple)" }} />
+
+                      {/* Team header */}
+                      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12, flexWrap: "wrap", gap: 8 }}>
+                        <div>
+                          <span style={{ fontFamily: "'Orbitron',monospace", fontSize: "1rem", fontWeight: 700, color: "var(--cyan)", letterSpacing: 2 }}>
+                            {team.teamName}
+                          </span>
+                          <span style={{ fontFamily: "'Share Tech Mono',monospace", fontSize: "0.68rem", color: "rgba(180,200,255,0.4)", marginLeft: 12, letterSpacing: 2 }}>
+                            [{team.teamCode}]
+                          </span>
+                        </div>
+                        <span style={{
+                          fontFamily: "'Share Tech Mono',monospace", fontSize: "0.65rem",
+                          letterSpacing: 2, padding: "4px 12px",
+                          border: `1px solid ${team.leaderId === user?.userID ? "var(--yellow)" : "var(--purple)"}`,
+                          color: team.leaderId === user?.userID ? "var(--yellow)" : "var(--purple)",
+                          background: team.leaderId === user?.userID ? "rgba(255,255,0,0.05)" : "rgba(191,0,255,0.05)",
+                        }}>
+                          {team.leaderId === user?.userID ? "★ LEADER" : "◈ MEMBER"}
+                        </span>
+                      </div>
+
+                      {/* Event name */}
+                      <div style={{ fontFamily: "'Rajdhani',sans-serif", fontSize: "0.85rem", color: "rgba(180,200,255,0.5)", marginBottom: 14, letterSpacing: 1 }}>
+                        ◆ EVENT: <span style={{ color: "rgba(180,200,255,0.8)" }}>{team.eventName}</span>
+                      </div>
+
+                      <div className="db-profile-divider" style={{ margin: "0 0 14px" }} />
+
+                      {/* Members list */}
+                      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                        <span style={{ fontFamily: "'Share Tech Mono',monospace", fontSize: "0.6rem", letterSpacing: 3, color: "var(--pink)", marginBottom: 4 }}>
+                          // members ({team.members?.length}/{team.maxSize})
+                        </span>
+                        {team.members?.map((m: any, j: number) => (
+                          <div key={j} style={{
+                            display: "flex", alignItems: "center", gap: 12,
+                            padding: "8px 12px",
+                            background: "rgba(0,245,255,0.03)",
+                            border: "1px solid rgba(0,245,255,0.07)",
+                          }}>
+                            <span style={{ fontFamily: "'Share Tech Mono',monospace", fontSize: "0.6rem", color: "rgba(0,245,255,0.3)", width: 20 }}>
+                              {String(j + 1).padStart(2, "0")}
+                            </span>
+                            <span style={{ fontFamily: "'Rajdhani',sans-serif", fontWeight: 600, fontSize: "0.9rem", color: "rgba(220,230,255,0.85)", flex: 1 }}>
+                              {m.fullName}
+                              {m.userID === user?.userID && (
+                                <span style={{ color: "var(--cyan)", fontSize: "0.7rem", marginLeft: 8 }}>(you)</span>
+                              )}
+                            </span>
+                            <span style={{ fontFamily: "'Share Tech Mono',monospace", fontSize: "0.6rem", letterSpacing: 1, color: "rgba(180,200,255,0.35)" }}>
+                              {m.email}
+                            </span>
+                            <span style={{ fontFamily: "'Share Tech Mono',monospace", fontSize: "0.58rem", color: m.role === "leader" ? "var(--yellow)" : "rgba(180,200,255,0.3)", letterSpacing: 1 }}>
+                              {m.role?.toUpperCase()}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* Status footer */}
+                      <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 16 }}>
+                        <span className="db-pulse-dot" style={{
+                          background: team.status === "competing" ? "var(--yellow)" : team.status === "complete" ? "#00ff88" : "var(--cyan)",
+                          boxShadow: `0 0 8px ${team.status === "competing" ? "var(--yellow)" : team.status === "complete" ? "#00ff88" : "var(--cyan)"}`,
+                        }} />
+                        <span style={{
+                          fontFamily: "'Share Tech Mono',monospace", fontSize: "0.65rem", letterSpacing: 2,
+                          color: team.status === "competing" ? "var(--yellow)" : team.status === "complete" ? "#00ff88" : "var(--cyan)",
+                        }}>
+                          {team.status?.toUpperCase()}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           )}
 
