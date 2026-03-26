@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useContext } from "react";
 import Link from "next/link";
+import { UserContext } from "@/context/UserContext";
 
 // ── Types ──────────────────────────────────────────────
 interface Professor { name: string; role: string; img: string; }
@@ -41,18 +42,14 @@ const MEMBERS: Member[] = [
 ];
 
 const WEB_TEAM: WebMember[] = [
-  { name: "Ayush Verma",             role: "Web Lead",  img: "/images/20240616_222405_resized - Abhijeet kumar Trivedi.jpg", github: "https://github.com/ayushv-nitj", linkedin: "https://www.linkedin.com/ayushverma-25" },
-  { name: "Priyanshu Raj",           role: "Web Lead",  img: "/images/Screenshot_2025-03-31 - sulochan khadka.jpg",         github: "https://github.com/",           linkedin: "https://www.linkedin.com/in/sulochan-khadka" },
-  { name: "Abhijeet Kumar",          role: "Web Team",  img: "/images/20240616_222405_resized - Abhijeet kumar Trivedi.jpg", github: "https://github.com/",           linkedin: "https://www.linkedin.com/in/abhijeet-kumar-trivedi-329b90258" },
-  { name: "Sulochan Kumar",          role: "Web Team",  img: "/images/Screenshot_2025-03-31 - sulochan khadka.jpg",         github: "https://github.com/",           linkedin: "https://www.linkedin.com/in/sulochan-khadka" },
-  { name: "Abhijeet Kumar Triveni",  role: "Web Team",  img: "/images/20240616_222405_resized - Abhijeet kumar Trivedi.jpg", github: "https://github.com/",           linkedin: "https://www.linkedin.com/in/abhijeet-kumar-trivedi-329b90258" },
-  { name: "Sulocha Kumari",          role: "Web Team",  img: "/images/Screenshot_2025-03-31 - sulochan khadka.jpg",         github: "https://github.com/",           linkedin: "https://www.linkedin.com/in/sulochan-khadka" },
-  { name: "Abhijeet Singh",          role: "Web",       img: "/images/20240616_222405_resized - Abhijeet kumar Trivedi.jpg", github: "https://github.com/",           linkedin: "https://www.linkedin.com/in/abhijeet-kumar-trivedi-329b90258" },
-  { name: "Sulochan Khadkai",        role: "Web Team",  img: "/images/Screenshot_2025-03-31 - sulochan khadka.jpg",         github: "https://github.com/",           linkedin: "https://www.linkedin.com/in/sulochan-khadka" },
-  { name: "Abhijeet Kumar Singh",    role: "Web",       img: "/images/20240616_222405_resized - Abhijeet kumar Trivedi.jpg", github: "https://github.com/",           linkedin: "https://www.linkedin.com/in/abhijeet-kumar-trivedi-329b90258" },
-  { name: "Sulochan Singh",          role: "Web Team",  img: "/images/Screenshot_2025-03-31 - sulochan khadka.jpg",         github: "https://github.com/",           linkedin: "https://www.linkedin.com/in/sulochan-khadka" },
-  { name: "Abhijeet Kumar Chaturvedi",role: "Web Team", img: "/images/20240616_222405_resized - Abhijeet kumar Trivedi.jpg", github: "https://github.com/",           linkedin: "https://www.linkedin.com/in/abhijeet-kumar-trivedi-329b90258" },
-  { name: "Sulochan Rajput",         role: "Web Team",  img: "/images/Screenshot_2025-03-31 - sulochan khadka.jpg",         github: "https://github.com/",           linkedin: "https://www.linkedin.com/in/sulochan-khadka" },
+  { name: "Ayush Verma",             role: "Web Lead",  img: "https://res.cloudinary.com/dtieuimsz/image/upload/v1774474434/WhatsApp_Image_2026-03-26_at_3.03.23_AM_yi25nd.jpg", github: "https://github.com/ayushv-nitj", linkedin: "https://www.linkedin.com/in/ayush-verma-jsr25/" },
+  { name: "Priyanshu Raj",           role: "Web Lead",  img: "/web-team-photo/IMG_20260326_022402 - Priyanshu Raj.jpg", github: "https://github.com/priyanshuraj-dev", linkedin: "https://www.linkedin.com/in/priyanshuraj-nitjsr/" },
+  { name: "Vivek Mishra",            role: "Web Team",  img: "/web-team-photo/WhatsApp Image 2026-03-26 -Vivek Mishra.jpeg", github: "https://github.com/vivekrtx-lang", linkedin: "https://www.linkedin.com/in/vivek-mishra-9735a3386" },
+  { name: "Deeptanshu Singh Negi",   role: "Web Team",  img: "/web-team-photo/IMG-20260215-WA0048 - Deeptanshu Singh Negi.jpg", github: "https://github.com/deeptanshu-glitch", linkedin: "https://www.linkedin.com/in/deeptanshu-singh-negi" },
+  { name: "Lakshay Sudhera",         role: "Web Team",  img: "/web-team-photo/profile - Lakshay Sudhera.jpeg", github: "https://github.com/lakshay-sudhera", linkedin: "https://www.linkedin.com/in/lakshay-kumar-sudhera-133b35389/" },
+  { name: "Aditya Agrawal",          role: "Web Team",  img: "/web-team-photo/aditya photo - ADITYA AGARWAL.jpg", github: "https://github.com/AdityaAgarwal18122006", linkedin: "https://www.linkedin.com/in/aditya-agarwal-844493386" },
+  { name: "Ayush Sarkar",            role: "Web Team",  img: "/web-team-photo/IMG_20260102_194028 - Ayush Sarkar.jpg", github: "https://github.com/ayushsarkar314", linkedin: "https://www.linkedin.com/in/ayush-sarkar-441b9a39b" },
+  { name: "Darshita Maheshwari",     role: "Web Team",  img: "/web-team-photo/Screenshot_20260325_084115_Photos - DARSHITA MAHESHWARI.jpg", github: "https://github.com/darshita44", linkedin: "https://www.linkedin.com/in/darshita-maheshwari-836980383" },
 ];
 
 const EDITIONS: Edition[] = [
@@ -263,6 +260,7 @@ function WebCard({ member, idx }: { member: WebMember; idx: number }) {
 
 // ── Main ───────────────────────────────────────────────
 export default function AboutPage() {
+  const { userData } = useContext(UserContext);
   const bootLine = useTypingEffect("Initializing SCSE.archive() → Loading member database... OK", 30, 300);
   const { ref: aboutRef, inView: aboutIn } = useInView();
   const { ref: profRef,  inView: profIn  } = useInView();
@@ -1028,7 +1026,7 @@ export default function AboutPage() {
                 this fest is for YOU! Connect with like-minded enthusiasts and recruiters,
                 and attend workshops and guest talks from top industry professionals.
               </p>
-              <a href="/SCSE_brochure.pdf" target="_blank" rel="noopener noreferrer" className="xav-btn">
+              <a href="/sponsorship_brochure.pdf" target="_blank" rel="noopener noreferrer" className="xav-btn">
                 ▶ View Brochure
               </a>
             </div>
@@ -1096,8 +1094,25 @@ export default function AboutPage() {
             Register now and be part of the biggest tech fest at NIT Jamshedpur.
           </p>
           <div className="cta-btns">
-            <Link href="/register" className="cta-btn-primary">▶ Register Now</Link>
-            <Link href="/#events" className="cta-btn-secondary">◆ View Events</Link>
+            {userData ? (
+              <>
+                <Link href="/dashboard" className="cta-btn-primary">▶ Dashboard</Link>
+                <button
+                  className="cta-btn-secondary"
+                  onClick={async () => {
+                    await fetch("/api/auth/logout", { method: "POST" });
+                    window.location.href = "/";
+                  }}
+                >
+                  ◆ Logout
+                </button>
+              </>
+            ) : (
+              <>
+                <Link href="/register" className="cta-btn-primary">▶ Register Now</Link>
+                <Link href="/#events" className="cta-btn-secondary">◆ View Events</Link>
+              </>
+            )}
           </div>
         </section>
 

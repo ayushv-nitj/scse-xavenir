@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useContext } from "react";
 import Link from "next/link";
 import InstagramEmbed from '../components/InstagramEmbed';
+import { UserContext } from "@/context/UserContext";
 
 // ── Count-up hook ──────────────────────────────────────
 function useCountUp(target: number, active: boolean, duration = 2200) {
@@ -458,6 +459,7 @@ function CompRow({ index, comp }: { index: number; comp: { icon: string; title: 
 
 // ══════════════════════════════════════════════════════
 export default function LandingPage() {
+  const { userData } = useContext(UserContext);
   const [activeComp, setActiveComp] = useState(0);
   const [loaded, setLoaded]       = useState(false);
   const [loaderDone, setLoaderDone] = useState(false);
@@ -820,8 +822,25 @@ useEffect(() => {
             <p className="cta-sub">Register now and be part of the biggest tech fest at NIT Jamshedpur.</p>
           </div>
           <div className="btn-group" style={{ justifyContent: "center" }}>
-            <Link href="/register" className="btn-primary"><span>/ Register /</span></Link>
-            <Link href="/dashboard" className="btn-outline"> / Login / </Link>
+            {userData ? (
+              <>
+                <Link href="/dashboard" className="btn-primary"><span>/ Dashboard /</span></Link>
+                <button
+                  className="btn-outline"
+                  onClick={async () => {
+                    await fetch("/api/auth/logout", { method: "POST" });
+                    window.location.href = "/";
+                  }}
+                >
+                  / Logout /
+                </button>
+              </>
+            ) : (
+              <>
+                <Link href="/register" className="btn-primary"><span>/ Register /</span></Link>
+                <Link href="/login" className="btn-outline"> / Login / </Link>
+              </>
+            )}
           </div>
           <div className="cta-line cta-line-right" />
         </FadeIn>
