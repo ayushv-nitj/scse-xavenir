@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useContext } from "react";
 import Link from "next/link";
+import { UserContext } from "@/context/UserContext";
 
 // ── Types ──────────────────────────────────────────────
 interface Professor { name: string; role: string; img: string; }
@@ -259,6 +260,7 @@ function WebCard({ member, idx }: { member: WebMember; idx: number }) {
 
 // ── Main ───────────────────────────────────────────────
 export default function AboutPage() {
+  const { userData } = useContext(UserContext);
   const bootLine = useTypingEffect("Initializing SCSE.archive() → Loading member database... OK", 30, 300);
   const { ref: aboutRef, inView: aboutIn } = useInView();
   const { ref: profRef,  inView: profIn  } = useInView();
@@ -1092,8 +1094,25 @@ export default function AboutPage() {
             Register now and be part of the biggest tech fest at NIT Jamshedpur.
           </p>
           <div className="cta-btns">
-            <Link href="/register" className="cta-btn-primary">▶ Register Now</Link>
-            <Link href="/#events" className="cta-btn-secondary">◆ View Events</Link>
+            {userData ? (
+              <>
+                <Link href="/dashboard" className="cta-btn-primary">▶ Dashboard</Link>
+                <button
+                  className="cta-btn-secondary"
+                  onClick={async () => {
+                    await fetch("/api/auth/logout", { method: "POST" });
+                    window.location.href = "/";
+                  }}
+                >
+                  ◆ Logout
+                </button>
+              </>
+            ) : (
+              <>
+                <Link href="/register" className="cta-btn-primary">▶ Register Now</Link>
+                <Link href="/#events" className="cta-btn-secondary">◆ View Events</Link>
+              </>
+            )}
           </div>
         </section>
 
