@@ -7,9 +7,10 @@ type Payment = {
   status?: string; createdAt: string;
 };
 type Tab    = "pending" | "approved" | "rejected";
-type Panel  = "payments" | "search" | "goodies" | "announce" | "eventregs";
+type Panel  = "stats" | "payments" | "eventregs" | "search" | "goodies" | "announce";
 
 const NAV: { key: Panel; icon: string; label: string }[] = [
+  { key: "stats",     icon: "◈", label: "Stats"       },
   { key: "payments",  icon: "◆", label: "Payments"    },
   { key: "eventregs", icon: "◉", label: "Event Regs"  },
   { key: "search",    icon: "◎", label: "User Search" },
@@ -23,11 +24,17 @@ type EventReg = {
   transactionId3?: string; status?: string; createdAt: string;
 };
 
-export default function AdminClient({ payments, eventRegs }: { payments: Payment[]; eventRegs: EventReg[] }) {
+type Stats = {
+  totalUsers: number; primeUsers: number; visitorCount: number;
+  pendingPayments: number; confirmedEventRegs: number; pendingEventRegs: number;
+  eventRegsByName: { _id: string; count: number; participants: number }[];
+};
+
+export default function AdminClient({ payments, eventRegs, stats }: { payments: Payment[]; eventRegs: EventReg[]; stats: Stats }) {
   const [localPayments, setLocalPayments] = useState<Payment[]>(payments);
   const [localEventRegs, setLocalEventRegs] = useState<EventReg[]>(eventRegs);
   const [activeTab,  setActiveTab]  = useState<Tab>("pending");
-  const [panel,      setPanel]      = useState<Panel>("payments");
+  const [panel, setPanel] = useState<Panel>("stats");
   const [loadingId,  setLoadingId]  = useState<string | null>(null);
   const [lightboxUrl,setLightboxUrl]= useState<string | null>(null);
   const [sideOpen,   setSideOpen]   = useState(true);
@@ -122,11 +129,7 @@ export default function AdminClient({ payments, eventRegs }: { payments: Payment
             {sideOpen ? "◀" : "▶"}
           </button>
         </div>
-        <div className="sb-stat-row">
-          <div className="sb-stat"><span className="sb-stat-n">{localPayments.length}</span><span className="sb-stat-l">REG PAYS</span></div>
-          <div className="sb-stat"><span className="sb-stat-n" style={{color:"#f59e0b"}}>{pending.length}</span><span className="sb-stat-l">PENDING</span></div>
-          <div className="sb-stat"><span className="sb-stat-n" style={{color:"#bf00ff"}}>{localEventRegs.filter(r=>!r.status||r.status==="pending").length}</span><span className="sb-stat-l">EVT REGS</span></div>
-        </div>
+        
         <nav className="sb-nav">
           {NAV.map(n => (
             <button key={n.key} className={`sb-item${panel === n.key ? " sb-item-active" : ""}`} onClick={() => setPanel(n.key)}>
@@ -143,6 +146,58 @@ export default function AdminClient({ payments, eventRegs }: { payments: Payment
 
       {/* ── MAIN ── */}
       <main className="main-area">
+
+        {/* STATS */}
+        {panel === "stats" && (
+          <div className="content-panel">
+            <div className="page-header">
+              <h1 className="page-title">◈ Stats Overview</h1>
+              <p className="page-sub">Live snapshot of platform activity.</p>
+            </div>
+
+            {/* Top stat cards */}
+            <div className="stat-grid">
+              {[
+                { label: "Total Users",        value: stats.totalUsers,          color: "#00b4ff", icon: "👤" },
+                { label: "Prime Members",       value: stats.primeUsers,          color: "#00ffb3", icon: "★" },
+                { label: "Non-Prime",           value: stats.totalUsers - stats.primeUsers, color: "#f59e0b", icon: "◎" },
+                { label: "Visitor Count",       value: stats.visitorCount,        color: "#bf00ff", icon: "👁" },
+                { label: "Confirmed Event Regs",value: stats.confirmedEventRegs,  color: "#00ffb3", icon: "◉" },
+                { label: "Pending Payments",    value: stats.pendingPayments,     color: "#f59e0b", icon: "◆" },
+                { label: "Pending Event Regs",  value: stats.pendingEventRegs,    color: "#ff2d6b", icon: "⚡" },
+              ].map(s => (
+                <div key={s.label} className="scard" style={{"--sc": s.color} as any}>
+                  <div className="scard-icon">{s.icon}</div>
+                  <div className="scard-val">{s.value.toLocaleString()}</div>
+                  <div className="scard-label">{s.label}</div>
+                  <div className="scard-bar" />
+                </div>
+              ))}
+            </div>
+
+            {/* Per-event breakdown */}
+            {stats.eventRegsByName.length > 0 && (
+              <div style={{marginTop: 32}}>
+                <div className="divider-row">
+                  <span className="divider-lbl">// EVENT REGISTRATIONS BREAKDOWN</span>
+                  <div className="divider-line" />
+                </div>
+                <div className="evt-table">
+                  <div className="evt-thead">
+                    <span>EVENT</span><span>TEAMS</span><span>PARTICIPANTS</span>
+                  </div>
+                  {stats.eventRegsByName.map((e, i) => (
+                    <div key={i} className="evt-row">
+                      <span className="evt-name">{e._id}</span>
+                      <span className="evt-num">{e.count}</span>
+                      <span className="evt-num" style={{color:"#00ffb3"}}>{e.participants}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
 
         {/* PAYMENTS */}
         {panel === "payments" && (<>
@@ -517,6 +572,25 @@ export default function AdminClient({ payments, eventRegs }: { payments: Payment
         .form-stack{display:flex;flex-direction:column;gap:16px;max-width:520px;}
         .form-field{display:flex;flex-direction:column;gap:6px;}
         .form-label{font-family:'Space Mono',monospace;font-size:10px;font-weight:700;letter-spacing:2px;color:rgba(0,180,255,0.45);text-transform:uppercase;}
+
+        /* STATS */
+        .stat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;padding:0 0 8px;}
+        .scard{background:rgba(4,12,28,0.97);border:1px solid rgba(0,180,255,0.1);padding:20px 18px;position:relative;overflow:hidden;transition:border-color 0.2s;}
+        .scard:hover{border-color:var(--sc);}
+        .scard::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--sc);box-shadow:0 0 10px var(--sc);}
+        .scard-icon{font-size:20px;margin-bottom:10px;opacity:0.7;}
+        .scard-val{font-family:'Orbitron',sans-serif;font-size:28px;font-weight:900;color:var(--sc);line-height:1;margin-bottom:6px;}
+        .scard-label{font-size:11px;font-weight:600;letter-spacing:1.5px;color:rgba(180,210,240,0.45);text-transform:uppercase;}
+        .scard-bar{position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,var(--sc),transparent);}
+        .divider-row{display:flex;align-items:center;gap:14px;margin-bottom:16px;}
+        .divider-lbl{font-family:'Space Mono',monospace;font-size:11px;font-weight:700;letter-spacing:2px;color:rgba(0,180,255,0.45);white-space:nowrap;}
+        .divider-line{flex:1;height:1px;background:linear-gradient(90deg,rgba(0,180,255,0.2),transparent);}
+        .evt-table{display:flex;flex-direction:column;border:1px solid rgba(0,180,255,0.1);}
+        .evt-thead{display:grid;grid-template-columns:1fr 100px 120px;padding:10px 16px;background:rgba(0,180,255,0.05);font-family:'Space Mono',monospace;font-size:10px;font-weight:700;letter-spacing:2px;color:rgba(0,180,255,0.45);text-transform:uppercase;}
+        .evt-row{display:grid;grid-template-columns:1fr 100px 120px;padding:12px 16px;border-top:1px solid rgba(0,180,255,0.07);transition:background 0.15s;}
+        .evt-row:hover{background:rgba(0,180,255,0.04);}
+        .evt-name{font-family:'Inter',sans-serif;font-size:13px;font-weight:600;color:#e8f4ff;}
+        .evt-num{font-family:'Orbitron',sans-serif;font-size:13px;font-weight:700;color:#00b4ff;}
 
         /* LIGHTBOX */
         .lb-back{position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.92);display:flex;align-items:center;justify-content:center;padding:20px;}

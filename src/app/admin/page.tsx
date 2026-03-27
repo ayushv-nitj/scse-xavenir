@@ -5,6 +5,8 @@ import { connectDB } from "@/dbConfig/dbConfig";
 import User from "@/models/userModel";
 import PendingPaymentsModel from "@/models/pendingPaymentModel";
 import PendingEventRegistrations from "@/models/pendingEventPaymentModel";
+import EventRegistration from "@/models/eventRegistrationModel";
+import Visitor from "@/models/visitorModel";
 import AdminClient from "./AdminClient";
 
 async function getAdminData() {
@@ -20,18 +22,37 @@ async function getAdminData() {
   const user = await User.findOne({ email: decoded.email }).select("role").lean();
   if (!user || user.role !== "admin") redirect("/");
 
-  const [payments, eventRegs] = await Promise.all([
+  const [payments, eventRegs, totalUsers, primeUsers, visitorDoc, confirmedEventRegs, eventRegsByName] = await Promise.all([
     PendingPaymentsModel.find().sort({ createdAt: -1 }).lean(),
     PendingEventRegistrations.find().sort({ createdAt: -1 }).lean(),
+    User.countDocuments(),
+    User.countDocuments({ isPrime: true }),
+    Visitor.findOne().lean(),
+    EventRegistration.countDocuments(),
+    EventRegistration.aggregate([
+      { $group: { _id: "$eventName", count: { $sum: 1 }, participants: { $sum: { $size: "$members" } } } },
+      { $sort: { count: -1 } },
+    ]),
   ]);
+
+  const stats = {
+    totalUsers,
+    primeUsers,
+    visitorCount: (visitorDoc as any)?.count ?? 0,
+    pendingPayments: payments.filter((p: any) => !p.status || p.status === "pending").length,
+    confirmedEventRegs,
+    pendingEventRegs: eventRegs.filter((r: any) => !r.status || r.status === "pending").length,
+    eventRegsByName: JSON.parse(JSON.stringify(eventRegsByName)),
+  };
 
   return {
     payments: JSON.parse(JSON.stringify(payments)),
     eventRegs: JSON.parse(JSON.stringify(eventRegs)),
+    stats,
   };
 }
 
 export default async function AdminPage() {
-  const { payments, eventRegs } = await getAdminData();
-  return <AdminClient payments={payments} eventRegs={eventRegs} />;
+  const { payments, eventRegs, stats } = await getAdminData();
+  return <AdminClient payments={payments} eventRegs={eventRegs} stats={stats} />;
 }
