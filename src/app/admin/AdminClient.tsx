@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 type Payment = {
   _id: string; email: string; scseId: string; paymentProof: string;
@@ -45,7 +45,19 @@ export default function AdminClient({ payments, eventRegs, contacts, stats }: {
   const [panel, setPanel] = useState<Panel>("stats");
   const [loadingId,  setLoadingId]  = useState<string | null>(null);
   const [lightboxUrl,setLightboxUrl]= useState<string | null>(null);
-  const [sideOpen,   setSideOpen]   = useState(true);
+  const [sideOpen, setSideOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const check = () => {
+      const mobile = window.innerWidth < 768;
+      setIsMobile(mobile);
+      setSideOpen(!mobile);
+    };
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
 
   // search
   const [searchId,     setSearchId]     = useState("");
@@ -63,6 +75,7 @@ export default function AdminClient({ payments, eventRegs, contacts, stats }: {
   const [annTitle,  setAnnTitle]  = useState("");
   const [annMsg,    setAnnMsg]    = useState("");
   const [annTarget, setAnnTarget] = useState("");
+  const [annEvent,  setAnnEvent]  = useState("");
   const [announcing,setAnnouncing]= useState(false);
   const [annResult, setAnnResult] = useState("");
 
@@ -139,7 +152,7 @@ export default function AdminClient({ payments, eventRegs, contacts, stats }: {
 
         <nav className="sb-nav">
           {NAV.map(n => (
-            <button key={n.key} className={`sb-item${panel === n.key ? " sb-item-active" : ""}`} onClick={() => setPanel(n.key)}>
+            <button key={n.key} className={`sb-item${panel === n.key ? " sb-item-active" : ""}`} onClick={() => { setPanel(n.key); if (isMobile) setSideOpen(false); }}>
               <span className="sb-icon">{n.icon}</span>
               {sideOpen && <span className="sb-label">{n.label}</span>}
               {panel === n.key && <span className="sb-active-bar" />}
@@ -153,6 +166,20 @@ export default function AdminClient({ payments, eventRegs, contacts, stats }: {
 
       {/* ── MAIN ── */}
       <main className="main-area">
+        {/* Mobile top bar */}
+        {isMobile && (
+          <div className="mob-topbar">
+            <button className="mob-menu-btn" onClick={() => setSideOpen(o => !o)}>
+              <span /><span /><span />
+            </button>
+            <span className="mob-title">Xavenir Admin</span>
+          </div>
+        )}
+
+        {/* Backdrop for mobile sidebar */}
+        {isMobile && sideOpen && (
+          <div className="sb-backdrop" onClick={() => setSideOpen(false)} />
+        )}
 
         {/* STATS */}
         {panel === "stats" && (
@@ -460,35 +487,81 @@ export default function AdminClient({ payments, eventRegs, contacts, stats }: {
         {/* ANNOUNCE */}
         {panel === "announce" && (
           <div className="content-panel">
-            <div className="page-header"><h1 className="page-title">📢 Broadcast Announcement</h1></div>
+            <div className="page-header">
+              <h1 className="page-title">📢 Broadcast Announcement</h1>
+              <p className="page-sub">Send to all users, a specific event's participants, or a single user.</p>
+            </div>
             <div className="form-stack">
               <div className="form-field">
                 <label className="form-label">TITLE *</label>
-                <input className="s-input" style={{borderRight:"1px solid rgba(0,180,255,0.2)"}} placeholder="Announcement title" value={annTitle} onChange={e => setAnnTitle(e.target.value)} />
+                <input className="s-input" style={{borderRight:"1px solid #1e2535"}} placeholder="Announcement title" value={annTitle} onChange={e => setAnnTitle(e.target.value)} />
               </div>
               <div className="form-field">
                 <label className="form-label">MESSAGE *</label>
-                <textarea className="s-input" style={{borderRight:"1px solid rgba(0,180,255,0.2)",minHeight:100,resize:"vertical"}} placeholder="Announcement message..." value={annMsg} onChange={e => setAnnMsg(e.target.value)} />
+                <textarea className="s-input" style={{minHeight:100,resize:"vertical"}} placeholder="Announcement message..." value={annMsg} onChange={e => setAnnMsg(e.target.value)} />
               </div>
+
+              {/* Target selector */}
               <div className="form-field">
-                <label className="form-label">TARGET USER ID <span style={{opacity:0.4}}>(blank = broadcast to all)</span></label>
-                <input className="s-input" style={{borderRight:"1px solid rgba(0,180,255,0.2)"}} placeholder="SCSE-XXXXXXX (optional)" value={annTarget} onChange={e => setAnnTarget(e.target.value)} />
+                <label className="form-label">TARGET</label>
+                <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
+                  {["all", "event", "user"].map(t => (
+                    <button key={t} type="button"
+                      style={{padding:"6px 16px",borderRadius:6,border:"1px solid",fontSize:12,fontWeight:600,cursor:"pointer",
+                        background: (annEvent === "" && annTarget === "" && t === "all") || (t === "event" && annEvent !== "") || (t === "user" && annTarget !== "") ? "rgba(99,102,241,0.15)" : "transparent",
+                        borderColor: (annEvent === "" && annTarget === "" && t === "all") || (t === "event" && annEvent !== "") || (t === "user" && annTarget !== "") ? "#6366f1" : "#2a3347",
+                        color: (annEvent === "" && annTarget === "" && t === "all") || (t === "event" && annEvent !== "") || (t === "user" && annTarget !== "") ? "#818cf8" : "#64748b",
+                      }}
+                      onClick={() => { setAnnEvent(""); setAnnTarget(""); }}>
+                      {t === "all" ? "🌐 All Users" : t === "event" ? "◉ Event Participants" : "� Single User"}
+                    </button>
+                  ))}
+                </div>
               </div>
+
+              {/* Event picker */}
+              <div className="form-field">
+                <label className="form-label">EVENT <span style={{opacity:0.4}}>(select to target event participants)</span></label>
+                <select className="s-input" style={{borderRight:"1px solid #1e2535"}}
+                  value={annEvent} onChange={e => { setAnnEvent(e.target.value); setAnnTarget(""); }}>
+                  <option value="">— All users (no event filter) —</option>
+                  {stats.eventRegsByName.map(e => (
+                    <option key={e._id} value={e._id}>{e._id} ({e.participants} participants)</option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Single user override */}
+              <div className="form-field">
+                <label className="form-label">SINGLE USER ID <span style={{opacity:0.4}}>(overrides event filter)</span></label>
+                <input className="s-input" style={{borderRight:"1px solid #1e2535"}} placeholder="SCSE-XXXXXXX (optional)"
+                  value={annTarget} onChange={e => { setAnnTarget(e.target.value); if (e.target.value) setAnnEvent(""); }} />
+              </div>
+
+              {/* Preview */}
+              <div style={{padding:"10px 14px",background:"rgba(99,102,241,0.06)",border:"1px solid rgba(99,102,241,0.2)",borderRadius:6,fontSize:12,color:"#94a3b8"}}>
+                {annTarget ? `→ Sending to user: ${annTarget}` : annEvent ? `→ Sending to all participants of: ${annEvent}` : `→ Broadcasting to all ${stats.totalUsers} users`}
+              </div>
+
               <button className="s-btn" style={{alignSelf:"flex-start"}} disabled={announcing || !annTitle || !annMsg}
                 onClick={async () => {
                   setAnnouncing(true); setAnnResult("");
                   const res = await fetch("/api/admin/announce", {
                     method:"POST", headers:{"Content-Type":"application/json"},
-                    body: JSON.stringify({ title: annTitle, message: annMsg, targetUserID: annTarget || undefined }),
+                    body: JSON.stringify({
+                      title: annTitle, message: annMsg,
+                      targetUserID: annTarget || undefined,
+                      eventName: annEvent || undefined,
+                    }),
                   });
                   const d = await res.json();
-                  setAnnResult(d.message || "Sent");
-                  if (res.ok) { setAnnTitle(""); setAnnMsg(""); setAnnTarget(""); }
+                  setAnnResult(res.ok ? d.message : (d.error || "Failed"));
+                  if (res.ok) { setAnnTitle(""); setAnnMsg(""); setAnnTarget(""); setAnnEvent(""); }
                   setAnnouncing(false);
                 }}>
                 {announcing ? <span className="spin" /> : "📢 SEND"}
               </button>
-              {annResult && <p style={{color:"#00ffb3",fontFamily:"'Inter',sans-serif",fontSize:13}}>{annResult}</p>}
+              {annResult && <p style={{color: annResult.includes("Sent") || annResult.includes("sent") ? "#22c55e" : "#ef4444", fontFamily:"'Inter',sans-serif",fontSize:13}}>{annResult}</p>}
             </div>
           </div>
         )}
@@ -606,11 +679,12 @@ export default function AdminClient({ payments, eventRegs, contacts, stats }: {
         @keyframes sp{to{transform:rotate(360deg)}}
 
         /* SEARCH / FORMS */
-        .search-box{display:flex;margin-bottom:20px;border-radius:8px;overflow:hidden;border:1px solid #1e2535;}
+        .search-box{display:flex;flex-wrap:wrap;margin-bottom:20px;border-radius:8px;overflow:hidden;border:1px solid #1e2535;}
         .s-prefix{background:#1e2535;color:#818cf8;font-family:'Inter',sans-serif;font-size:13px;font-weight:700;padding:11px 14px;display:flex;align-items:center;white-space:nowrap;border-right:1px solid #2a3347;}
         .s-input{flex:1;background:#161b27;border:none;color:#f1f5f9;font-family:'Inter',sans-serif;font-size:14px;padding:11px 14px;outline:none;}
         .s-input::placeholder{color:#334155;}
         textarea.s-input{resize:vertical;min-height:100px;}
+        select.s-input{appearance:none;cursor:pointer;}
         .s-btn{background:#6366f1;border:none;color:#fff;font-family:'Inter',sans-serif;font-size:12px;font-weight:600;letter-spacing:0.3px;padding:11px 20px;cursor:pointer;transition:background 0.15s;white-space:nowrap;display:flex;align-items:center;gap:6px;}
         .s-btn:hover:not(:disabled){background:#4f46e5;}
         .s-btn:disabled{opacity:0.4;cursor:not-allowed;}
@@ -656,10 +730,30 @@ export default function AdminClient({ payments, eventRegs, contacts, stats }: {
         @media(max-width:768px){
           .sidebar{position:fixed;z-index:200;top:70px;height:calc(100vh - 70px);}
           .sidebar-collapsed{width:0;overflow:hidden;border:none;}
-          .cards-grid,.content-panel{padding:16px;}
-          .page-header{padding:20px 16px;}
+          .cards-grid,.content-panel{padding:12px;}
+          .page-header{padding:16px 12px;}
           .card-actions{grid-template-columns:1fr;}
           .stat-grid{grid-template-columns:1fr 1fr;}
+          .card-header{flex-direction:column;gap:10px;}
+          .search-box{flex-wrap:wrap;}
+          .s-prefix{border-right:1px solid #2a3347;border-bottom:none;}
+          .s-input{min-width:0;flex:1 1 120px;}
+          .s-btn{width:100%;justify-content:center;}
+          .proof-img{height:120px;}
+          .result-card{max-width:100%;}
+          .form-stack{max-width:100%;}
+          .tab-row{flex-wrap:wrap;}
+          .ptab{flex:1 1 auto;justify-content:center;}
+          .evt-thead,.evt-row{grid-template-columns:1fr 60px 80px;font-size:11px;}
+          .mob-topbar{display:flex;align-items:center;gap:14px;padding:12px 16px;border-bottom:1px solid #1e2535;background:#161b27;position:sticky;top:0;z-index:10;}
+          .mob-menu-btn{background:transparent;border:1px solid #2a3347;border-radius:6px;width:36px;height:36px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;cursor:pointer;flex-shrink:0;}
+          .mob-menu-btn span{display:block;width:16px;height:2px;background:#94a3b8;border-radius:2px;}
+          .mob-title{font-size:15px;font-weight:700;color:#f1f5f9;}
+          .sb-backdrop{position:fixed;inset:0;top:70px;z-index:199;background:rgba(0,0,0,0.5);}
+        }
+        @media(min-width:769px){
+          .mob-topbar{display:none;}
+          .sb-backdrop{display:none;}
         }
       `}</style>
     </div>
