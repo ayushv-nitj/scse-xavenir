@@ -505,24 +505,26 @@ export default function AdminClient({ payments, eventRegs, contacts, stats }: {
               <div className="form-field">
                 <label className="form-label">TARGET</label>
                 <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
-                  {["all", "event", "user"].map(t => (
-                    <button key={t} type="button"
-                      style={{padding:"6px 16px",borderRadius:6,border:"1px solid",fontSize:12,fontWeight:600,cursor:"pointer",
-                        background: (annEvent === "" && annTarget === "" && t === "all") || (t === "event" && annEvent !== "") || (t === "user" && annTarget !== "") ? "rgba(99,102,241,0.15)" : "transparent",
-                        borderColor: (annEvent === "" && annTarget === "" && t === "all") || (t === "event" && annEvent !== "") || (t === "user" && annTarget !== "") ? "#6366f1" : "#2a3347",
-                        color: (annEvent === "" && annTarget === "" && t === "all") || (t === "event" && annEvent !== "") || (t === "user" && annTarget !== "") ? "#818cf8" : "#64748b",
-                      }}
-                      onClick={() => { setAnnEvent(""); setAnnTarget(""); }}>
-                      {t === "all" ? "🌐 All Users" : t === "event" ? "◉ Event Participants" : "� Single User"}
-                    </button>
-                  ))}
+                  {(["all","event","user"] as const).map(t => {
+                    const active = (t === "all" && !annEvent && !annTarget) || (t === "event" && !!annEvent) || (t === "user" && !!annTarget);
+                    return (
+                      <button key={t} type="button"
+                        style={{padding:"6px 16px",borderRadius:6,border:"1px solid",fontSize:12,fontWeight:600,cursor:"pointer",flex:"1 1 auto",minWidth:0,
+                          background: active ? "rgba(99,102,241,0.15)" : "transparent",
+                          borderColor: active ? "#6366f1" : "#2a3347",
+                          color: active ? "#818cf8" : "#64748b",
+                        }}
+                        onClick={() => { setAnnEvent(""); setAnnTarget(""); }}>
+                        {t === "all" ? "All Users" : t === "event" ? "Event" : "Single User"}
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
-
               {/* Event picker */}
               <div className="form-field">
                 <label className="form-label">EVENT <span style={{opacity:0.4}}>(select to target event participants)</span></label>
-                <select className="s-input" style={{borderRight:"1px solid #1e2535"}}
+                <select className="s-input" style={{borderRight:"1px solid #1e2535", height:42, paddingTop:0, paddingBottom:0}}
                   value={annEvent} onChange={e => { setAnnEvent(e.target.value); setAnnTarget(""); }}>
                   <option value="">— All users (no event filter) —</option>
                   {stats.eventRegsByName.map(e => (
@@ -534,7 +536,7 @@ export default function AdminClient({ payments, eventRegs, contacts, stats }: {
               {/* Single user override */}
               <div className="form-field">
                 <label className="form-label">SINGLE USER ID <span style={{opacity:0.4}}>(overrides event filter)</span></label>
-                <input className="s-input" style={{borderRight:"1px solid #1e2535"}} placeholder="SCSE-XXXXXXX (optional)"
+                <input className="s-input" style={{borderRight:"1px solid #1e2535", height:42}} placeholder="SCSE-XXXXXXX (optional)"
                   value={annTarget} onChange={e => { setAnnTarget(e.target.value); if (e.target.value) setAnnEvent(""); }} />
               </div>
 
@@ -681,9 +683,9 @@ export default function AdminClient({ payments, eventRegs, contacts, stats }: {
         /* SEARCH / FORMS */
         .search-box{display:flex;flex-wrap:wrap;margin-bottom:20px;border-radius:8px;overflow:hidden;border:1px solid #1e2535;}
         .s-prefix{background:#1e2535;color:#818cf8;font-family:'Inter',sans-serif;font-size:13px;font-weight:700;padding:11px 14px;display:flex;align-items:center;white-space:nowrap;border-right:1px solid #2a3347;}
-        .s-input{flex:1;background:#161b27;border:none;color:#f1f5f9;font-family:'Inter',sans-serif;font-size:14px;padding:11px 14px;outline:none;}
+        .s-input{flex:1;background:#161b27;border:none;color:#f1f5f9;font-family:'Inter',sans-serif;font-size:14px;padding:11px 14px;outline:none;height:42px;}
         .s-input::placeholder{color:#334155;}
-        textarea.s-input{resize:vertical;min-height:100px;}
+        textarea.s-input{height:auto;resize:vertical;min-height:100px;}
         select.s-input{appearance:none;cursor:pointer;}
         .s-btn{background:#6366f1;border:none;color:#fff;font-family:'Inter',sans-serif;font-size:12px;font-weight:600;letter-spacing:0.3px;padding:11px 20px;cursor:pointer;transition:background 0.15s;white-space:nowrap;display:flex;align-items:center;gap:6px;}
         .s-btn:hover:not(:disabled){background:#4f46e5;}
@@ -695,7 +697,7 @@ export default function AdminClient({ payments, eventRegs, contacts, stats }: {
         .sr-l{font-size:10px;font-weight:600;letter-spacing:1.5px;color:#475569;width:90px;flex-shrink:0;text-transform:uppercase;}
         .sr-v{font-size:14px;font-weight:500;color:#e2e8f0;}
         .ok{color:#22c55e;font-weight:600;} .no{color:#ef4444;font-weight:600;}
-        .form-stack{display:flex;flex-direction:column;gap:16px;max-width:520px;}
+        .form-stack{display:flex;flex-direction:column;gap:16px;max-width:100%;}
         .form-field{display:flex;flex-direction:column;gap:6px;}
         .form-label{font-size:11px;font-weight:600;letter-spacing:1px;color:#64748b;text-transform:uppercase;}
 
