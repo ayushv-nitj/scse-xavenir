@@ -7,17 +7,25 @@ type Payment = {
   status?: string; createdAt: string;
 };
 type Tab    = "pending" | "approved" | "rejected";
-type Panel  = "payments" | "search" | "goodies" | "announce";
+type Panel  = "payments" | "search" | "goodies" | "announce" | "eventregs";
 
 const NAV: { key: Panel; icon: string; label: string }[] = [
-  { key: "payments", icon: "◆", label: "Payments"  },
-  { key: "search",   icon: "◎", label: "User Search" },
-  { key: "goodies",  icon: "★", label: "Goodies"   },
-  { key: "announce", icon: "📢", label: "Announce"  },
+  { key: "payments",  icon: "◆", label: "Payments"    },
+  { key: "eventregs", icon: "◉", label: "Event Regs"  },
+  { key: "search",    icon: "◎", label: "User Search" },
+  { key: "goodies",   icon: "★", label: "Goodies"     },
+  { key: "announce",  icon: "📢", label: "Announce"   },
 ];
 
-export default function AdminClient({ payments }: { payments: Payment[] }) {
+type EventReg = {
+  _id: string; eventName: string; teamName: string; members: string[];
+  paymentProof: string; transactionId1: string; transactionId2?: string;
+  transactionId3?: string; status?: string; createdAt: string;
+};
+
+export default function AdminClient({ payments, eventRegs }: { payments: Payment[]; eventRegs: EventReg[] }) {
   const [localPayments, setLocalPayments] = useState<Payment[]>(payments);
+  const [localEventRegs, setLocalEventRegs] = useState<EventReg[]>(eventRegs);
   const [activeTab,  setActiveTab]  = useState<Tab>("pending");
   const [panel,      setPanel]      = useState<Panel>("payments");
   const [loadingId,  setLoadingId]  = useState<string | null>(null);
@@ -52,6 +60,18 @@ export default function AdminClient({ payments }: { payments: Payment[] }) {
       });
       if (!res.ok) { const d = await res.json(); alert(d.error || "Failed"); return; }
       setLocalPayments(prev => prev.map(p => p._id === id ? { ...p, status } : p));
+    } catch { alert("Network error"); } finally { setLoadingId(null); }
+  };
+
+  const updateEventStatus = async (id: string, status: string) => {
+    setLoadingId(id);
+    try {
+      const res = await fetch("/api/admin/update-event-status", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, status }),
+      });
+      if (!res.ok) { const d = await res.json(); alert(d.error || "Failed"); return; }
+      setLocalEventRegs(prev => prev.map(r => r._id === id ? { ...r, status } : r));
     } catch { alert("Network error"); } finally { setLoadingId(null); }
   };
 
@@ -103,6 +123,9 @@ export default function AdminClient({ payments }: { payments: Payment[] }) {
           </button>
         </div>
         <div className="sb-stat-row">
+          <div className="sb-stat"><span className="sb-stat-n">{localPayments.length}</span><span className="sb-stat-l">REG PAYS</span></div>
+          <div className="sb-stat"><span className="sb-stat-n" style={{color:"#f59e0b"}}>{pending.length}</span><span className="sb-stat-l">PENDING</span></div>
+          <div className="sb-stat"><span className="sb-stat-n" style={{color:"#bf00ff"}}>{localEventRegs.filter(r=>!r.status||r.status==="pending").length}</span><span className="sb-stat-l">EVT REGS</span></div>
         </div>
         <nav className="sb-nav">
           {NAV.map(n => (
@@ -177,6 +200,84 @@ export default function AdminClient({ payments }: { payments: Payment[] }) {
             ))}
           </div>
         </>)}
+
+        {/* EVENT REGISTRATIONS */}
+        {panel === "eventregs" && (() => {
+          const evPending  = localEventRegs.filter(r => !r.status || r.status === "pending");
+          const evApproved = localEventRegs.filter(r => r.status === "verified");
+          const evRejected = localEventRegs.filter(r => r.status === "rejected");
+          const evTabCfg = [
+            { key: "pending"  as Tab, label: "PENDING",  list: evPending,  color: "#f59e0b", glow: "rgba(245,158,11,0.4)" },
+            { key: "approved" as Tab, label: "APPROVED", list: evApproved, color: "#00ffb3", glow: "rgba(0,255,179,0.4)"  },
+            { key: "rejected" as Tab, label: "REJECTED", list: evRejected, color: "#ff2d6b", glow: "rgba(255,45,107,0.4)" },
+          ];
+          const evCurrent = evTabCfg.find(t => t.key === activeTab)?.list ?? evPending;
+          return (<>
+            <div className="page-header">
+              <h1 className="page-title">◉ Event Registrations</h1>
+              <p className="page-sub">Manual payment submissions pending verification.</p>
+              <div className="tab-row">
+                {evTabCfg.map(t => (
+                  <button key={t.key} className={`ptab${activeTab === t.key ? " ptab-active" : ""}`}
+                    style={{"--acc": t.color, "--glow": t.glow} as any} onClick={() => setActiveTab(t.key)}>
+                    <span className="ptab-dot" />{t.label}
+                    <span className="ptab-count">{t.list.length}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div className="cards-grid">
+              {evCurrent.length === 0 ? (
+                <div className="empty-state"><div className="empty-icon">◈</div><p>NO RECORDS</p><span>Queue is clear.</span></div>
+              ) : evCurrent.map((r, i) => (
+                <div key={r._id} className="card" style={{animationDelay:`${i*50}ms`}}>
+                  <div className="card-accent" />
+                  <div className="card-header">
+                    <div className="card-meta">
+                      <div className="card-rid">REC #{r._id.slice(-8).toUpperCase()}</div>
+                      <h2 className="card-email" style={{fontSize:15}}>{r.teamName} <span style={{color:"rgba(0,180,255,0.5)",fontSize:12,fontWeight:400}}>· {r.eventName}</span></h2>
+                      <div className="card-scse" style={{flexDirection:"column", alignItems:"flex-start", gap:6}}>
+                        <span className="fl" style={{marginBottom:2}}>MEMBERS</span>
+                        <div style={{display:"flex", flexWrap:"wrap", gap:6}}>
+                          {r.members.map((m, mi) => (
+                            <span key={mi} style={{fontFamily:"'Space Mono',monospace", fontSize:11, color:"#00b4ff", background:"rgba(0,180,255,0.08)", border:"1px solid rgba(0,180,255,0.25)", padding:"3px 10px", letterSpacing:1}}>
+                              {m}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                      <div className="card-txns">
+                        {[r.transactionId1, r.transactionId2, r.transactionId3].filter(Boolean).map((t, ti) => (
+                          <div key={ti} className="txn-row"><span className="fl">TXN {ti+1}</span><span className="fv txnv">{t}</span></div>
+                        ))}
+                      </div>
+                    </div>
+                    <div className={`status-chip status-${r.status || "pending"}`}>{(r.status || "pending").toUpperCase()}</div>
+                  </div>
+                  <div className="proof-wrap" onClick={() => setLightboxUrl(r.paymentProof)}>
+                    <img src={r.paymentProof} alt="proof" className="proof-img" />
+                    <div className="proof-ov">🔍 VIEW FULL</div>
+                  </div>
+                  {(!r.status || r.status === "pending") && (
+                    <div className="card-actions">
+                      <button className="btn-approve" disabled={loadingId === r._id} onClick={() => updateEventStatus(r._id, "verified")}>
+                        {loadingId === r._id ? <span className="spin" /> : "▶ APPROVE"}
+                      </button>
+                      <button className="btn-reject" disabled={loadingId === r._id} onClick={() => updateEventStatus(r._id, "rejected")}>
+                        {loadingId === r._id ? <span className="spin" /> : "✕ REJECT"}
+                      </button>
+                    </div>
+                  )}
+                  {r.status && r.status !== "pending" && (
+                    <div className={`final-badge ${r.status === "verified" ? "badge-ok" : "badge-no"}`}>
+                      {r.status === "verified" ? "✔ REGISTRATION APPROVED" : "✕ REGISTRATION REJECTED"}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </>);
+        })()}
 
         {/* USER SEARCH */}
         {panel === "search" && (
