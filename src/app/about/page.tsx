@@ -314,6 +314,7 @@ export default function AboutPage() {
           pointer-events: none;
           z-index: 0;
         }
+
         .about-page::after {
           content: '';
           position: fixed; inset: 0;
