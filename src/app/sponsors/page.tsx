@@ -72,7 +72,7 @@ function Sponsors() {
           {/* BE OUR SPONSORS CTA */}
           <div className="sponsor-cta">
             <a
-              href="https://docs.google.com/forms/d/e/1FAIpQLSclbHWh3OGFRJP31Zic5KFtvQ1QSQ-wOyAnJLbhBM3huR39hw/viewform?pli=1"
+              href="https://docs.google.com/forms/d/e/1FAIpQLSeYMEDPbFvrT6418RWm_ucp2OJ6y-0XaXkkrgdE4Zt82JGH4A/viewform?usp=dialog"
               className="cta-btn"
             >
               ⚡ Be Our Sponsor

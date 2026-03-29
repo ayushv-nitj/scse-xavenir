@@ -47,8 +47,8 @@
 //           <p><span>+91 97986 87024</span></p>
 //           <p>
 //             <span>
-//               <a href="mailto:scse@nitjsr.ac.in" style={{ color: "var(--cyan)", textDecoration: "none" }}>
-//                 scse@nitjsr.ac.in
+//               <a href="mailto:nitjsr.scse@gmail.com" style={{ color: "var(--cyan)", textDecoration: "none" }}>
+//                 nitjsr.scse@gmail.com
 //               </a>
 //             </span>
 //           </p>
@@ -122,12 +122,12 @@ export default function Footer() {
         <div className="footer-col footer-contact-col">
           <h4>Contact Us</h4>
           <p>National Institute of Technology<br />Adityapur, Jamshedpur<br />Jharkhand <span>831014</span></p>
-          <p><span>+91 91188 41006</span></p>
           <p><span>+91 97986 87024</span></p>
+          <p><span>+91 9693780078</span></p>
           <p>
             <span>
-              <a href="mailto:scse@nitjsr.ac.in" style={{ color: "var(--cyan)", textDecoration: "none" }}>
-                scse@nitjsr.ac.in
+              <a href="mailto:nitjsr.scse@gmail.com" style={{ color: "var(--cyan)", textDecoration: "none" }}>
+                nitjsr.scse@gmail.com
               </a>
             </span>
           </p>
@@ -135,7 +135,7 @@ export default function Footer() {
       </div>
 
       <div className="footer-bottom">
-        <p>© 2025 Xavenir. All rights reserved. | Designed &amp; Managed by SCSE Web Team</p>
+        <p>© 2026 Xavenir. All rights reserved. | Designed &amp; Managed by SCSE Web Team</p>
         <div className="visitors">
           ⬡ VISITORS : {visitorCount !== null ? visitorCount.toLocaleString() : "—"}
         </div>
