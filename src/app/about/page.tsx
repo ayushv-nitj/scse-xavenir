@@ -21,7 +21,7 @@ const CORE_TEAM: Member[] = [
     {
     name: "Abhishek kumar",
     role: "President",
-    img: "/images/Screenshot_20260220_093211 - Abhishek Kumar.jpg",
+    img: "/images/abhishek_sir.png",
     phone: "+91 9798687024",
     email: "2023ugcs048@nitjsr.ac.in",
     linkedin: "https://www.linkedin.com/in/abhishek-kaushik47",
@@ -287,6 +287,7 @@ const MEMBERS: Member[] = [
 const WEB_TEAM: WebMember[] = [
   { name: "Ayush Verma",             role: "Web Lead",  img: "https://res.cloudinary.com/dtieuimsz/image/upload/v1774474434/WhatsApp_Image_2026-03-26_at_3.03.23_AM_yi25nd.jpg", github: "https://github.com/ayushv-nitj", linkedin: "https://www.linkedin.com/in/ayush-verma-jsr25" },
   { name: "Priyanshu Raj",           role: "Web Lead",  img: "/web-team-photo/IMG_20260326_022402 - Priyanshu Raj.jpg", github: "https://github.com/priyanshuraj-dev", linkedin: "https://www.linkedin.com/in/priyanshuraj-nitjsr/" },
+  { name: "Yashita ",           role: "Web Team",  img: "https://res.cloudinary.com/dtieuimsz/image/upload/v1774812629/yashita_xnmoou.jpg", github: "https://github.com/yashita7002-hub", linkedin: "https://www.linkedin.com/in/yashita-07981b394" },
   { name: "Vivek Mishra",            role: "Web Team",  img: "/web-team-photo/WhatsApp Image 2026-03-26 -Vivek Mishra.jpeg", github: "https://github.com/vivekrtx-lang", linkedin: "https://www.linkedin.com/in/vivek-mishra-9735a3386" },
   { name: "Deeptanshu Singh Negi",   role: "Web Team",  img: "/web-team-photo/IMG-20260215-WA0048 - Deeptanshu Singh Negi.jpg", github: "https://github.com/deeptanshu-glitch", linkedin: "https://www.linkedin.com/in/deeptanshu-singh-negi" },
   { name: "Lakshay Sudhera",         role: "Web Team",  img: "/web-team-photo/profile - Lakshay Sudhera.jpeg", github: "https://github.com/lakshay-sudhera", linkedin: "https://www.linkedin.com/in/lakshay-kumar-sudhera-133b35389/" },
@@ -297,6 +298,8 @@ const WEB_TEAM: WebMember[] = [
   {name:  "Harshit Sharma",          role: "Web Team",  img: "/web-team-photo/ Harshit Sharma.jpg" , github:"https://github.com/HarshitSharma-h8",    linkedin:"https://www.linkedin.com/in/harshit-sharma-fullstack-dev/"},
   {name:  "Ganesh Gundawar",         role: "Web Team",  img: "/web-team-photo/IMG_20250727_174200 - Ganesh Gundawar.jpg" , github:"https://github.com/ganeshgundawar",    linkedin:"https://www.linkedin.com/in/ganesh-gundawar-2b681926a?utm_source=share_via&utm_content=profile&utm_medium=member_android"},
 ];
+
+
 
 const EDITIONS: Edition[] = [
   { year: "2023", theme: "Rise of the Machines",  highlights: ["First ever SCSE Tech Fest", "500+ participants", "6 flagship events", "Industry experts from TCS & Infosys"],          participants: "500+",  events: "6", prizePool: "₹25,000",  status: "ARCHIVED" },
@@ -830,7 +833,7 @@ export default function AboutPage() {
           background: linear-gradient(90deg, var(--cyan), var(--pink), var(--purple));
         }
         .core-card:hover { border-color: rgba(0,245,255,0.5); box-shadow: 0 0 45px rgba(0,245,255,0.11); }
-        .core-img-wrap { position: relative; height: 260px; overflow: hidden; }
+        .core-img-wrap { position: relative; height: 280px; overflow: hidden; }
         .core-img {
           width: 100%; height: 100%; object-fit: cover; object-position: top;
           filter: grayscale(15%) brightness(0.85);
@@ -895,9 +898,9 @@ export default function AboutPage() {
           color: var(--cyan); background: rgba(0,3,20,0.82);
           padding: 2px 7px; z-index: 2; letter-spacing: 0.08em;
         }
-        .mem-img-wrap { position: relative; height: 170px; overflow: hidden; }
+        .mem-img-wrap { position: relative; height: 190px; overflow: hidden; }
         .mem-img {
-          width: 100%; height: 100%; object-fit: cover; object-position: top;
+          width: 100%; height: 100%; object-fit: cover; object-position: center 15%;
           filter: grayscale(20%) brightness(0.85);
           transition: filter 0.3s, transform 0.3s;
         }
@@ -1078,9 +1081,9 @@ export default function AboutPage() {
           font-family: var(--f-mono); font-size: 0.62rem;
           color: rgba(0,245,255,0.35); letter-spacing: 0.08em; z-index: 3;
         }
-        .web-card-img-wrap { position: relative; height: 170px; overflow: hidden; }
+        .web-card-img-wrap { position: relative; height: 190px; overflow: hidden; }
         .web-card-img {
-          width: 100%; height: 100%; object-fit: cover; object-position: top;
+          width: 100%; height: 100%; object-fit: cover; object-position: center 15%;
           filter: grayscale(30%) brightness(0.8);
           transition: filter 0.4s, transform 0.4s;
         }
