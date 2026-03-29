@@ -35,7 +35,7 @@ function Sponsors() {
           </div>
 
           {/* Sponsor Cards */}
-          <div className="flex flex-wrap justify-center gap-6 md:gap-12 w-full max-w-6xl px-4 mt-8 md:mt-72">
+          <div className="flex flex-col md:flex-row flex-wrap justify-center gap-6 md:gap-12 w-full max-w-6xl px-6 md:px-4 mt-10 md:mt-72 items-center">
 
             {/* CARD 1 */}
             <div className="sponsor-card-wrapper">
