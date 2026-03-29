@@ -1,5 +1,6 @@
 import './page.css'
 import SponsorCard from './SponsorCard'
+import Link from "next/link";
 
 function Sponsors() {
   return (
@@ -271,15 +272,21 @@ function Sponsors() {
           </div>
 
           {/* CONTACT */}
-          <div className="contact-card-inner flex flex-col items-center justify-center w-full max-w-[300px]
-                          bg-black/70 border border-fuchsia-400/40 text-fuchsia-200
-                          rounded-2xl p-10
-                          shadow-[0_0_30px_rgba(255,0,255,0.25)_inset,0_0_30px_rgba(255,0,255,0.15)]
-                          space-y-5 cursor-pointer transition-transform duration-300
-                          hover:scale-105 hover:shadow-[0_0_45px_rgba(255,0,255,0.5),0_0_70px_rgba(0,247,255,0.2)]">
-            <div className="text-fuchsia-200/80 tracking-widest uppercase text-sm">For more enquiries</div>
-            <div className="contact-label text-fuchsia-300">Contact Us</div>
-          </div>
+          <Link href="/contact">
+  <div className="contact-card-inner flex flex-col items-center justify-center w-full max-w-[300px]
+                  bg-black/70 border border-fuchsia-400/40 text-fuchsia-200
+                  rounded-2xl p-10
+                  shadow-[0_0_30px_rgba(255,0,255,0.25)_inset,0_0_30px_rgba(255,0,255,0.15)]
+                  space-y-5 cursor-pointer transition-transform duration-300
+                  hover:scale-105 hover:shadow-[0_0_45px_rgba(255,0,255,0.5),0_0_70px_rgba(0,247,255,0.2)]">
+    <div className="text-fuchsia-200/80 tracking-widest uppercase text-sm">
+      For more enquiries
+    </div>
+    <div className="contact-label text-fuchsia-300">
+      Contact Us
+    </div>
+  </div>
+</Link>
 
         </div>
 

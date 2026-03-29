@@ -286,6 +286,7 @@ const MEMBERS: Member[] = [
 const WEB_TEAM: WebMember[] = [
   { name: "Ayush Verma",             role: "Web Lead",  img: "https://res.cloudinary.com/dtieuimsz/image/upload/v1774474434/WhatsApp_Image_2026-03-26_at_3.03.23_AM_yi25nd.jpg", github: "https://github.com/ayushv-nitj", linkedin: "https://www.linkedin.com/in/ayush-verma-jsr25" },
   { name: "Priyanshu Raj",           role: "Web Lead",  img: "/web-team-photo/IMG_20260326_022402 - Priyanshu Raj.jpg", github: "https://github.com/priyanshuraj-dev", linkedin: "https://www.linkedin.com/in/priyanshuraj-nitjsr/" },
+  { name: "Yashita ",           role: "Web Team",  img: "https://res.cloudinary.com/dtieuimsz/image/upload/v1774812629/yashita_xnmoou.jpg", github: "https://github.com/yashita7002-hub", linkedin: "https://www.linkedin.com/in/yashita-07981b394" },
   { name: "Vivek Mishra",            role: "Web Team",  img: "/web-team-photo/WhatsApp Image 2026-03-26 -Vivek Mishra.jpeg", github: "https://github.com/vivekrtx-lang", linkedin: "https://www.linkedin.com/in/vivek-mishra-9735a3386" },
   { name: "Deeptanshu Singh Negi",   role: "Web Team",  img: "/web-team-photo/IMG-20260215-WA0048 - Deeptanshu Singh Negi.jpg", github: "https://github.com/deeptanshu-glitch", linkedin: "https://www.linkedin.com/in/deeptanshu-singh-negi" },
   { name: "Lakshay Sudhera",         role: "Web Team",  img: "/web-team-photo/profile - Lakshay Sudhera.jpeg", github: "https://github.com/lakshay-sudhera", linkedin: "https://www.linkedin.com/in/lakshay-kumar-sudhera-133b35389/" },
@@ -293,6 +294,8 @@ const WEB_TEAM: WebMember[] = [
   { name: "Ayush Sarkar",            role: "Web Team",  img: "/web-team-photo/IMG_20260102_194028 - Ayush Sarkar.jpg", github: "https://github.com/ayushsarkar314", linkedin: "https://www.linkedin.com/in/ayush-sarkar-441b9a39b" },
   { name: "Darshita Maheshwari",     role: "Web Team",  img: "https://res.cloudinary.com/dtieuimsz/image/upload/v1774629414/d_foqjqk.jpg", github: "https://github.com/darshita44", linkedin: "https://www.linkedin.com/in/darshita-maheshwari-836980383" },
 ];
+
+
 
 const EDITIONS: Edition[] = [
   { year: "2023", theme: "Rise of the Machines",  highlights: ["First ever SCSE Tech Fest", "500+ participants", "6 flagship events", "Industry experts from TCS & Infosys"],          participants: "500+",  events: "6", prizePool: "₹25,000",  status: "ARCHIVED" },
