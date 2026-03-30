@@ -1613,14 +1613,14 @@ export default function Dashboard() {
           {/* PROFILE */}
           {tab === "profile" && (
             <div className="db-section">
-              <div className="db-section-label">// profile.edit()</div>
+              <div className="db-section-label"> profile.edit()</div>
               <div className="db-profile-grid">
 
                 {/* Pic upload card */}
                 <div className="db-card" style={{ alignItems: "center" }}>
                   <div className="db-card-corner tl" /><div className="db-card-corner br" />
                   <div className="db-card-top-bar" />
-                  <div className="db-section-label" style={{ marginBottom: 16, alignSelf: "flex-start" }}>// avatar.upload()</div>
+                  <div className="db-section-label" style={{ marginBottom: 16, alignSelf: "flex-start" }}>avatar.upload()</div>
                   <div className="db-avatar-wrap db-avatar-lg" onClick={() => fileRef.current?.click()}>
                     {picPreview
                       ? <img src={picPreview} alt="avatar" className="db-avatar-img" />
@@ -1632,7 +1632,7 @@ export default function Dashboard() {
                     <input ref={fileRef} type="file" accept="image/*" style={{ display: "none" }} onChange={handlePicUpload} />
                   </div>
                   <p style={{ fontFamily: "'Inter',sans-serif", fontSize: "0.85rem", fontWeight: 500, color: "rgba(0,245,255,0.45)", marginTop: 12, textAlign: "center" }}>
-                    {uploading ? "// UPLOADING..." : "// CLICK TO CHANGE PHOTO"}
+                    {uploading ? "// UPLOADING..." : " CLICK TO CHANGE PHOTO"}
                   </p>
                 </div>
 
@@ -1942,7 +1942,7 @@ export default function Dashboard() {
               ) : (
                 <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
                   {/* Team invites (actionable) */}
-                  {invites.map((inv, i) => (
+                  {[...invites].reverse().map((inv, i) => (
                     <div key={`inv-${i}`} className="db-card" style={{ gap: 10, borderColor: inv.status === "pending" ? "rgba(191,0,255,0.35)" : undefined }}>
                       <div className="db-card-corner tl" /><div className="db-card-corner br" />
                       <div className="db-card-top-bar" style={{ background: inv.status === "pending" ? "var(--purple)" : inv.status === "accepted" ? "#00ff88" : "var(--pink)" }} />
@@ -1973,7 +1973,7 @@ export default function Dashboard() {
                     </div>
                   ))}
                   {/* System notifications */}
-                  {notifications.map((n, i) => {
+                  {[...notifications].reverse().map((n, i) => {
                     const iconMap: Record<string, string> = {
                       team_invite_response: "👥",
                       team_confirmed: "✅",

@@ -1184,8 +1184,12 @@ export default function AboutPage() {
           .sec-label { font-size: 0.68rem; letter-spacing: 0.18em; }
           .about-term-body { padding: 1rem; font-size: 0.78rem; line-height: 1.75; }
           .core-card { flex-direction: column; }
-          .core-img-wrap { width: 100%; height: 200px; }
-          .core-img { width: 100%; height: 100%; object-fit: cover; object-position: top; }
+          .core-img-wrap { width: 100%; height: 240px; }
+          .core-img { width: 100%; height: 100%; object-fit: cover; object-position: center top; }
+          .mem-img-wrap { height: 160px; }
+          .mem-img { object-position: center top; }
+          .web-card-img-wrap { height: 160px; }
+          .web-card-img { object-position: center top; }
           .xav-title { font-size: 1.1rem; }
           .xav-text { font-size: 0.95rem; }
         }
@@ -1193,8 +1197,10 @@ export default function AboutPage() {
           .about-hero { padding: 85px 1rem 36px; }
           .about-section { padding: 36px 1rem; }
           .about-hero-title { font-size: clamp(1.4rem, 9vw, 2.2rem); line-height: 1.1; }
-          .prof-grid { grid-template-columns: 1fr; gap: 1rem; }
+          .prof-grid { grid-template-columns: 1fr 1fr; gap: 1rem; }
           .mem-grid, .web-grid { grid-template-columns: 1fr 1fr; gap: 0.6rem; }
+          .mem-img-wrap { height: 140px; }
+          .web-card-img-wrap { height: 140px; }
           .mem-name, .web-card-name { font-size: 0.82rem; }
           .mem-role, .web-card-role { font-size: 0.7rem; }
           .edition-year { font-size: 1rem; }
@@ -1202,6 +1208,8 @@ export default function AboutPage() {
           .edition-stat-val { font-size: 1.2rem; }
           .prof-name { font-size: 0.9rem; }
           .prof-role { font-size: 0.72rem; }
+          .prof-img-wrap { width: 100px; height: 100px; }
+          .prof-img { width: 100px; height: 100px; }
         }
       `}</style>
 
