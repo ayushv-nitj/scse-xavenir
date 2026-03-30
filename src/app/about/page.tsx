@@ -14,7 +14,7 @@ interface WebMember { name: string; role: string; img: string; github?: string; 
 const PROFESSORS: Professor[] = [
   { name: "Dr. Danish Ali Khan",  role: "Head of Department", img: "https://res.cloudinary.com/dtieuimsz/image/upload/v1774629413/h_gtptll.jpg" },
   { name: "Dr. Jitesh Pradhan",   role: "Prof. In-Charge",    img: "https://res.cloudinary.com/dtieuimsz/image/upload/v1774629413/j_cnec4m.jpg" },
-  { name: "Dr. Dinesh Kumar", role: "Associate Professor", img: "https://res.cloudinary.com/dtieuimsz/image/upload/v1774629414/ds_mvxrrv.jpg" },
+  { name: "Dr. Deepak Rai", role: "Prof. In-Charge", img: "https://res.cloudinary.com/dtieuimsz/image/upload/v1774896826/Screenshot_2026-03-31_002317_x6lmqr.png" },
 ];
 
 const CORE_TEAM: Member[] = [
@@ -256,12 +256,12 @@ const MEMBERS: Member[] = [
   },
   
   {
-    name: "Shubham Pandey",
+    name: "Anuj Kumar",
     role: "EM Head",
-    img: "/our-member-photo/Shubham Pandey.jpeg",
-    phone: "9205120803",
-    email: "adityaprakash91111@gmail.com",
-    linkedin: "https://www.linkedin.com/in/shubham-pandey-a71951344?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app",
+    img: "https://res.cloudinary.com/dtieuimsz/image/upload/v1774585360/sample_tl78ud.jpg",
+    phone: "7858927896",
+    email: "anujkumar@gmail.com",
+    linkedin: "https://www.linkedin.com/in/anuj-kumar-14878b28a",
   },
   {
     name: "Sachin Kumar",
