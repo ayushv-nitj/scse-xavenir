@@ -538,7 +538,7 @@
 //     };
 //   }, []);
 //   const competitions = [
-//     { icon: "⌨", title: "Computer Fundamentals Quiz", desc: "Test your grasp on CS basics in a challenging quiz. Think fast, answer faster!", prize: "₹8,000 PRIZE" },
+//     { icon: "⌨", title: "Computer Fundamentals Quiz", slug: "Computer Fundamentals Quiz", desc: "Test your grasp on CS basics in a challenging quiz. Think fast, answer faster!", prize: "₹8,000 PRIZE" },
 //     { icon: "⚡", title: "Typing Speed Challenge",     desc: "Compete to type swiftly and accurately. The fastest fingers claim glory.",          prize: "₹3,000 PRIZE" },
 //     { icon: "🧩", title: "Code Debugging",             desc: "Spot the bugs and fix them faster than anyone. Debug to dominate.",                 prize: "₹5,000 PRIZE" },
 //     { icon: "🤖", title: "AI Hackathon",               desc: "Build an AI-powered solution in 24 hours. Innovate or perish.",                    prize: "₹15,000 PRIZE" },
@@ -1774,7 +1774,7 @@ function FadeIn({ children, delay = 0, className = "" }: { children: React.React
   );
 }
 
-function CompRow({ index, comp }: { index: number; comp: { icon: string; title: string; desc: string; prize: string } }) {
+function CompRow({ index, comp }: { index: number; comp: { icon: string; title: string; desc: string; prize: string; slug: string } }) {
   const [open, setOpen] = useState(false);
   const id = String(index + 1).padStart(2, "0");
  
@@ -1809,7 +1809,7 @@ function CompRow({ index, comp }: { index: number; comp: { icon: string; title: 
               REGISTRATION OPEN
             </div>
             <Link
-              href="/register"
+              href={`/eventDetails/${encodeURIComponent(comp.slug)}`}
               className="comp-detail-btn"
               onClick={e => e.stopPropagation()}
             >
@@ -1915,37 +1915,37 @@ useEffect(() => {
     };
   }, []);
  const competitions = [
-  { icon: "🕵️", title: "Scavenger Hunt", desc: "Solve tech puzzles, hunt hidden clues, and outsmart rival teams in a fast-paced challenge.", prize: "₹5,000 PRIZE" },
+  { icon: "🕵️", title: "Scavenger Hunt", slug: "Scavenger Hunt", desc: "Solve tech puzzles, hunt hidden clues, and outsmart rival teams in a fast-paced challenge.", prize: "₹5,000 PRIZE" },
 
-  { icon: "💃", title: "Paper Dance", desc: "Dance with your partner on shrinking paper—balance, coordination, and fun combined.", prize: "₹3,000 PRIZE" },
+  { icon: "💃", title: "Paper Dance", slug: "Paper Dance", desc: "Dance with your partner on shrinking paper—balance, coordination, and fun combined.", prize: "₹3,000 PRIZE" },
 
-  { icon: "🤖", title: "AI-ML Challenge", desc: "Build an AI/ML model to solve real-world problems under constraints.", prize: "₹8,000 PRIZE" },
+  { icon: "🤖", title: "AI-ML Challenge", slug: "AI-ML Challenge", desc: "Build an AI/ML model to solve real-world problems under constraints.", prize: "₹8,000 PRIZE" },
 
-  { icon: "🎮", title: "PUBG, Valorant & Free Fire Tournament", desc: "Compete in high-intensity esports battles and prove your squad’s dominance.", prize: "₹3,000 PRIZE" },
+  { icon: "🎮", title: "PUBG, Valorant & Free Fire Tournament", slug: "PUBG, Valorant & Free Fire Tournament", desc: "Compete in high-intensity esports battles and prove your squad’s dominance.", prize: "₹3,000 PRIZE" },
 
-  { icon: "🎨", title: "Frontend Design Contest", desc: "Design and build a stunning frontend UI from scratch—where creativity meets code.", prize: "₹4,000 PRIZE" },
+  { icon: "🎨", title: "Frontend Design Contest", slug: "Frontend Design Contest", desc: "Design and build a stunning frontend UI from scratch—where creativity meets code.", prize: "₹4,000 PRIZE" },
 
-  { icon: "🔐", title: "Ethical Hacking Challenge", desc: "Test your penetration testing and cybersecurity skills in a controlled environment.", prize: "₹5,000 PRIZE" },
+  { icon: "🔐", title: "Ethical Hacking Challenge", slug: "Ethical Hacking Challenge", desc: "Test your penetration testing and cybersecurity skills in a controlled environment.", prize: "₹5,000 PRIZE" },
 
-  { icon: "🥟", title: "Golgappa Eating Challenge", desc: "A fun-filled eating contest—push your limits in the ultimate golgappa showdown.", prize: "₹1,000 PRIZE" },
+  { icon: "🥟", title: "Golgappa Eating Challenge", slug: "Golgappa Eating Challenge", desc: "A fun-filled eating contest—push your limits in the ultimate golgappa showdown.", prize: "₹1,000 PRIZE" },
 
-  { icon: "🤖", title: "Robotics Competition", desc: "Design, build, and program robots to complete exciting real-world challenges.", prize: "₹3,000 PRIZE" },
+  { icon: "🤖", title: "Robotics Competition", slug: "Robotics Competition", desc: "Design, build, and program robots to complete exciting real-world challenges.", prize: "₹3,000 PRIZE" },
 
-  { icon: "🙈", title: "Blind Coding", desc: "Code without seeing your screen—pure logic, memory, and confidence.", prize: "₹3,000 PRIZE" },
+  { icon: "🙈", title: "Blind Coding", slug: "Blind Coding", desc: "Code without seeing your screen—pure logic, memory, and confidence.", prize: "₹3,000 PRIZE" },
 
-  { icon: "💡", title: "Ideathon", desc: "Pitch innovative tech ideas and showcase your creativity and problem-solving vision.", prize: "₹3,000 PRIZE" },
+  { icon: "💡", title: "Ideathon", slug: "Ideathon", desc: "Pitch innovative tech ideas and showcase your creativity and problem-solving vision.", prize: "₹3,000 PRIZE" },
 
-  { icon: "🎬", title: "Movie Mania", desc: "Enjoy a tech-themed movie screening followed by an engaging trivia challenge.", prize: "₹2,000 PRIZE" },
+  { icon: "🎬", title: "Movie Mania", slug: "Movie Mania", desc: "Enjoy a tech-themed movie screening followed by an engaging trivia challenge.", prize: "₹2,000 PRIZE" },
 
-  { icon: "💻", title: "Competitive Programming", desc: "Solve algorithmic problems under time pressure and prove your coding skills.", prize: "₹8,000 PRIZE" },
+  { icon: "💻", title: "Competitive Programming", slug: "Competitive Programming", desc: "Solve algorithmic problems under time pressure and prove your coding skills.", prize: "₹8,000 PRIZE" },
 
-  { icon: "⚡", title: "Hackathon", desc: "Build innovative solutions in an intense 24-hour coding marathon.", prize: "₹15,000 PRIZE" },
+  { icon: "⚡", title: "Hackathon", slug: "Hackathon", desc: "Build innovative solutions in an intense 24-hour coding marathon.", prize: "₹15,000 PRIZE" },
 
-  { icon: "⌨️", title: "Computer Fundamentals Quiz", desc: "Test your knowledge of core computer science concepts in a competitive quiz.", prize: "₹8,000 PRIZE" },
+  { icon: "⌨️", title: "Computer Fundamentals Quiz", slug: "Computer Fundamentals Quiz", desc: "Test your knowledge of core computer science concepts in a competitive quiz.", prize: "₹8,000 PRIZE" },
 
-  { icon: "⚡", title: "Typing Speed Challenge", desc: "Compete on speed and accuracy—fastest fingers take the win.", prize: "₹3,000 PRIZE" },
+  { icon: "⚡", title: "Typing Speed Challenge", slug: "Typing Speed Challenge", desc: "Compete on speed and accuracy—fastest fingers take the win.", prize: "₹3,000 PRIZE" },
 
-  { icon: "🎥", title: "Tech Reel", desc: "Create a short, engaging video capturing the essence of technology trends.", prize: "₹2,000 PRIZE" }
+  { icon: "🎥", title: "Tech Reel", slug: "Tech Reel", desc: "Create a short, engaging video capturing the essence of technology trends.", prize: "₹2,000 PRIZE" }
 ];
 
   return (
@@ -2627,7 +2627,7 @@ function PageStyles() {
       .comp-row-chevron { font-size: 0.6rem; color: rgba(0,245,255,0.4); transition: color 0.2s; min-width: 12px; }
       .comp-row-open .comp-row-chevron { color: var(--cyan); }
       .comp-row-body { max-height: 0; overflow: hidden; transition: max-height 0.45s cubic-bezier(0.4,0,0.2,1); }
-      .comp-row-open .comp-row-body { max-height: 200px; }
+      .comp-row-open .comp-row-body { max-height: 400px; }
       .comp-row-body-inner { display: grid; grid-template-columns: 1fr auto; gap: 3rem; align-items: start; padding: 0.5rem 1.8rem 1.8rem 3.8rem; border-top: 1px solid rgba(0,245,255,0.07); }
       .comp-detail-label { font-family: 'Share Tech Mono', monospace; font-size: 0.62rem; letter-spacing: 3px; color: var(--pink); margin-bottom: 0.5rem; }
       .comp-detail-desc { font-size: 0.9rem; color: rgba(180,200,255,0.65); line-height: 1.7; max-width: 520px; }
@@ -2693,6 +2693,7 @@ function PageStyles() {
         .stats-bar { gap: 1.5rem; padding: 1.2rem 1.5rem; flex-wrap: wrap; }
         .comp-row-body-inner { gap: 1.5rem; padding: 0.5rem 1.2rem 1.5rem 1.8rem; }
         .comp-detail-right { min-width: 140px; }
+        .comp-row-open .comp-row-body { max-height: 500px; }
         .btn-primary { padding: 12px 24px; font-size: 0.7rem; }
         .btn-outline  { padding: 11px 22px; font-size: 0.7rem; }
         .three-canvas { width: 100% !important; opacity: 0.35 !important; }
@@ -2715,6 +2716,7 @@ function PageStyles() {
         .comp-row-body-inner { grid-template-columns: 1fr; gap: 1rem; padding: 0.5rem 1rem 1.2rem; }
         .comp-detail-right { align-items: flex-start; min-width: unset; }
         .comp-row-prize { display: none; }
+        .comp-row-open .comp-row-body { max-height: 600px; }
         .cta-band { padding: 40px 1.2rem; }
         .cta-sub { font-size: 0.78rem; }
         .footer { padding: 2.5rem 1.2rem 1.2rem; }
@@ -2746,7 +2748,8 @@ function PageStyles() {
         .comp-row-name { font-size: 0.68rem; }
         .comp-row-body-inner { padding: 0.5rem 0.8rem 1rem; }
         .comp-detail-prize-big { font-size: 1.1rem; }
-        .comp-detail-btn { padding: 8px 14px; font-size: 0.58rem; }
+        .comp-detail-btn { padding: 8px 14px; font-size: 0.58rem; white-space: nowrap; }
+        .comp-row-open .comp-row-body { max-height: 700px; }
         .cta-band { padding: 36px 1rem; }
         .cta-title { font-size: clamp(1.2rem,7vw,1.8rem); }
         .footer { padding: 2rem 1rem 1rem; }
