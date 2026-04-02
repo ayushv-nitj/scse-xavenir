@@ -15,7 +15,6 @@ export async function POST(request: NextRequest) {
         { status: 401 }
     );
     }
-
     let decoded;
     try {
     decoded = jwt.verify(token, process.env.JWT_SECRET!);
@@ -28,7 +27,6 @@ export async function POST(request: NextRequest) {
     return res;
     }
     const amount = 900;
-
     const instance = new Razorpay({
       key_id: process.env.RAZORPAY_API_KEY!,
       key_secret: process.env.RAZORPAY_API_SECRET!,

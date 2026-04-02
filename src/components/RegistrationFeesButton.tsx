@@ -354,13 +354,16 @@ export default function RegistrationFeesButton({ email }: RegistrationFeesButton
         prefill: { email },
         theme: { color: "#00f5ff" },
         modal: {
+          // disabling escape key to close popup
           escape: false,
+          // this runs when user manually closes the popup
           ondismiss: () => setLoading(false),
         },
       };
 
       const rzp1 = new (window as any).Razorpay(options);
       rzp1.on("payment.failed", () => setLoading(false));
+      // this opens the razorpay checkout ui
       rzp1.open();
 
     } catch (error) {
