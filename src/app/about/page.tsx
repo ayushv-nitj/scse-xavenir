@@ -301,11 +301,7 @@ const WEB_TEAM: WebMember[] = [
 
 
 
-const EDITIONS: Edition[] = [
-  { year: "2023", theme: "Rise of the Machines",  highlights: ["First ever SCSE Tech Fest", "500+ participants", "6 flagship events", "Industry experts from TCS & Infosys"],          participants: "500+",  events: "6", prizePool: "₹25,000",  status: "ARCHIVED" },
-  { year: "2024", theme: "Code to the Future",    highlights: ["Expanded to 8 competitions", "1200+ participants across India", "AI Hackathon introduced", "Live CTF Challenge"],      participants: "1200+", events: "8", prizePool: "₹40,000",  status: "ARCHIVED" },
-  { year: "2025", theme: "Code to the Future",    highlights: ["Biggest edition yet", "National level participation", "₹50K+ prize pool", "Gaming tournament added"],                participants: "2000+", events: "8", prizePool: "₹50,000+", status: "ACTIVE"   },
-];
+
 
 // ── Hooks ──────────────────────────────────────────────
 function useTypingEffect(text: string, speed = 40, startDelay = 0) {
