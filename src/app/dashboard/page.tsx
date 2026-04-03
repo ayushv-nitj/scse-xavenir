@@ -199,8 +199,10 @@ export default function Dashboard() {
     setPicPreview(localUrl);
     setUploading(true);
     try {
+      // files are sent using formdata
       const form = new FormData();
       form.append("file", file);
+      // browser automatically sets content-type: multipart/form-data , no need to manually set headers
       const res = await fetch("/api/cloudinary/upload", { method: "POST", body: form });
       const d = await res.json();
       const url = d.uploads?.file?.secure_url;

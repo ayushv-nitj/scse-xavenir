@@ -5,7 +5,7 @@ import { Readable } from "stream";
 
 export const runtime = "nodejs";
 
-// Cloudinary config
+// Cloudinary config, this authenticates your backend with cloudinary
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME!,
   api_key: process.env.CLOUDINARY_API_KEY!,
@@ -29,8 +29,9 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       );
     }
-
+    // busboy parses files from multipart form
     const bb = busboy({ headers: { "content-type": contentType } });
+    // nextjs use web streams , but busboy expects node streams, so we convert it
     const nodeStream = Readable.fromWeb(req.body as any);
 
     const fields: Record<string, string> = {};
@@ -47,6 +48,7 @@ export async function POST(req: NextRequest) {
         info: FileInfo
       ) => {
         const promise = new Promise<void>((resolve, reject) => {
+          // this creates cloudinary upload stream
           const uploadStream = cloudinary.uploader.upload_stream(
             { folder: "nextjs_uploads" },
             (error: Error | undefined, result?: UploadApiResponse) => {

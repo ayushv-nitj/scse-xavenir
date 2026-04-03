@@ -153,8 +153,11 @@ function ReceiptModal({
         alert("Receipt generation failed. Check server logs.");
         return;
       }
-
+      // blob is binary large object
+      // when server sends pdf binary data then browser receives ReadableStream
+      // it converts blob(file-like-object) so browser can treat it like a file
       const blob = await res.blob();
+      // it converts file to a temporary downloadable link
       const url  = URL.createObjectURL(blob);
       const a    = document.createElement("a");
       a.href     = url;

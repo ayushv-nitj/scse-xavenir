@@ -70,21 +70,6 @@ export default function ContactPage() {
     }
 
     const digitsOnly = form.mobile.replace(/\D/g, "");
-    if (digitsOnly.length !== 10) {
-      setError("Phone number must be exactly 10 digits.");
-      return;
-    }
-
-    if (!form.email.endsWith("@gmail.com")) {
-      setError("Only Gmail addresses (@gmail.com) are accepted.");
-      return;
-    }
-
-    if (form.message.length < 5) {
-      setError("Message must be at least 5 characters.");
-      return;
-    }
-
     setLoading(true);
     setError("");
 
