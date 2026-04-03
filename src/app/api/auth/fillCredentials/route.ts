@@ -130,9 +130,7 @@ export async function POST(req: NextRequest) {
       isNitian,
       isFromCse,
       isPrime: false,
-      b1: false,
-      b2: false,
-      x: false
+      isCollectedTshirt: false,
     });
     await newUser.save();
 

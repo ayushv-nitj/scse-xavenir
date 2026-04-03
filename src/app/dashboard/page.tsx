@@ -10,18 +10,22 @@ import { useToast } from "@/components/Toast";
 import RegistrationFeesButton from "@/components/RegistrationFeesButton";
 
 type User = {
-  fullName: string;
   email: string;
-  userID: string;
   role: string;
+  userID: string;
+  fullName: string;
+  collegeName: string;
+  isPrime: boolean;
   isNitian: boolean;
   isFromCse: boolean;
-  isPrime: boolean;
-  collegeName: string;
+  isCollectedTshirt: boolean; // this is source of truth for hoodie 
+  paidForTshirt:  "unpaid" | "paid" | "approved" | "rejected";
+  paidForaccoModation: "unpaid" | "paid" | "approved" | "rejected";
+  paidForPrime: "paid" | "unpaid" | "approved" | "rejected";
   phone?: string;
   gender?: string;
   profilePic?: string;
-  // phoneVerified?: boolean;
+  x: boolean;
 };
 
 type Tab = "overview" | "events" | "profile" | "receipt" | "certificates" | "notifications" | "community";
@@ -162,43 +166,6 @@ export default function Dashboard() {
     }
     setSaving(false);
   };
-
-  // const handleSendOtp = async () => {
-  //   if (!otpPhone.trim()) { setOtpMsg("Enter a phone number first."); return; }
-  //   setOtpLoading(true); setOtpMsg("");
-  //   try {
-  //     const res = await fetch("/api/users/phone-otp/send", {
-  //       method: "POST",
-  //       headers: { "Content-Type": "application/json" },
-  //       body: JSON.stringify({ phone: otpPhone }),
-  //     });
-  //     const d = await res.json();
-  //     if (res.ok) { setOtpSent(true); setOtpMsg("OTP sent to your registered email."); }
-  //     else { setOtpMsg(d.error || "Failed to send OTP."); }
-  //   } catch { setOtpMsg("Network error."); }
-  //   setOtpLoading(false);
-  // };
-
-  // const handleVerifyOtp = async () => {
-  //   if (!otpValue.trim()) { setOtpMsg("Enter the OTP."); return; }
-  //   setOtpLoading(true); setOtpMsg("");
-  //   try {
-  //     const res = await fetch("/api/users/phone-otp/verify", {
-  //       method: "POST",
-  //       headers: { "Content-Type": "application/json" },
-  //       body: JSON.stringify({ otp: otpValue }),
-  //     });
-  //     const d = await res.json();
-  //     if (res.ok) {
-  //       setUser(prev => ({ ...prev!, phone: otpPhone, phoneVerified: true }));
-  //       setUserData({ ...userData!, phone: otpPhone } as any);
-  //       setPhone(otpPhone);
-  //       setOtpSent(false); setOtpValue(""); setOtpPhone("");
-  //       setOtpMsg("✓ Phone verified and saved!");
-  //     } else { setOtpMsg(d.error || "Verification failed."); }
-  //   } catch { setOtpMsg("Network error."); }
-  //   setOtpLoading(false);
-  // };
 
   const handlePicUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -756,91 +723,6 @@ export default function Dashboard() {
                         : <span className="db-edit-static">{user?.phone || <span style={{ opacity: 0.35 }}>not set</span>}</span>
                       }
                     </div>
-
-                    {/* ── PHONE OTP VERIFICATION ──
-{editMode && (
-  <div style={{
-    marginTop: 8,
-    padding: "14px 16px",
-    background: "rgba(0,245,255,0.04)",
-    border: "1px solid rgba(0,245,255,0.15)",
-  }}>
-    <div className="db-section-label" style={{ marginBottom: 10, fontSize: "0.72rem" }}>
-      // phone.verify()
-    </div>
-
-    {user?.phoneVerified ? (
-      <p style={{ fontFamily: "'Inter',sans-serif", fontSize: "0.85rem", color: "#00ff88", fontWeight: 600 }}>
-        ✓ PHONE VERIFIED
-      </p>
-    ) : (
-      <>
-        <p style={{ fontFamily: "'Rajdhani',sans-serif", fontSize: "0.85rem", color: "rgba(180,200,255,0.5)", marginBottom: 10 }}>
-          Enter a number and verify via OTP sent to your email.
-        </p>
-
-        <div style={{ display: "flex", gap: 8, marginBottom: 8, flexWrap: "wrap" }}>
-          <input
-            className="db-input"
-            style={{ flex: 1, minWidth: 160 }}
-            value={otpPhone}
-            onChange={e => setOtpPhone(e.target.value)}
-            placeholder="+91 XXXXXXXXXX"
-            disabled={otpSent}
-          />
-          <button
-            className="db-btn-outline"
-            style={{ padding: "6px 14px", fontSize: "0.78rem", whiteSpace: "nowrap" }}
-            onClick={handleSendOtp}
-            disabled={otpLoading || otpSent}
-          >
-            {otpLoading ? "◌ SENDING..." : otpSent ? "✓ OTP SENT" : "SEND OTP"}
-          </button>
-        </div>
-
-        {otpSent && (
-          <div style={{ display: "flex", gap: 8, marginBottom: 8, flexWrap: "wrap" }}>
-            <input
-              className="db-input"
-              style={{ flex: 1, minWidth: 120, letterSpacing: 6, fontWeight: 700 }}
-              value={otpValue}
-              onChange={e => setOtpValue(e.target.value)}
-              placeholder="_ _ _ _ _ _"
-              maxLength={6}
-            />
-            <button
-              className="db-btn-primary"
-              style={{ padding: "6px 14px", fontSize: "0.78rem", whiteSpace: "nowrap" }}
-              onClick={handleVerifyOtp}
-              disabled={otpLoading}
-            >
-              <span>{otpLoading ? "◌ VERIFYING..." : "VERIFY"}</span>
-            </button>
-            <button
-              className="db-btn-outline"
-              style={{ padding: "6px 10px", fontSize: "0.78rem" }}
-              onClick={() => { setOtpSent(false); setOtpValue(""); setOtpMsg(""); }}
-            >
-              ↩
-            </button>
-          </div>
-        )}
-
-        {otpMsg && (
-          <p style={{
-            fontFamily: "'Inter',sans-serif",
-            fontSize: "0.8rem",
-            color: otpMsg.startsWith("✓") ? "#00ff88" : "var(--pink)",
-            marginTop: 4,
-          }}>
-            {otpMsg}
-          </p>
-        )}
-      </>
-    )}
-  </div>
-)} */}
-
 
 
 
