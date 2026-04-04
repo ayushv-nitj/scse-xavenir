@@ -56,16 +56,15 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // On rejection — notify all team members
+    // On rejection — notify the team leader
     if (status === "rejected") {
-      await notify(updated.members.map((uid: string) => ({
-        userID: uid,
+      await notify({ 
+        userID: updated.members[0],
         type: "payment_verified" as const,
         title: "Event registration rejected",
         message: `Your team "${updated.teamName}" registration for ${updated.eventName} was rejected.`,
         meta: { teamName: updated.teamName, eventName: updated.eventName },
-      })));
-    }
+  })};
 
     return NextResponse.json({ message: `Event registration ${status}`, data: updated }, { status: 200 });
   } catch {
