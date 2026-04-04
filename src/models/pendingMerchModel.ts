@@ -1,6 +1,7 @@
 import mongoose, { Schema, Document } from "mongoose";
 
-export interface PendingPayments extends Document {
+export interface PendingMerch extends Document {
+  isNitian: boolean;
   email: string;
   scseId: string;
   paymentProof: string;
@@ -10,11 +11,9 @@ export interface PendingPayments extends Document {
   transactionId3?: string;
   isSpam: boolean;
   status: "pending" | "verified" | "rejected";
-  paymentType: string;
-  expectedAmount: number;
 }
 
-const PendingPaymentsSchema: Schema<PendingPayments> = new Schema(
+const PendingMerchSchema: Schema<PendingMerch> = new Schema(
   {
     email: {
       type: String,
@@ -23,6 +22,11 @@ const PendingPaymentsSchema: Schema<PendingPayments> = new Schema(
         /[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/i,
         "Please use a valid email address",
       ],
+    },
+    isNitian: {
+        type: Boolean,
+        required: true,
+        default: true,
     },
     scseId: {
       type: String,
@@ -59,32 +63,14 @@ const PendingPaymentsSchema: Schema<PendingPayments> = new Schema(
       type: String,
       required: false,
     },
-    paymentType: {
-      type: String,
-      enum: [
-        "reg_with_tshirt",
-        "reg_without_tshirt",
-        "tshirt_only",
-        "reg_with_accom",
-        "reg_without_accom",
-        "accom_only",
-        "registration_only"
-      ],
-      default: "registration_only",
-    },
-    expectedAmount: {
-      type: Number,
-      required: true,
-      default: 500,
-    },
   },
   {
     timestamps: true, // automatically add createdAt and updatedAt fields
   }
 );
 
-const PendingPaymentsModel =
-  (mongoose.models.PendingPayments as mongoose.Model<PendingPayments>) ||
-  mongoose.model<PendingPayments>("PendingPayments", PendingPaymentsSchema);
+const PendingMerchModel =
+  (mongoose.models.PendingMerch as mongoose.Model<PendingMerch>) ||
+  mongoose.model<PendingMerch>("PendingMerch", PendingMerchSchema);
 
-export default PendingPaymentsModel;
+export default PendingMerchModel;
