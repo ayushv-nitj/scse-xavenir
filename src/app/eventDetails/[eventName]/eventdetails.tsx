@@ -138,7 +138,7 @@
 //                 <span className="hb-date">APR 26</span>
 //               </div>
 //               <div className="hb-sub-row">
-//                 <span className="hb-sub">XAVENIR 2025</span>
+//                 <span className="hb-sub">XAVENIR 2026</span>
 //                 <span className="hb-sub">REGISTER NOW</span>
 //               </div>
 //             </div>
@@ -699,7 +699,7 @@ export default function RegisterEventPage() {
                 <span className="hb-date">APR 26</span>
               </div>
               <div className="hb-sub-row">
-                <span className="hb-sub">XAVENIR 2025</span>
+                <span className="hb-sub">XAVENIR 2026</span>
                 <span className="hb-sub">REGISTER NOW</span>
               </div>
             </div>

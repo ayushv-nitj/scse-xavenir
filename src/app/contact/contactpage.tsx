@@ -184,7 +184,7 @@ export default function ContactPage() {
                 <div className="info-block-title">💼 Sponsorship</div>
                 <div className="info-block-text">
                   For sponsorship and collaboration:<br />
-                  <a href="mailto:scse.nit@gmail.com">scse.nit@gmail.com</a>
+                  <a href="mailto:nitjsr.scse@gmail.com">nitjsr.scse@gmail.com</a>
                 </div>
               </div>
               <div className="info-block">
