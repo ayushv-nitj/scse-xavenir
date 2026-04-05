@@ -462,14 +462,14 @@ function CompRow({ index, comp }: { index: number; comp: { icon: string; title: 
               <span className="comp-status-dot" />
               REGISTRATION OPEN
             </div>
-            <Link
+            {/* <Link
               href={`/eventDetails/${encodeURIComponent(comp.slug)}`}
               className="comp-detail-btn"
               onClick={e => e.stopPropagation()}
             >
               <span>INITIALIZE REGISTRATION</span>
               <span className="comp-detail-btn-arr">▶</span>
-            </Link>
+            </Link> */}
           </div>
  
         </div>
@@ -859,20 +859,31 @@ useEffect(() => {
         <span /><span /><span />
       </div>
       <div className="comp-term-title">xavenir@nitjsr:~/competitions$</div>
-      <div className="comp-term-status">{competitions.length} PROCESSES LOADED</div>
+      <div className="comp-term-status">STANDBY</div>
     </div>
- 
-    {/* Competition rows */}
-    <div className="comp-list">
+
+    {/* Coming soon placeholder */}
+    <div style={{ padding: "60px 20px", textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center", gap: "18px" }}>
+      <span style={{ fontSize: "2.5rem", opacity: 0.5 }}>⚡</span>
+      <div style={{ fontFamily: "'Orbitron',monospace", fontSize: "1.1rem", letterSpacing: "0.2em", color: "var(--cyan)" }}>
+        EVENTS COMING SOON
+      </div>
+      <div style={{ fontFamily: "'Share Tech Mono',monospace", fontSize: "0.78rem", letterSpacing: "0.12em", color: "rgba(200,220,255,0.35)" }}>
+        // competitions will be listed here once registration opens
+      </div>
+    </div>
+
+    {/* Competition rows — commented out until registration opens */}
+    {/* <div className="comp-list">
       {competitions.map((c, i) => (
         <CompRow key={i} index={i} comp={c} />
       ))}
-    </div>
+    </div> */}
  
     {/* Bottom prompt line */}
     <div className="comp-prompt">
       <span className="comp-prompt-symbol">❯</span>
-      <span className="comp-prompt-text">select a competition to initialize registration_</span>
+      <span className="comp-prompt-text">awaiting competition data_</span>
     </div>
  
   </FadeIn>
