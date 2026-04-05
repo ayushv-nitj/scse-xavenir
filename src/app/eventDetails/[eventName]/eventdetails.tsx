@@ -166,7 +166,7 @@ export default function RegisterEventPage() {
                   <div className="img-overlay"/>
                   <span className="hud tl"/><span className="hud tr"/>
                   <span className="hud bl"/><span className="hud br"/>
-                  <div className="img-date-badge">APR 18-19</div>
+                  <div className="img-date-badge">APR 17-19</div>
                 </div>
                 <div className="img-statusbar">
                   <span className="isb-dec">DECRYPTED</span>
