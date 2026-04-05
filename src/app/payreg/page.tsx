@@ -183,10 +183,10 @@ function PayRegForm() {
                 </div>
               </div>
               <div style={s.fieldWrap}>
-                <label style={s.label}>SCSE_ID</label>
+                <label style={s.label}>XAV_ID</label>
                 <div style={{ ...s.inputWrap, borderColor: "rgba(0,245,255,0.08)", background: "rgba(0,245,255,0.03)" }}>
                   <span style={{ ...s.inputPrefix, color: "rgba(0,245,255,0.2)" }}>◈</span>
-                  <input type="text" value={userData?.userID || "SCSE1234"} readOnly style={{ ...s.input, color: "rgba(0,245,255,0.45)", cursor: "default" }} />
+                  <input type="text" value={userData?.userID || "XAV1234"} readOnly style={{ ...s.input, color: "rgba(0,245,255,0.45)", cursor: "default" }} />
                   <span style={s.lockIcon}>🔒</span>
                 </div>
               </div>

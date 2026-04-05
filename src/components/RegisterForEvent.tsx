@@ -4,7 +4,7 @@ import axios, { AxiosResponse } from "axios";
 import { useRouter } from "next/navigation";
 import Modal from "@/components/Modal";
 import { UserContext } from "@/context/UserContext"; // adjust path if needed
-
+import { useToast } from "./Toast";
 interface RegisterForEventProps {
   eventName: string;
   maxPart: number;
@@ -44,6 +44,7 @@ export default function RegisterForEvent({
 
   // Login-prompt toast state
   const [showLoginToast, setShowLoginToast] = useState(false);
+  const { showToast } = useToast();
 
   const [image, setImage] = useState<File | null>(null);
   const [imageUrl, setImageUrl] = useState("");
@@ -94,8 +95,9 @@ export default function RegisterForEvent({
     try {
       const response: AxiosResponse<ApiResponse> = await axios.post("/api/registerForEvent", formData);
       if (response.status === 200) {
-        showModal("Registration Successful", "SUCCESS.", "success");
         setTeamName(""); setParticipants([""]); setIsOverlayOpen(false);
+        document.body.style.overflowY = "auto";
+        showToast("REGISTRATION SUCCESSFUL", "success");
         router.push("/dashboard");
       }
     } catch (err: any) {
@@ -236,11 +238,11 @@ export default function RegisterForEvent({
                 <div key={i} className="rfe-field">
                   <label className="rfe-label">
                     PARTICIPANT {i + 1}{i === 0 && <span className="rfe-hint"> (YOU — TEAM LEADER)</span>}
-                    {i > 0 && <span className="rfe-hint"> (SCSE-xxxxxxx)</span>}
+                    {i > 0 && <span className="rfe-hint"> (XAV-xxxxxxx)</span>}
                   </label>
                   <div className="rfe-field-row">
                     <input
-                      type="text" placeholder={i === 0 ? leaderID : "SCSE-1234567"} className="rfe-input"
+                      type="text" placeholder={i === 0 ? leaderID : "XAV-1234567"} className="rfe-input"
                       value={value} onChange={e => handleParticipantChange(i, e.target.value)} required
                       readOnly={i === 0}
                       style={i === 0 ? { opacity: 0.6, cursor: "not-allowed" } : undefined}

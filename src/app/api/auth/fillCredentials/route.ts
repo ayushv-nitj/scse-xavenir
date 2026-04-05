@@ -5,6 +5,7 @@ import User from "@/models/userModel";
 import Eauth from "@/models/eAuthModel";
 import bcrypt from "bcryptjs";
 import { rateLimit, getIP } from "@/lib/rateLimit";
+import Existing from "@/models/existingModel";
 
 // Helper to generate a random 7-character alphanumeric ID prefixed with "USR-"
 function generateUserID(req: NextRequest): string {
@@ -14,7 +15,7 @@ function generateUserID(req: NextRequest): string {
   for (let i = 0; i < 7; i++) {
     id += chars.charAt(Math.floor(Math.random() * chars.length));
   }
-  return `SCSE-${id}`;
+  return `XAV-${id}`;
 }
 
 export async function POST(req: NextRequest) {
@@ -112,6 +113,16 @@ export async function POST(req: NextRequest) {
     }
 
     const isNitian = email.endsWith("@nitjsr.ac.in");
+    let isPrime = false;
+    let paidForPrime = "unpaid";
+    if(email.endsWith("@nitjsr.ac.in")){
+      const regNo = email.split("@")[0];
+      const exits = await Existing.findOne({ regNumber: regNo });
+      if(exits){
+        isPrime = true;
+        paidForPrime = "approved";
+      }
+    }
     const hashedPassword = await bcrypt.hash(password,10);
     //change for PG,phd ,masters,etc
     const isFromCse =
@@ -129,8 +140,9 @@ export async function POST(req: NextRequest) {
       collegeName,
       isNitian,
       isFromCse,
-      isPrime: false,
+      isPrime,
       isCollectedTshirt: false,
+      paidForPrime
     });
     await newUser.save();
 

@@ -118,7 +118,7 @@ export default function AdminClient({ payments, eventRegs, contacts, stats }: {
     try {
       const res = await fetch("/api/search-user", {
         method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userID: `SCSE-${searchId.trim()}` }),
+        body: JSON.stringify({ userID: `XAV-${searchId.trim()}` }),
       });
       const d = await res.json();
       if (!res.ok) { setSearchError(d.message || "Not found"); return; }
@@ -130,7 +130,7 @@ export default function AdminClient({ payments, eventRegs, contacts, stats }: {
     if (!goodiesId.trim()) return;
     setGoodiesLoading(true); setGoodiesResult(null); setGoodiesError("");
     try {
-      const res = await fetch(`/api/admin/collect-goodies?userID=${encodeURIComponent(`SCSE-${goodiesId.trim()}`)}`);
+      const res = await fetch(`/api/admin/collect-goodies?userID=${encodeURIComponent(`XAV-${goodiesId.trim()}`)}`);
       const d = await res.json();
       if (!res.ok) { setGoodiesError(d.error || "Not found"); return; }
       setGoodiesResult(d.data);
@@ -290,7 +290,7 @@ export default function AdminClient({ payments, eventRegs, contacts, stats }: {
                       </div>
                     )}
                     <h2 className="card-email">{p.email}</h2>
-                    <div className="card-scse"><span className="fl">SCSE ID</span><span className="fv">{p.scseId}</span></div>
+                    <div className="card-scse"><span className="fl">Xavenir ID</span><span className="fv">{p.scseId}</span></div>
                     <div className="card-txns">
                       {[p.transactionId1, p.transactionId2, p.transactionId3].filter(Boolean).map((t, ti) => (
                         <div key={ti} className="txn-row"><span className="fl">TXN {ti+1}</span><span className="fv txnv">{t}</span></div>
@@ -443,7 +443,7 @@ export default function AdminClient({ payments, eventRegs, contacts, stats }: {
           <div className="content-panel">
             <div className="page-header"><h1 className="page-title">◎ User Search</h1></div>
             <div className="search-box">
-              <span className="s-prefix">SCSE-</span>
+              <span className="s-prefix">XAV-</span>
               <input className="s-input" placeholder="XXXXXXX"
                 value={searchId} onChange={e => setSearchId(e.target.value)}
                 onKeyDown={e => e.key === "Enter" && handleSearch()} />
@@ -472,10 +472,10 @@ export default function AdminClient({ payments, eventRegs, contacts, stats }: {
           <div className="content-panel">
             <div className="page-header">
               <h1 className="page-title">★ Goodies Collection</h1>
-              <p className="page-sub">Search a user by their SCSE ID and mark their goodies as collected.</p>
+              <p className="page-sub">Search a user by their Xavenir ID and mark their goodies as collected.</p>
             </div>
             <div className="search-box">
-              <span className="s-prefix">SCSE-</span>
+              <span className="s-prefix">XAV-</span>
               <input className="s-input" placeholder="XXXXXXX"
                 value={goodiesId} onChange={e => { setGoodiesId(e.target.value); setGoodiesResult(null); setGoodiesError(""); }}
                 onKeyDown={e => e.key === "Enter" && handleGoodies()} />
@@ -568,7 +568,7 @@ export default function AdminClient({ payments, eventRegs, contacts, stats }: {
               {/* Single user override */}
               <div className="form-field">
                 <label className="form-label">SINGLE USER ID <span style={{opacity:0.4}}>(overrides event filter)</span></label>
-                <input className="s-input" style={{borderRight:"1px solid #1e2535", height:42}} placeholder="SCSE-XXXXXXX (optional)"
+                <input className="s-input" style={{borderRight:"1px solid #1e2535", height:42}} placeholder="XAV-XXXXXXX (optional)"
                   value={annTarget} onChange={e => { setAnnTarget(e.target.value); if (e.target.value) setAnnEvent(""); }} />
               </div>
 

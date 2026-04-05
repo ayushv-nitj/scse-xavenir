@@ -247,8 +247,8 @@ export default function Dashboard() {
             WELCOME BACK,{" "}
             <span className="db-hero-accent">{firstName}</span>
           </h1>
-          <p className="db-hero-sub">
-            <span>USER_ID:</span> {user?.userID} &nbsp;|&nbsp;
+          <p className="db-hero-sub" style={{ fontSize: "1.2rem" }}>
+          <span>USER_ID:</span> {user?.userID} &nbsp;&nbsp;
           </p>
           <p className="db-hero-sub" style={{ marginTop: "0.3rem" }}>
             <span>NITJSR:</span> <span style={{ color: user?.isNitian ? "#00ff88" : "#ff0080" }}>{user?.isNitian ? "YES ✓" : "NO"}</span> &nbsp;|&nbsp;
