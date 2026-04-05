@@ -6,7 +6,6 @@ import { UserContext } from "@/context/UserContext";
 import "./dashboard.css";
 import Loading from "@/components/Loading";
 import { useToast } from "@/components/Toast";
-import RegistrationFeesButton from "@/components/RegistrationFeesButton";
 
 type User = {
   email: string;
