@@ -12,7 +12,7 @@ export function proxy(request: NextRequest) {
     path.startsWith("/payreg") || path.startsWith("/dashboard");
 
   const isAuthPage =
-    path.startsWith("/login") || path.startsWith("/register");
+    path.startsWith("/login") || path.startsWith("/register") || path.startsWith("/forgotpassword") || path.startsWith("/resetpassword");
 
   // // 1. fillcredentials requires eAuthToken
   if (isFillCredentials && !eAuthToken) {
@@ -39,5 +39,7 @@ export const config = {
     "/dashboard",
     "/login",
     "/register",
+    "/forgotpassword",
+    "/resetpassword"
   ],
 };
