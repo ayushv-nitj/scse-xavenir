@@ -638,7 +638,7 @@ export default function RegisterEventPage() {
     <>
       <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet"/>
       <div className="state-screen">
-        <div className="bg-grid"/><div className="bg-glow c"/><div className="bg-glow m"/>
+        <div/><div className="bg-glow c"/><div className="bg-glow m"/>
         <div className="state-inner">
           <span className="blink">▋</span>
           <span className="state-txt">DECRYPTING NODE DATA...</span>
@@ -845,15 +845,16 @@ export default function RegisterEventPage() {
           padding-bottom: 80px;
         }
 
-        /* Backgrounds */
-        .bg-grid {
-          position: fixed; inset: 0;
-          background-image:
-            linear-gradient(rgba(0,255,240,.038) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(0,255,240,.038) 1px, transparent 1px);
-          background-size: 55px 55px;
-          pointer-events: none; z-index: 0;
-        }
+        // /* Backgrounds */
+        // .bg-grid {
+        //   position: fixed; inset: 0;
+        //   background-image:
+        //     linear-gradient(rgba(0,255,240,.038) 1px, transparent 1px),
+        //     linear-gradient(90deg, rgba(0,255,240,.038) 1px, transparent 1px);
+        //   background-size: 55px 55px;
+        //   pointer-events: none; z-index: 0;
+        // }
+        
         .bg-glow {
           position: fixed; border-radius: 50%;
           pointer-events: none; z-index: 0; filter: blur(140px);
@@ -1107,7 +1108,7 @@ function StatCard({ label, value, accent }: { label:string; value:string; accent
 function StateStyles() {
   return <style>{`
     .state-screen{position:relative;min-height:100vh;background:#060818;display:flex;align-items:center;justify-content:center}
-    .bg-grid{position:fixed;inset:0;background-image:linear-gradient(rgba(0,255,240,.038) 1px,transparent 1px),linear-gradient(90deg,rgba(0,255,240,.038) 1px,transparent 1px);background-size:55px 55px;pointer-events:none;z-index:0}
+    // .bg-grid{position:fixed;inset:0;background-image:linear-gradient(rgba(0,255,240,.038) 1px,transparent 1px),linear-gradient(90deg,rgba(0,255,240,.038) 1px,transparent 1px);background-size:55px 55px;pointer-events:none;z-index:0}
     .bg-glow{position:fixed;border-radius:50%;pointer-events:none;z-index:0;filter:blur(140px)}
     .bg-glow.c{width:600px;height:600px;top:-120px;left:-200px;background:#00fff0;opacity:.065}
     .bg-glow.m{width:700px;height:700px;bottom:-200px;right:-200px;background:#ff2d78;opacity:.065}

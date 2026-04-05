@@ -234,7 +234,7 @@ export default function GalleryPage() {
           </p>
         </div>
 
-        <aside className="gal-hero-right" aria-label="Gallery instructions">
+        {/* <aside className="gal-hero-right" aria-label="Gallery instructions">
           <div className="gal-ops-panel">
             <div className="gal-ops-title" style={{ fontSize: '0.8rem', letterSpacing: '0.3em' }}>OPS.CONSOLE</div>
             <div className="gal-ops-line" style={{ fontSize: '1rem' }}>
@@ -264,7 +264,7 @@ export default function GalleryPage() {
               </div>
             </div>
           </div>
-        </aside>
+        </aside> */}
       </header>
 
       {/* ── EVENTS GRID ── */}

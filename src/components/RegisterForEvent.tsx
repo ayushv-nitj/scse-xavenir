@@ -155,6 +155,20 @@ export default function RegisterForEvent({
     }
   };
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const MAX_SIZE = 5 * 1024 * 1024; // 5 MB
+    if (file.size > MAX_SIZE) {
+      setError("File too large — maximum allowed size is 5 MB. Please choose a smaller image.");
+      e.target.value = "";
+      setImage(null);
+      return;
+    }
+    setError("");
+    setImage(file);
+  };
+
   return (
     <>
       {/* ── Login toast ── */}
@@ -268,16 +282,49 @@ export default function RegisterForEvent({
 
                 {error && <div className="rfe-error"><span>⚠</span> {error}</div>}
 
-                <div className="rfe-field">
-                  <label className="rfe-label">UPLOAD PAYMENT PROOF</label>
+                {/* ── Enhanced File Upload Section ── */}
+                <div className="rfe-field rfe-upload-field">
+                  <label className="rfe-label">
+                    UPLOAD PAYMENT PROOF <span className="rfe-req">*</span>
+                  </label>
+
+                  {/* Custom styled file zone */}
+                  <label className="rfe-file-zone" htmlFor="rfe-file-picker">
+                    <span className="rfe-file-zone-icon">
+                      {image ? "🖼" : "📂"}
+                    </span>
+                    <span className="rfe-file-zone-text">
+                      {image
+                        ? <><span className="rfe-file-name">{image.name}</span><span className="rfe-file-size">({(image.size / (1024 * 1024)).toFixed(2)} MB)</span></>
+                        : <><span className="rfe-file-prompt">CHOOSE IMAGE</span><span className="rfe-file-subtext">Click to browse your files</span></>
+                      }
+                    </span>
+                    {image && <span className="rfe-file-check">✓</span>}
+                  </label>
                   <input
-                    type="file" className="rfe-file-input"
-                    onChange={e => { if (e.target.files?.[0]) setImage(e.target.files[0]); }}
+                    id="rfe-file-picker"
+                    type="file"
+                    accept="image/*"
+                    className="rfe-file-input-hidden"
+                    onChange={handleFileChange}
                   />
-                  <button onClick={handleImageUpload} className="rfe-upload-btn" disabled={loading}>
-                    {loading ? "UPLOADING..." : imageUrl
-                      ? <span className="rfe-uploaded">✓ UPLOADED</span>
-                      : "UPLOAD"
+
+                  {/* Size limit notice */}
+                  <div className="rfe-size-notice">
+                    <span className="rfe-size-icon">ℹ</span>
+                    <span>Maximum file size: <strong>5 MB</strong> &nbsp;·&nbsp; Accepted formats: JPG, PNG, WEBP, GIF</span>
+                  </div>
+
+                  <button
+                    onClick={handleImageUpload}
+                    className={`rfe-upload-btn${imageUrl ? " rfe-upload-btn--done" : ""}${!image ? " rfe-upload-btn--idle" : ""}`}
+                    disabled={loading || !image}
+                  >
+                    {loading
+                      ? <span className="rfe-loading">UPLOADING<span className="rfe-dots">...</span></span>
+                      : imageUrl
+                        ? <span className="rfe-uploaded">✓ UPLOADED SUCCESSFULLY</span>
+                        : <><span>⬆</span> UPLOAD PROOF</>
                     }
                   </button>
                 </div>
@@ -530,24 +577,145 @@ export default function RegisterForEvent({
         .rfe-qr { width:200px; height:200px; object-fit:cover; border: 2px solid rgba(0,255,240,.3); box-shadow: 0 0 20px rgba(0,255,240,.15); }
         .rfe-pay-amount { font-family:'Orbitron',sans-serif; font-size:1.3rem; font-weight:700; color:#00fff0; letter-spacing:.1em; }
 
-        .rfe-file-input { width:100%; font-family:'Share Tech Mono',monospace; font-size:.82rem; color:rgba(200,220,255,.7); }
-        .rfe-file-input::file-selector-button {
-          padding: 7px 14px; margin-right: 12px;
-          background: rgba(0,255,240,.08); border: 1px solid rgba(0,255,240,.25);
-          color: #00fff0; font-family:'Share Tech Mono',monospace; font-size:.75rem;
-          letter-spacing:.08em; cursor:pointer; border-radius:2px; transition:all .2s;
+        /* ── Enhanced Upload Section ── */
+        .rfe-upload-field {
+          background: rgba(0, 255, 240, 0.03);
+          border: 1px solid rgba(0, 255, 240, 0.18);
+          border-radius: 4px;
+          padding: 16px;
+          box-shadow: 0 0 20px rgba(0,255,240,.05), inset 0 0 16px rgba(0,255,240,.03);
         }
-        .rfe-file-input::file-selector-button:hover { background:rgba(0,255,240,.18); border-color:rgba(0,255,240,.5); }
+        .rfe-upload-field .rfe-label {
+          color: #00fff0;
+          font-size: .8rem;
+          letter-spacing: .18em;
+        }
 
-        .rfe-upload-btn {
-          width:100%; padding:10px;
-          background:rgba(0,255,240,.08); border:1px solid rgba(0,255,240,.25);
-          color:#00fff0; font-family:'Orbitron',sans-serif; font-size:.82rem;
-          font-weight:700; letter-spacing:.1em; cursor:pointer; border-radius:2px; transition:all .2s;
+        /* Hidden native input */
+        .rfe-file-input-hidden {
+          position: absolute;
+          width: 1px; height: 1px;
+          opacity: 0; overflow: hidden;
+          clip: rect(0,0,0,0); white-space: nowrap;
         }
-        .rfe-upload-btn:hover:not(:disabled) { background:rgba(0,255,240,.18); border-color:rgba(0,255,240,.5); }
-        .rfe-upload-btn:disabled { opacity:.6; cursor:not-allowed; }
-        .rfe-uploaded { color:#00ff80; }
+
+        /* Custom file zone — the clickable area */
+        .rfe-file-zone {
+          display: flex;
+          align-items: center;
+          gap: 14px;
+          padding: 14px 18px;
+          background: rgba(0,8,26,.9);
+          border: 1.5px dashed rgba(0,255,240,.4);
+          border-radius: 3px;
+          cursor: pointer;
+          transition: border-color .25s, background .25s, box-shadow .25s;
+          position: relative;
+          overflow: hidden;
+          margin-bottom: 10px;
+        }
+        .rfe-file-zone::before {
+          content: '';
+          position: absolute; inset: 0;
+          background: linear-gradient(135deg, rgba(0,255,240,.05) 0%, transparent 60%);
+          pointer-events: none;
+        }
+        .rfe-file-zone:hover {
+          border-color: #00fff0;
+          background: rgba(0,255,240,.06);
+          box-shadow: 0 0 18px rgba(0,255,240,.15), inset 0 0 12px rgba(0,255,240,.05);
+        }
+        .rfe-file-zone-icon {
+          font-size: 1.6rem;
+          flex-shrink: 0;
+          filter: drop-shadow(0 0 6px rgba(0,255,240,.5));
+        }
+        .rfe-file-zone-text {
+          display: flex; flex-direction: column; gap: 3px; flex: 1;
+        }
+        .rfe-file-prompt {
+          font-family: 'Orbitron', sans-serif;
+          font-size: .82rem; font-weight: 700;
+          color: #00fff0; letter-spacing: .14em;
+        }
+        .rfe-file-subtext {
+          font-family: 'Share Tech Mono', monospace;
+          font-size: .72rem;
+          color: rgba(0,255,240,.4);
+          letter-spacing: .06em;
+        }
+        .rfe-file-name {
+          font-family: 'Share Tech Mono', monospace;
+          font-size: .82rem; color: #fff;
+          letter-spacing: .04em;
+          word-break: break-all;
+        }
+        .rfe-file-size {
+          font-family: 'Share Tech Mono', monospace;
+          font-size: .7rem; color: rgba(0,255,240,.5);
+          margin-left: 6px;
+        }
+        .rfe-file-check {
+          font-size: 1.1rem; color: #00ff80;
+          flex-shrink: 0;
+          text-shadow: 0 0 10px rgba(0,255,128,.6);
+        }
+
+        /* Size limit notice */
+        .rfe-size-notice {
+          display: flex; align-items: center; gap: 7px;
+          padding: 7px 10px;
+          background: rgba(0,255,240,.04);
+          border: 1px solid rgba(0,255,240,.12);
+          border-radius: 2px;
+          font-family: 'Share Tech Mono', monospace;
+          font-size: .72rem;
+          color: rgba(0,255,240,.5);
+          letter-spacing: .05em;
+          margin-bottom: 12px;
+        }
+        .rfe-size-notice strong { color: rgba(0,255,240,.8); }
+        .rfe-size-icon { font-style: normal; color: rgba(0,255,240,.6); flex-shrink: 0; }
+
+        /* Upload button — prominent */
+        .rfe-upload-btn {
+          width: 100%; padding: 13px;
+          background: linear-gradient(90deg, rgba(0,255,240,.15), rgba(0,200,220,.1));
+          border: 1.5px solid rgba(0,255,240,.55);
+          color: #00fff0;
+          font-family: 'Orbitron', sans-serif; font-size: .88rem;
+          font-weight: 700; letter-spacing: .13em;
+          cursor: pointer; border-radius: 3px;
+          transition: all .25s;
+          display: flex; align-items: center; justify-content: center; gap: 8px;
+          box-shadow: 0 0 14px rgba(0,255,240,.12), inset 0 0 10px rgba(0,255,240,.04);
+          text-shadow: 0 0 10px rgba(0,255,240,.4);
+        }
+        .rfe-upload-btn:hover:not(:disabled) {
+          background: linear-gradient(90deg, rgba(0,255,240,.28), rgba(0,200,220,.2));
+          border-color: #00fff0;
+          box-shadow: 0 0 28px rgba(0,255,240,.35), inset 0 0 16px rgba(0,255,240,.08);
+          transform: translateY(-1px);
+        }
+        .rfe-upload-btn:disabled { opacity: .45; cursor: not-allowed; transform: none; }
+
+        /* Idle state (no file selected) */
+        .rfe-upload-btn--idle {
+          border-color: rgba(0,255,240,.25);
+          color: rgba(0,255,240,.4);
+          box-shadow: none;
+          text-shadow: none;
+        }
+
+        /* Done / uploaded state */
+        .rfe-upload-btn--done {
+          background: rgba(0,255,128,.1);
+          border-color: rgba(0,255,128,.5);
+          color: #00ff80;
+          text-shadow: 0 0 10px rgba(0,255,128,.4);
+          box-shadow: 0 0 16px rgba(0,255,128,.15);
+        }
+        .rfe-uploaded { color: #00ff80; text-shadow: 0 0 10px rgba(0,255,128,.5); letter-spacing:.1em; }
 
         .rfe-final-btn {
           width:100%; padding:14px;

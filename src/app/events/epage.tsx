@@ -533,8 +533,9 @@ export default function EventsPage() {
                   <span className="sb-buf">SCSE.NODE</span>
                   <span className="sb-status">EVENTS // READY</span>
                 </div>
-                <div className="sb-main-row">
+               <div className="sb-main-row">
                   <span className="sb-s">SCSE</span>
+                  <br/>
                   <span className="sb-a">ARCHIVE</span>
                 </div>
                 <div className="sb-sub-row">
@@ -614,7 +615,7 @@ export default function EventsPage() {
             )}
           </div>
 
-          <div className="egrid">
+          {/* <div className="egrid">
             {loading
               ? Array.from({length:6}).map((_,i)=><SkeletonCard key={i}/>)
               : error
@@ -623,11 +624,57 @@ export default function EventsPage() {
               ? <div className="serr">// NO MATCHES FOUND</div>
               : filtered.map((ev,i)=><EventCard key={ev._id} event={ev} index={i}/>)
             }
-          </div>
+          </div> */}
+          <div className="egrid">
+  <div className="coming-soon">
+    <div className="cs-icon">◎</div>
+    <h2 className="cs-title">EVENTS COMING SOON</h2>
+    <p className="cs-sub">// Encrypted event nodes are being prepared. Stand by.</p>
+    <div className="cs-bar"><div className="cs-bar-fill"/></div>
+  </div>
+</div>
         </section>
       </div>
 
       <style>{`
+
+//events coming soon styles
+
+.coming-soon{
+  grid-column:1/-1;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:80px 20px;gap:18px;text-align:center;
+}
+.cs-icon{
+  font-size:3rem;color:rgba(0,255,240,.25);
+  animation:eyePulse2 2s ease infinite;
+}
+@keyframes eyePulse2{0%,100%{text-shadow:0 0 20px #00fff0;opacity:.4}50%{text-shadow:none;opacity:1}}
+.cs-title{
+  font-family:'Orbitron',sans-serif;font-size:clamp(1.4rem,3vw,2rem);
+  font-weight:900;letter-spacing:.2em;
+  color:#00fff0;text-shadow:0 0 28px rgba(0,255,240,.4),2px 2px 0px rgba(255,45,120,.2);
+}
+.cs-sub{
+  font-size:.78rem;letter-spacing:.14em;
+  color:rgba(200,220,255,.35);
+}
+.cs-bar{
+  width:280px;height:3px;
+  background:rgba(0,255,240,.08);border-radius:2px;overflow:hidden;margin-top:8px;
+}
+.cs-bar-fill{
+  height:100%;width:60%;
+  background:linear-gradient(90deg,#00fff0,#ff2d78);
+  animation:csFill 2.5s ease infinite alternate;
+  border-radius:2px;
+}
+@keyframes csFill{from{width:20%}to{width:85%}}
+
+
+
+
+
         *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 
         .root{
@@ -640,8 +687,10 @@ export default function EventsPage() {
         /* ── Backgrounds ── */
         .bg-city{
           position:fixed;inset:0;
-          background:url('https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=1600&q=60') center/cover;
-          opacity:.08;pointer-events:none;z-index:0;
+          background:
+            linear-gradient(rgba(0,4,12,0.72) 0%, rgba(0,8,20,0.68) 100%),
+            url('/contact/cyberpunk-bg.jpeg') center top/cover;
+          opacity:1;pointer-events:none;z-index:0;
         }
         .bg-overlay{
           position:fixed;inset:0;
@@ -728,8 +777,7 @@ export default function EventsPage() {
           font-weight:900;line-height:.92;
           margin-bottom:14px;
         }
-        .ht-c{color:#00fff0;text-shadow:0 0 28px rgba(0,255,240,.5),0 0 70px rgba(0,255,240,.15)}
-        .ht-m{color:#ff2d78;text-shadow:0 0 28px rgba(255,45,120,.5),0 0 70px rgba(255,45,120,.15)}
+.ht-c{color:#00fff0;text-shadow:0 0 28px rgba(0,255,240,.6),0 0 70px rgba(0,255,240,.2),0 0 120px rgba(255,45,120,.15),2px 2px 0px rgba(255,45,120,.2)}        .ht-m{color:#ff2d78;text-shadow:0 0 28px rgba(255,45,120,.5),0 0 70px rgba(255,45,120,.15)}
         .h-tagline{color:rgba(0,255,240,.32);font-size:.8rem;letter-spacing:.15em}
 
         /* ── Right panels: side-by-side, not stacked ── */
@@ -788,10 +836,7 @@ export default function EventsPage() {
         }
         .sb-buf{color:#00fff0;letter-spacing:.1em}
         .sb-status{color:rgba(200,220,255,.38);letter-spacing:.08em}
-        .sb-main-row{
-          display:flex;justify-content:space-between;align-items:baseline;
-          padding:10px 14px 4px;flex:1;
-        }
+        .sb-main-row{display:flex;flex-direction:column;justify-content:center;align-items:flex-start;padding:10px 14px 4px;flex:1;gap:2px;}
         .sb-s{font-family:'Orbitron',sans-serif;font-size:1.8rem;font-weight:900;color:#00fff0;text-shadow:0 0 18px rgba(0,255,240,.55)}
         .sb-a{font-family:'Orbitron',sans-serif;font-size:1.8rem;font-weight:900;color:#ff2d78;text-shadow:0 0 18px rgba(255,45,120,.55)}
         .sb-sub-row{

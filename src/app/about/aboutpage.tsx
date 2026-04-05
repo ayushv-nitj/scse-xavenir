@@ -1227,6 +1227,64 @@ export default function AboutPage() {
           .prof-img-wrap { width: 120px; height: 120px; }
           .prof-img { width: 100%; height: 100%; }
         }
+
+   .about-hero-title-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;  /* pushes panel to far right */
+  gap: 2rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.2rem;
+  width: 100%;
+}
+.about-hero-title {
+  /* keep existing styles, just remove margin-bottom since row handles spacing */
+  margin-bottom: 0;
+}
+.about-hero-panel {
+  border: 1px solid rgba(0,245,255,0.22);
+  background: rgba(0,3,20,0.85);
+  width: 320px;           /* bigger fixed width */
+  flex-shrink: 0;
+  position: relative;
+  overflow: hidden;
+}
+.about-hero-panel::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, var(--cyan), var(--pink), transparent);
+}
+.ahp-topbar {
+  display: flex; align-items: center; gap: 8px;
+  padding: 9px 16px;      /* taller topbar */
+  background: rgba(0,245,255,0.04);
+  border-bottom: 1px solid rgba(0,245,255,0.1);
+  font-family: var(--f-mono); font-size: 0.68rem;
+}
+.ahp-buf { color: var(--cyan); letter-spacing: 0.1em; flex: 1; }
+.ahp-bars { display: flex; gap: 3px; }
+.ahp-bars b { display: block; width: 8px; height: 7px; background: rgba(0,245,255,0.35); clip-path: polygon(0 0,100% 0,100% 55%,0 55%); }
+.ahp-body { padding: 18px 20px; display: flex; flex-direction: column; gap: 14px; }
+.ahp-row {
+  display: flex; align-items: center; gap: 10px;
+  font-family: var(--f-mono); font-size: 0.82rem;   /* bigger text */
+  letter-spacing: 0.1em; color: rgba(180,200,255,0.55);
+}
+.ahp-val { margin-left: auto; color: var(--cyan); font-weight: 600; font-size: 0.95rem; }
+.ahp-label { font-family: var(--f-mono); font-size: 0.68rem; letter-spacing: 0.1em; color: rgba(0,245,255,0.28); }
+.ahp-dot {
+  width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0;
+  animation: ab-pulse 1.5s ease infinite;
+}
+.ahp-dot.green  { background: var(--green);  box-shadow: 0 0 6px var(--green); }
+.ahp-dot.cyan   { background: var(--cyan);   box-shadow: 0 0 6px var(--cyan); }
+.ahp-dot.pink   { background: var(--pink);   box-shadow: 0 0 6px var(--pink); }
+.ahp-divider { height: 1px; background: rgba(0,245,255,0.1); margin: 2px 0; }
+
+@media (max-width: 600px) {
+  .about-hero-title-row { flex-direction: column; align-items: flex-start; gap: 1rem; }
+  .about-hero-panel { min-width: 0; width: 100%; }
+}
       `}</style>
 
       <div className="about-page">
@@ -1240,8 +1298,22 @@ export default function AboutPage() {
           <div className="about-boot-text">
             {bootLine}<span className="about-boot-cursor" />
           </div>
-          <h1 className="about-hero-title">About <span>Us</span></h1>
-          <p className="about-hero-sub">// WHO_WE_ARE · OUR_TEAM · XAVENIR_HISTORY</p>
+<div className="about-hero-title-row">
+  <h1 className="about-hero-title">About <span>Us</span></h1>
+  <div className="about-hero-panel">
+    <div className="ahp-topbar">
+      <span className="ahp-buf">SCSE.STATUS</span>
+      <span className="ahp-bars"><b/><b/><b/></span>
+    </div>
+    <div className="ahp-body">
+      <div className="ahp-row"><span className="ahp-dot green"/>TOTAL EVENTS <span className="ahp-val">16+</span></div>
+      <div className="ahp-row"><span className="ahp-dot cyan"/>PARTICIPANTS<span className="ahp-val">483+</span></div>
+      <div className="ahp-row"><span className="ahp-dot pink"/>EST. <span className="ahp-val">2023</span></div>
+      <div className="ahp-divider"/>
+      <div className="ahp-label">// scse@nitjsr:~$</div>
+    </div>
+  </div>
+</div>          <p className="about-hero-sub">// WHO_WE_ARE · OUR_TEAM · XAVENIR_HISTORY</p>
           <div className="about-hero-tags">
             <span className="about-tag">// NIT JAMSHEDPUR</span>
             <span className="about-tag-pink">// CSE DEPARTMENT</span>

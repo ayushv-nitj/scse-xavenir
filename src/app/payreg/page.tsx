@@ -3,6 +3,7 @@
 import React, { useEffect, useState, Suspense } from "react";
 import axios from "axios";
 import { useRouter, useSearchParams } from "next/navigation";
+
 interface UserData {
   email: string;
   role: string;
@@ -12,7 +13,7 @@ interface UserData {
   isPrime: boolean;
   isNitian: boolean;
   isFromCse: boolean;
-  isCollectedTshirt: boolean; // this is source of truth for hoodie 
+  isCollectedTshirt: boolean;
   paidForTshirt: "unpaid" | "paid" | "approved" | "rejected";
   paidForaccoModation: "unpaid" | "paid" | "approved" | "rejected";
   paidForPrime: "paid" | "unpaid" | "rejected" | "approved";
@@ -21,6 +22,9 @@ interface UserData {
   profilePic?: string;
   x: boolean;
 }
+
+const MAX_FILE_SIZE_MB = 5;
+const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024;
 
 function PayRegForm() {
   const router = useRouter();
@@ -33,9 +37,11 @@ function PayRegForm() {
   const [submitting, setSubmitting] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [sizeError, setSizeError] = useState<string | null>(null);
   const [focusedField, setFocusedField] = useState<string | null>(null);
   const [submitHovered, setSubmitHovered] = useState(false);
   const [uploadHovered, setUploadHovered] = useState(false);
+  const [fileLabelHovered, setFileLabelHovered] = useState(false);
   const [formData, setFormData] = useState({
     transactionId1: "",
     transactionId2: "",
@@ -58,23 +64,16 @@ function PayRegForm() {
 
   let amount = 900;
   let formTitle = "SECURE";
-
   const isCSE = userData?.isFromCse;
 
   if (typeParam === "reg_with_tshirt") {
-    amount = isCSE
-      ? Number(process.env.NEXT_PUBLIC_PRICE_CSE_PRIME_WITH_TSHIRT || 890)
-      : Number(process.env.NEXT_PUBLIC_PRICE_NCSE_PRIME_WITH_TSHIRT || 890);
+    amount = isCSE? Number(process.env.NEXT_PUBLIC_PRICE_CSE_PRIME_WITH_TSHIRT || 890) : Number(process.env.NEXT_PUBLIC_PRICE_NCSE_PRIME_WITH_TSHIRT || 890);
     formTitle = "REG + TSHIRT";
   } else if (typeParam === "reg_without_tshirt") {
-    amount = isCSE
-      ? Number(process.env.NEXT_PUBLIC_PRICE_CSE_PRIME_WITHOUT_TSHIRT || 500)
-      : Number(process.env.NEXT_PUBLIC_PRICE_NCSE_PRIME_WITHOUT_TSHIRT || 500);
+    amount = isCSE ? Number(process.env.NEXT_PUBLIC_PRICE_CSE_PRIME_WITHOUT_TSHIRT || 500) : Number(process.env.NEXT_PUBLIC_PRICE_NCSE_PRIME_WITHOUT_TSHIRT || 500);
     formTitle = "REGISTRATION";
   } else if (typeParam === "tshirt_only") {
-    amount = isCSE
-      ? Number(process.env.NEXT_PUBLIC_PRICE_CSE_TSHIRT || 390)
-      : Number(process.env.NEXT_PUBLIC_PRICE_NCSE_TSHIRT || 390);
+    amount = isCSE ? Number(process.env.NEXT_PUBLIC_PRICE_CSE_TSHIRT || 390) : Number(process.env.NEXT_PUBLIC_PRICE_NCSE_TSHIRT || 390);
     formTitle = "T-SHIRT";
   } else if (typeParam === "reg_with_accom") {
     amount = Number(process.env.NEXT_PUBLIC_PRICE_NONIT_PRIME_WITH_ACCO || 1300);
@@ -85,7 +84,20 @@ function PayRegForm() {
   } else if (typeParam === "accom_only") {
     amount = Number(process.env.NEXT_PUBLIC_PRICE_ACCO || 400);
     formTitle = "ACCOMMODATION";
-  } 
+  }
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0] || null;
+    setSizeError(null);
+    if (file && file.size > MAX_FILE_SIZE_BYTES) {
+      setSizeError(`File exceeds ${MAX_FILE_SIZE_MB} MB limit. Please compress and retry.`);
+      setImage(null);
+      e.target.value = "";
+      return;
+    }
+    setImage(file);
+  };
+
   const handleImageUpload = async () => {
     setError(null);
     if (!image) { setError("Please select an image to upload."); return; }
@@ -119,15 +131,8 @@ function PayRegForm() {
     }
   };
 
-  const inputStyle = (name: string): React.CSSProperties => ({
-    ...s.input,
-    borderColor: focusedField === name ? "#00f5ff" : "rgba(0,245,255,0.18)",
-    boxShadow: focusedField === name ? "0 0 16px rgba(0,245,255,0.18)" : "none",
-  });
-
   return (
     <div style={s.root}>
-      {/* Background */}
       <div style={s.grid} />
       <div style={s.scanH} />
       <div style={s.scanV} />
@@ -137,13 +142,11 @@ function PayRegForm() {
 
       <div style={s.wrap}>
         <form onSubmit={handleSubmit} style={s.card}>
-          {/* Corner accents */}
           <span style={{ ...s.corner, top: -1, left: -1, borderTop: "2px solid #00f5ff", borderLeft: "2px solid #00f5ff", boxShadow: "-2px -2px 12px #00f5ff" }} />
           <span style={{ ...s.corner, top: -1, right: -1, borderTop: "2px solid #ff0080", borderRight: "2px solid #ff0080", boxShadow: "2px -2px 12px #ff0080" }} />
           <span style={{ ...s.corner, bottom: -1, left: -1, borderBottom: "2px solid #ff0080", borderLeft: "2px solid #ff0080", boxShadow: "-2px 2px 12px #ff0080" }} />
           <span style={{ ...s.corner, bottom: -1, right: -1, borderBottom: "2px solid #00f5ff", borderRight: "2px solid #00f5ff", boxShadow: "2px 2px 12px #00f5ff" }} />
 
-          {/* Top bar */}
           <div style={s.topBar}>
             <span style={s.dot} />
             <span style={{ ...s.dot, background: "#ff0080", boxShadow: "0 0 5px #ff0080" }} />
@@ -152,7 +155,6 @@ function PayRegForm() {
           </div>
 
           <div style={s.body}>
-            {/* Title */}
             <p style={s.tag}>// PAYMENT_GATEWAY</p>
             <h1 style={s.title}>
               <span style={s.titleCyan}>{formTitle}</span>
@@ -164,7 +166,6 @@ function PayRegForm() {
               <div style={s.divLine} />
             </div>
 
-            {/* Error */}
             {error && (
               <div style={s.alert}>
                 <span style={{ marginRight: 6 }}>⚠</span>{error}
@@ -226,19 +227,29 @@ function PayRegForm() {
                   </span>
                 </div>
               )}
+
+              {/* Size limit hint + inline error */}
+              <div style={s.sizeHintRow}>
+                <span style={s.sizeHint}>◈ Max file size: {MAX_FILE_SIZE_MB} MB &nbsp;·&nbsp; JPG / PNG / WEBP accepted</span>
+                {sizeError && <span style={s.sizeError}>⚠&nbsp;{sizeError}</span>}
+              </div>
+
               <div style={s.uploadRow}>
-                <label style={s.fileLabel}>
+                {/* CHOOSE FILE — violet/purple */}
+                <label
+                  style={{ ...s.fileLabel, ...(fileLabelHovered ? s.fileLabelHover : {}) }}
+                  onMouseEnter={() => setFileLabelHovered(true)}
+                  onMouseLeave={() => setFileLabelHovered(false)}
+                >
                   <span>📎 &nbsp;CHOOSE FILE</span>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={(e) => setImage(e.target.files?.[0] || null)}
-                    style={{ display: "none" }}
-                  />
+                  <input type="file" accept="image/*" onChange={handleFileChange} style={{ display: "none" }} />
                 </label>
+
                 {image && (
                   <span style={s.fileName}>{image.name.slice(0, 24)}{image.name.length > 24 ? "..." : ""}</span>
                 )}
+
+                {/* UPLOAD PROOF — bold cyan, maximum glow */}
                 <button
                   type="button"
                   onClick={handleImageUpload}
@@ -248,12 +259,14 @@ function PayRegForm() {
                   style={{
                     ...s.uploadBtn,
                     ...(uploadHovered && !loading && image ? s.uploadBtnHover : {}),
-                    ...(loading || !image ? s.btnDisabled : {}),
+                    ...(loading || !image ? s.uploadBtnDisabled : {}),
                   }}
                 >
                   {loading ? (
                     <span style={s.loadingInner}><span style={s.spinner} />UPLOADING...</span>
-                  ) : "UPLOAD"}
+                  ) : (
+                    <span style={s.loadingInner}>⬆&nbsp;UPLOAD PROOF</span>
+                  )}
                 </button>
               </div>
             </div>
@@ -326,29 +339,21 @@ function PayRegForm() {
           <div style={s.modal}>
             <span style={{ ...s.corner, top: -1, left: -1, borderTop: "2px solid #00ff88", borderLeft: "2px solid #00ff88", boxShadow: "-2px -2px 12px #00ff88" }} />
             <span style={{ ...s.corner, bottom: -1, right: -1, borderBottom: "2px solid #00f5ff", borderRight: "2px solid #00f5ff", boxShadow: "2px 2px 12px #00f5ff" }} />
-
-            {/* Success orb */}
             <div style={s.successOrb}>
               <div style={s.successOrbInner} />
               <svg width="36" height="36" viewBox="0 0 36 36" style={{ position: "absolute" }}>
-                <polyline points="6,18 14,26 30,10" fill="none"
-                  stroke="#00ff88" strokeWidth="2.5" strokeLinecap="round"
-                  style={{ filter: "drop-shadow(0 0 6px #00ff88)" }} />
+                <polyline points="6,18 14,26 30,10" fill="none" stroke="#00ff88" strokeWidth="2.5" strokeLinecap="round" style={{ filter: "drop-shadow(0 0 6px #00ff88)" }} />
               </svg>
             </div>
-
             <h3 style={s.successTitle}>SUBMITTED</h3>
             <p style={s.successSub}>// PAYMENT_RECEIVED</p>
-
             <div style={s.divider}>
               <div style={{ ...s.divLine, background: "linear-gradient(90deg,transparent,rgba(0,255,136,0.3),transparent)" }} />
             </div>
-
             <p style={s.successMsg}>
               We will verify your payment soon. Till then —{" "}
               <span style={{ color: "#00f5ff" }}>explore all events!</span>
             </p>
-
             <button
               style={{ ...s.submitBtn, background: "rgba(0,255,136,0.12)", borderColor: "rgba(0,255,136,0.4)", color: "#00ff88", marginTop: "1rem" }}
               onClick={() => router.push("/events")}
@@ -374,6 +379,14 @@ function PayRegForm() {
         @keyframes spin        { to{transform:rotate(360deg)} }
         @keyframes successPop  { 0%{transform:scale(0.5);opacity:0} 70%{transform:scale(1.1)} 100%{transform:scale(1);opacity:1} }
         @keyframes amountPulse { 0%,100%{text-shadow:0 0 20px #ffff00,0 0 40px rgba(255,255,0,0.3)} 50%{text-shadow:0 0 36px #ffff00,0 0 72px rgba(255,255,0,0.6)} }
+        @keyframes choosePulse {
+          0%,100% { box-shadow: 0 0 10px rgba(191,0,255,0.32), 0 0 22px rgba(191,0,255,0.1), inset 0 0 8px rgba(191,0,255,0.07); border-color: rgba(191,0,255,0.55); }
+          50%      { box-shadow: 0 0 20px rgba(191,0,255,0.58), 0 0 40px rgba(191,0,255,0.2), inset 0 0 14px rgba(191,0,255,0.12); border-color: #bf00ff; }
+        }
+        @keyframes uploadPulse {
+          0%,100% { box-shadow: 0 0 20px rgba(0,245,255,0.6), 0 0 45px rgba(0,245,255,0.25), 0 0 70px rgba(0,245,255,0.1), inset 0 0 16px rgba(0,245,255,0.12); border-color: rgba(0,245,255,0.85); }
+          50%      { box-shadow: 0 0 36px rgba(0,245,255,0.9), 0 0 72px rgba(0,245,255,0.42), 0 0 100px rgba(0,245,255,0.18), inset 0 0 26px rgba(0,245,255,0.2); border-color: #00f5ff; }
+        }
         input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus {
           -webkit-box-shadow:0 0 0px 1000px #00050f inset !important;
           -webkit-text-fill-color:#e0e8ff !important; caret-color:#00f5ff;
@@ -395,12 +408,7 @@ export default function Page() {
 }
 
 const s: Record<string, React.CSSProperties> = {
-  root: {
-    minHeight: "100vh", background: "#020010",
-    fontFamily: "'Rajdhani',sans-serif", color: "#e0e0ff",
-    position: "relative", overflowX: "hidden",
-    paddingTop: "5rem", paddingBottom: "3rem",
-  },
+  root: { minHeight: "100vh", background: "#020010", fontFamily: "'Rajdhani',sans-serif", color: "#e0e0ff", position: "relative", overflowX: "hidden", paddingTop: "5rem", paddingBottom: "3rem" },
   grid: { position: "fixed", inset: 0, zIndex: 0, pointerEvents: "none", backgroundImage: "linear-gradient(rgba(0,245,255,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(0,245,255,0.04) 1px,transparent 1px)", backgroundSize: "60px 60px", animation: "gridMove 8s linear infinite" },
   scanH: { position: "fixed", left: 0, right: 0, height: 1, background: "rgba(0,245,255,0.2)", boxShadow: "0 0 8px rgba(0,245,255,0.35)", animation: "scanH 7s linear infinite", zIndex: 1, pointerEvents: "none" },
   scanV: { position: "fixed", top: 0, bottom: 0, width: 1, background: "rgba(255,0,128,0.12)", animation: "scanV 11s linear infinite", zIndex: 1, pointerEvents: "none" },
@@ -408,23 +416,13 @@ const s: Record<string, React.CSSProperties> = {
   blob: { position: "fixed", borderRadius: "50%", filter: "blur(90px)", zIndex: 0, pointerEvents: "none" },
   blob1: { width: 360, height: 360, background: "rgba(0,245,255,0.065)", top: "-12%", right: "-10%", animation: "blobFloat1 9s ease-in-out infinite" },
   blob2: { width: 280, height: 280, background: "rgba(191,0,255,0.065)", bottom: "-10%", left: "-8%", animation: "blobFloat2 11s ease-in-out infinite" },
-
   wrap: { position: "relative", zIndex: 10, maxWidth: 680, margin: "0 auto", padding: "0 1.5rem" },
-
-  card: {
-    position: "relative",
-    background: "rgba(0,5,30,0.88)", backdropFilter: "blur(22px)",
-    borderWidth: 1, borderStyle: "solid", borderColor: "rgba(0,245,255,0.18)",
-    clipPath: "polygon(0 0,calc(100% - 22px) 0,100% 22px,100% 100%,22px 100%,0 calc(100% - 22px))",
-    animation: "fadeUp 0.55s ease forwards, borderPulse 4s ease infinite",
-  },
+  card: { position: "relative", background: "rgba(0,5,30,0.88)", backdropFilter: "blur(22px)", borderWidth: 1, borderStyle: "solid", borderColor: "rgba(0,245,255,0.18)", clipPath: "polygon(0 0,calc(100% - 22px) 0,100% 22px,100% 100%,22px 100%,0 calc(100% - 22px))", animation: "fadeUp 0.55s ease forwards, borderPulse 4s ease infinite" },
   corner: { position: "absolute", width: 16, height: 16 } as React.CSSProperties,
   topBar: { display: "flex", alignItems: "center", gap: 8, padding: "0.65rem 1.4rem", borderBottom: "1px solid rgba(0,245,255,0.09)", background: "rgba(0,0,20,0.5)" },
   dot: { width: 7, height: 7, borderRadius: "50%", background: "#00f5ff", boxShadow: "0 0 5px #00f5ff", display: "inline-block" },
   topBarLabel: { fontFamily: "'Share Tech Mono',monospace", fontSize: "0.56rem", letterSpacing: 3, color: "rgba(0,245,255,0.38)", marginLeft: "auto" },
-
   body: { padding: "1.8rem 2rem 2.4rem", display: "flex", flexDirection: "column" as const, gap: "1.2rem" },
-
   tag: { fontFamily: "'Share Tech Mono',monospace", fontSize: "0.65rem", letterSpacing: 4, color: "#ff0080", textShadow: "0 0 8px #ff0080" },
   title: { fontFamily: "'Orbitron',monospace", fontWeight: 900, lineHeight: 1.05 },
   titleCyan: { display: "block", fontSize: "2.2rem", color: "#00f5ff", animation: "glowPulse 3s ease infinite" },
@@ -432,9 +430,7 @@ const s: Record<string, React.CSSProperties> = {
   divider: { display: "flex", alignItems: "center", gap: "0.7rem" },
   divLine: { flex: 1, height: 1, background: "linear-gradient(90deg,transparent,rgba(0,245,255,0.28),transparent)" },
   divText: { fontFamily: "'Share Tech Mono',monospace", fontSize: "0.5rem", letterSpacing: 3, color: "rgba(0,245,255,0.32)", whiteSpace: "nowrap" as const },
-
   alert: { padding: "10px 14px", background: "rgba(255,0,128,0.08)", borderWidth: 1, borderStyle: "solid", borderColor: "rgba(255,0,128,0.35)", fontFamily: "'Share Tech Mono',monospace", fontSize: "0.72rem", color: "#ff0080", letterSpacing: 1, animation: "alertSlide 0.3s ease forwards", clipPath: "polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,8px 100%,0 calc(100% - 8px))" },
-
   autoGrid: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" },
   fieldWrap: { display: "flex", flexDirection: "column" as const, gap: "0.4rem" },
   label: { fontFamily: "'Share Tech Mono',monospace", fontSize: "0.6rem", letterSpacing: 3, textTransform: "uppercase" as const, color: "rgba(0,245,255,0.55)", transition: "color 0.2s,text-shadow 0.2s" },
@@ -442,8 +438,6 @@ const s: Record<string, React.CSSProperties> = {
   inputPrefix: { fontFamily: "'Share Tech Mono',monospace", fontSize: "0.85rem", padding: "0 0 0 12px", flexShrink: 0, transition: "color 0.2s" },
   input: { flex: 1, background: "transparent", borderWidth: 0, borderStyle: "solid", borderColor: "transparent", color: "#e0e8ff", fontFamily: "'Share Tech Mono',monospace", fontSize: "0.8rem", letterSpacing: 1, padding: "10px 12px", width: "100%", caretColor: "#00f5ff" },
   lockIcon: { position: "absolute" as const, right: 10, fontSize: "0.65rem", opacity: 0.35 },
-
-  /* QR section */
   qrSection: { display: "grid", gridTemplateColumns: "auto 1fr", gap: "2rem", alignItems: "center" },
   qrWrap: { padding: "0.8rem", background: "rgba(0,245,255,0.04)", borderWidth: 1, borderStyle: "solid", borderColor: "rgba(0,245,255,0.15)", clipPath: "polygon(0 0,calc(100% - 10px) 0,100% 10px,100% 100%,10px 100%,0 calc(100% - 10px))" },
   qrImg: { width: 140, height: 140, display: "block", filter: "brightness(0.95) contrast(1.1)" },
@@ -451,26 +445,95 @@ const s: Record<string, React.CSSProperties> = {
   amountLabel: { fontFamily: "'Share Tech Mono',monospace", fontSize: "0.6rem", letterSpacing: 4, color: "rgba(0,245,255,0.45)" },
   amount: { fontFamily: "'Orbitron',monospace", fontSize: "3rem", fontWeight: 900, color: "#ffff00", animation: "amountPulse 2.5s ease infinite", lineHeight: 1 },
   amountNote: { marginTop: "0.3rem" },
-
-  /* Upload */
   uploadPlaceholder: { display: "flex", flexDirection: "column" as const, alignItems: "center", justifyContent: "center", gap: "0.5rem", padding: "1.5rem", background: "rgba(0,5,20,0.5)", borderWidth: 1, borderStyle: "dashed", borderColor: "rgba(0,245,255,0.15)", clipPath: "polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,8px 100%,0 calc(100% - 8px))" },
   proofPreview: { display: "flex", alignItems: "center", gap: "1rem", padding: "0.8rem", background: "rgba(0,255,136,0.04)", borderWidth: 1, borderStyle: "solid", borderColor: "rgba(0,255,136,0.2)", clipPath: "polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,8px 100%,0 calc(100% - 8px))" },
   proofImg: { width: 60, height: 60, objectFit: "cover" as const, borderWidth: 1, borderStyle: "solid", borderColor: "rgba(0,255,136,0.3)" },
   proofSuccess: { fontFamily: "'Share Tech Mono',monospace", fontSize: "0.72rem", color: "#00ff88", letterSpacing: 2, textShadow: "0 0 8px #00ff88" },
-  uploadRow: { display: "flex", gap: "0.8rem", alignItems: "center", flexWrap: "wrap" as const, marginTop: "0.5rem" },
-  fileLabel: { fontFamily: "'Share Tech Mono',monospace", fontSize: "0.65rem", letterSpacing: 2, padding: "9px 16px", cursor: "pointer", background: "rgba(0,5,20,0.7)", borderWidth: 1, borderStyle: "solid", borderColor: "rgba(0,245,255,0.25)", color: "rgba(0,245,255,0.7)", clipPath: "polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,8px 100%,0 calc(100% - 8px))" },
-  fileName: { fontFamily: "'Share Tech Mono',monospace", fontSize: "0.62rem", color: "rgba(180,200,255,0.5)", letterSpacing: 1, flex: 1, overflow: "hidden" as const, textOverflow: "ellipsis" as const, whiteSpace: "nowrap" as const },
-  uploadBtn: { fontFamily: "'Orbitron',monospace", fontSize: "0.65rem", letterSpacing: 3, padding: "9px 18px", cursor: "pointer", background: "rgba(0,245,255,0.1)", borderWidth: 1, borderStyle: "solid", borderColor: "rgba(0,245,255,0.35)", color: "#00f5ff", clipPath: "polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,8px 100%,0 calc(100% - 8px))", transition: "all 0.2s", flexShrink: 0 },
-  uploadBtnHover: { background: "rgba(0,245,255,0.2)", borderColor: "#00f5ff", boxShadow: "0 0 16px rgba(0,245,255,0.25)" },
 
-  /* Submit */
+  // Size hint
+  sizeHintRow: { display: "flex", alignItems: "center", gap: "1rem", flexWrap: "wrap" as const, marginTop: "0.3rem" },
+  sizeHint: { fontFamily: "'Share Tech Mono',monospace", fontSize: "0.54rem", letterSpacing: 1.5, color: "rgba(0,245,255,0.25)" },
+  sizeError: { fontFamily: "'Share Tech Mono',monospace", fontSize: "0.58rem", letterSpacing: 1.5, color: "#ffff00", textShadow: "0 0 8px rgba(255,255,0,0.55)", animation: "alertSlide 0.25s ease forwards" },
+
+  uploadRow: { display: "flex", gap: "0.8rem", alignItems: "center", flexWrap: "wrap" as const, marginTop: "0.4rem" },
+
+  // ── CHOOSE FILE — violet/purple, matches site's #bf00ff accent ──
+  fileLabel: {
+    fontFamily: "'Orbitron',monospace",
+    fontWeight: 700,
+    fontSize: "0.62rem",
+    letterSpacing: 2,
+    padding: "10px 18px",
+    cursor: "pointer",
+    background: "linear-gradient(135deg,rgba(191,0,255,0.14),rgba(100,0,200,0.1))",
+    borderWidth: 2,
+    borderStyle: "solid",
+    borderColor: "rgba(191,0,255,0.55)",
+    color: "#bf00ff",
+    clipPath: "polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,8px 100%,0 calc(100% - 8px))",
+    textShadow: "0 0 10px #bf00ff, 0 0 20px rgba(191,0,255,0.35)",
+    animation: "choosePulse 2.8s ease infinite",
+    transition: "all 0.2s ease",
+    display: "inline-flex",
+    alignItems: "center",
+  },
+  fileLabelHover: {
+    background: "linear-gradient(135deg,rgba(191,0,255,0.28),rgba(100,0,200,0.2))",
+    borderColor: "#bf00ff",
+    boxShadow: "0 0 28px rgba(191,0,255,0.6), inset 0 0 16px rgba(191,0,255,0.14)",
+    transform: "translateY(-2px)",
+    color: "#d040ff",
+    textShadow: "0 0 14px #bf00ff, 0 0 28px rgba(191,0,255,0.55)",
+  },
+
+  fileName: { fontFamily: "'Share Tech Mono',monospace", fontSize: "0.62rem", color: "rgba(180,200,255,0.5)", letterSpacing: 1, flex: 1, overflow: "hidden" as const, textOverflow: "ellipsis" as const, whiteSpace: "nowrap" as const },
+
+  // ── UPLOAD PROOF — oversized, max cyan glow ──
+  uploadBtn: {
+    fontFamily: "'Orbitron',monospace",
+    fontWeight: 900,
+    fontSize: "0.74rem",
+    letterSpacing: 3,
+    padding: "11px 30px",
+    cursor: "pointer",
+    background: "linear-gradient(135deg,rgba(0,245,255,0.24),rgba(0,60,160,0.18))",
+    borderWidth: 2,
+    borderStyle: "solid",
+    borderColor: "rgba(0,245,255,0.85)",
+    color: "#00f5ff",
+    clipPath: "polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,8px 100%,0 calc(100% - 8px))",
+    textShadow: "0 0 12px #00f5ff, 0 0 24px rgba(0,245,255,0.5)",
+    animation: "uploadPulse 2.2s ease infinite",
+    transition: "all 0.2s ease",
+    flexShrink: 0,
+    display: "flex",
+    alignItems: "center",
+    gap: "0.4rem",
+  },
+  uploadBtnHover: {
+    background: "linear-gradient(135deg,rgba(0,245,255,0.4),rgba(0,60,160,0.28))",
+    borderColor: "#00f5ff",
+    boxShadow: "0 0 44px rgba(0,245,255,0.85), 0 0 88px rgba(0,245,255,0.4), inset 0 0 28px rgba(0,245,255,0.2)",
+    transform: "translateY(-3px)",
+    color: "#80faff",
+    textShadow: "0 0 18px #00f5ff, 0 0 36px rgba(0,245,255,0.7)",
+  },
+  uploadBtnDisabled: {
+    opacity: 0.25,
+    cursor: "not-allowed",
+    transform: "none",
+    animation: "none",
+    boxShadow: "none",
+    textShadow: "none",
+    borderColor: "rgba(0,245,255,0.15)",
+    background: "rgba(0,245,255,0.03)",
+  },
+
   submitBtn: { width: "100%", padding: "13px 24px", background: "linear-gradient(135deg,rgba(0,245,255,0.12),rgba(191,0,255,0.12))", borderWidth: 1, borderStyle: "solid", borderColor: "rgba(0,245,255,0.38)", color: "#e0e8ff", cursor: "pointer", fontFamily: "'Orbitron',monospace", fontSize: "0.78rem", fontWeight: 700, letterSpacing: 3, textTransform: "uppercase" as const, clipPath: "polygon(0 0,calc(100% - 12px) 0,100% 12px,100% 100%,12px 100%,0 calc(100% - 12px))", transition: "all 0.22s ease", display: "flex", alignItems: "center", justifyContent: "center" },
   submitBtnHover: { background: "linear-gradient(135deg,rgba(0,245,255,0.22),rgba(191,0,255,0.22))", borderColor: "#00f5ff", color: "#00f5ff", boxShadow: "0 0 24px rgba(0,245,255,0.28)", transform: "translateY(-2px)" },
   btnDisabled: { opacity: 0.45, cursor: "not-allowed", transform: "none" },
   loadingInner: { display: "flex", alignItems: "center", gap: "0.6rem" },
   spinner: { width: 13, height: 13, borderRadius: "50%", borderWidth: 2, borderStyle: "solid", borderColor: "rgba(0,245,255,0.2)", borderTopColor: "#00f5ff", display: "inline-block", animation: "spin 0.9s linear infinite" },
-
-  /* Modal */
   modalOverlay: { position: "fixed", inset: 0, background: "rgba(2,0,16,0.88)", backdropFilter: "blur(10px)", zIndex: 500, display: "flex", alignItems: "center", justifyContent: "center", padding: "1.5rem" },
   modal: { position: "relative", width: "100%", maxWidth: 420, background: "rgba(0,5,30,0.96)", borderWidth: 1, borderStyle: "solid", borderColor: "rgba(0,255,136,0.25)", backdropFilter: "blur(24px)", clipPath: "polygon(0 0,calc(100% - 20px) 0,100% 20px,100% 100%,20px 100%,0 calc(100% - 20px))", padding: "2rem", display: "flex", flexDirection: "column" as const, alignItems: "center", gap: "1rem" },
   successOrb: { width: 80, height: 80, borderRadius: "50%", borderWidth: 1, borderStyle: "solid", borderColor: "rgba(0,255,136,0.4)", boxShadow: "0 0 30px rgba(0,255,136,0.2)", display: "flex", alignItems: "center", justifyContent: "center", position: "relative", animation: "successPop 0.5s ease forwards" },

@@ -255,7 +255,7 @@ export default function Dashboard() {
     { key: "overview",      label: "OVERVIEW",      icon: "◈" },
     { key: "profile",       label: "PROFILE",       icon: "✦" },
     { key: "events",        label: "EVENTS",        icon: "◆" },
-    { key: "receipt",       label: "RECEIPT",       icon: "◉" },
+    // { key: "receipt",       label: "RECEIPT",       icon: "◉" },
     { key: "certificates",  label: "CERTIFICATES",  icon: "★" },
     { key: "notifications", label: "NOTIFICATIONS", icon: "◎" },
     { key: "community",     label: "COMMUNITY",     icon: "⬡" },
@@ -286,8 +286,6 @@ export default function Dashboard() {
           </h1>
           <p className="db-hero-sub">
             <span>USER_ID:</span> {user?.userID} &nbsp;|&nbsp;
-            <span>ROLE:</span> {user?.role?.toUpperCase()} &nbsp;|&nbsp;
-            <span>STATUS:</span> <span style={{ color: "#ff0080" }}>ACTIVE</span>
           </p>
           <p className="db-hero-sub" style={{ marginTop: "0.3rem" }}>
             <span>NITJSR:</span> <span style={{ color: user?.isNitian ? "#00ff88" : "#ff0080" }}>{user?.isNitian ? "YES ✓" : "NO"}</span> &nbsp;|&nbsp;
@@ -497,12 +495,12 @@ export default function Dashboard() {
                             Registration payment is pending.
                           </p>
                           <p style={{ color: "#00ff88", fontFamily: "'Inter',sans-serif", fontWeight: 600, fontSize: "0.9rem", marginBottom: 4 }}>
-                            // email_verified ✓
+                            email_verified ✓
                           </p>
                           
                           {user?.paidForPrime === "rejected" && (
                             <p style={{ color: "#ff4444", fontFamily: "'Inter',sans-serif", fontWeight: 600, fontSize: "0.9rem", marginTop: 12, marginBottom: 4 }}>
-                              // PREVIOUS_PAYMENT_REJECTED ×
+                               PREVIOUS_PAYMENT_REJECTED ×
                             </p>
                           )}
                           
@@ -516,18 +514,18 @@ export default function Dashboard() {
                               style={{ width: '100%' }}
                               onClick={() => setShowPaymentOptions(true)}
                             >
-                              <span>// PAY REGISTRATION FEES</span>
+                              <span> PAY REGISTRATION FEES</span>
                             </button>
                           ) : (
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                               <p style={{ color: "#00ff88", fontSize: "0.85rem", fontFamily: "'Rajdhani',sans-serif" }}>SELECT OPTION:</p>
                               {user?.isNitian ? (
                                 <>
-                                  <Link href="/payreg?type=reg_with_tshirt" className="db-btn-primary" style={{ textAlign: 'center', background: 'rgba(0, 255, 136, 0.1)' }}>
-                                    <span>// PAY WITH T-SHIRT</span>
+                                  <Link href="/payreg?type=reg_with_tshirt" className="db-btn-primary" style={{ textAlign: 'center' }}>
+                                    <span> PAY WITH T-SHIRT</span>
                                   </Link>
                                   <Link href="/payreg?type=reg_without_tshirt" className="db-btn-primary" style={{ textAlign: 'center' }}>
-                                    <span>// PAY WITHOUT T-SHIRT</span>
+                                    <span> PAY WITHOUT T-SHIRT</span>
                                   </Link>
                                 </>
                               ) : (
@@ -1035,7 +1033,7 @@ export default function Dashboard() {
               ) : (
                 <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
                   {/* System notifications */}
-                  {[...notifications].reverse().map((n, i) => {
+                  {notifications.map((n, i) => {
                     const iconMap: Record<string, string> = {
                       team_invite_response: "👥",
                       team_confirmed: "✅",
