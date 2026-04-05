@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
 
     if (!email || !scseId) {
       return NextResponse.json(
-        { error: "Email and SCSE ID are missing" },
+        { error: "Email and Xavenir ID are missing" },
         { status: 400 }
       );
     }
