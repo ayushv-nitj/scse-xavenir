@@ -14,13 +14,13 @@ type EventItem = {
 };
 
 const EVENTS: EventItem[] = [
-  {
-    id: "EV-INAUGURATION-2025",
-    src: "https://res.cloudinary.com/dzewgmuty/image/upload/v1774361397/WhatsApp_Image_2026-03-24_at_7.18.09_PM_2_m8hmaq.jpg",
-    title: "Xavenir 2025 Inauguration",
-    date: "FEB, 2025",
-    desc: "The grand inauguration of Xavenir marks the the beginning of innovation, energy and cutting-edge brilliance!",
-  },
+  // {
+  //   id: "EV-INAUGURATION-2025",
+  //   src: "https://res.cloudinary.com/dzewgmuty/image/upload/v1774361397/WhatsApp_Image_2026-03-24_at_7.18.09_PM_2_m8hmaq.jpg",
+  //   title: "Xavenir 2025 Inauguration",
+  //   date: "FEB, 2025",
+  //   desc: "The grand inauguration of Xavenir marks the the beginning of innovation, energy and cutting-edge brilliance!",
+  // },
   {
     id: "EV-SCSE-PL2-2025",
     src: "https://res.cloudinary.com/dzewgmuty/image/upload/v1774361258/cricket2024_xckxnt.webp",
