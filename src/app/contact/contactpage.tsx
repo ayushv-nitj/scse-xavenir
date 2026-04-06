@@ -77,8 +77,8 @@ export default function ContactPage() {
       return;
     }
 
-    if (!form.email.endsWith("@gmail.com")) {
-      setError("Only Gmail addresses (@gmail.com) are accepted.");
+    if (!form.email.endsWith("@gmail.com") && !form.email.endsWith("@nitjsr.ac.in")) {
+      setError("Only Gmail addresses (@gmail.com) and NIT Jamshedpur emails (@nitjsr.ac.in) are accepted.");
       return;
     }
 

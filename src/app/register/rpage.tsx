@@ -90,9 +90,9 @@ export default function RegisterPage() {
           <p style={s.subtitle}>
             Use your{" "}
             <span style={{ color: "#00f5ff" }}>college email</span>{" "}
-            to avail{" "}
+            if you are from {" "}
             <span style={{ color: "#ffff00", textShadow: "0 0 8px rgba(255,255,0,0.5)" }}>
-              extra discounts
+             NIT Jamshedpur
             </span>.
           </p>
 

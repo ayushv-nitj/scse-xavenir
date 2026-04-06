@@ -88,6 +88,13 @@ export default function AdminClient({ payments, eventRegs, contacts, stats }: {
   const [certResult,   setCertResult]   = useState<{success:number;skipped:number;failed:number;errors:string[]} | null>(null);
   const [certError,    setCertError]    = useState("");
 
+  const getStatus = (status: string) => {
+  if (status === "unpaid") return { text: " Not Paid", class: "no" };
+    if (status === "paid") return { text: " ⏳Pending for approval", class: "warn" };
+  if (status === "approved") return { text: "✔ Approved", class: "ok" };
+  return { text: "✕ Rejected", class: "no" };
+};
+
   const updateStatus = async (id: string, status: string) => {
     setLoadingId(id);
     try {
@@ -123,6 +130,7 @@ export default function AdminClient({ payments, eventRegs, contacts, stats }: {
       const d = await res.json();
       if (!res.ok) { setSearchError(d.message || "Not found"); return; }
       setSearchResult(d);
+      console.log(d);
     } catch { setSearchError("Network error"); } finally { setSearching(false); }
   };
 
@@ -439,33 +447,76 @@ export default function AdminClient({ payments, eventRegs, contacts, stats }: {
         )}
 
         {/* USER SEARCH */}
-        {panel === "search" && (
-          <div className="content-panel">
-            <div className="page-header"><h1 className="page-title">◎ User Search</h1></div>
-            <div className="search-box">
-              <span className="s-prefix">XAV-</span>
-              <input className="s-input" placeholder="XXXXXXX"
-                value={searchId} onChange={e => setSearchId(e.target.value)}
-                onKeyDown={e => e.key === "Enter" && handleSearch()} />
-              <button className="s-btn" onClick={handleSearch} disabled={searching}>
-                {searching ? <span className="spin" /> : "SEARCH ▶"}
-              </button>
-            </div>
-            {searchError && <div className="err-msg">⚠ {searchError}</div>}
-            {searchResult && (
-              <div className="result-card">
-                <div className="card-accent" />
-                {[["NAME", searchResult.name], ["EMAIL", searchResult.email], ["USER ID", searchResult.id]].map(([l,v]) => (
-                  <div key={l} className="sr-row"><span className="sr-l">{l}</span><span className="sr-v">{v}</span></div>
-                ))}
-                <div className="sr-row"><span className="sr-l">PRIME</span>
-                  <span className={`sr-v ${searchResult.isPrime ? "ok" : "no"}`}>{searchResult.isPrime ? "✔ YES" : "✕ NO"}</span></div>
-                <div className="sr-row"><span className="sr-l">GOODIES</span>
-                  <span className={`sr-v ${searchResult.goodiesCollected ? "ok" : "no"}`}>{searchResult.goodiesCollected ? "✔ COLLECTED" : "✕ NOT COLLECTED"}</span></div>
-              </div>
-            )}
+       {panel === "search" && (
+  <div className="content-panel">
+    <div className="page-header"><h1 className="page-title">◎ User Search</h1></div>
+    <div className="search-box">
+      <span className="s-prefix">XAV-</span>
+      <input className="s-input" placeholder="XXXXXXX"
+        value={searchId} onChange={e => setSearchId(e.target.value)}
+        onKeyDown={e => e.key === "Enter" && handleSearch()} />
+      <button className="s-btn" onClick={handleSearch} disabled={searching}>
+        {searching ? <span className="spin" /> : "SEARCH ▶"}
+      </button>
+    </div>
+    {searchError && <div className="err-msg">⚠ {searchError}</div>}
+    {searchResult && (
+      <div className="result-card">
+        <div className="card-accent" />
+
+        {/* Identity */}
+        <div className="card-top">
+          <div className="avatar">
+            {searchResult.name?.split(" ").map((w: string) => w[0]).join("").slice(0, 2).toUpperCase()}
           </div>
-        )}
+          <div>
+            <div className="card-name">{searchResult.name}</div>
+            <div className="card-email">{searchResult.email}</div>
+          </div>
+        </div>
+
+        {/* Core fields */}
+        <div className="rows">
+         {([
+  ["USER ID",      <span className="sr-v mono-id">{searchResult.id}</span>],
+  ["SCSE Memership", <span className={`badge ${searchResult.isPrime ? "badge-yes" : "badge-no"}`}>{searchResult.isPrime ? "✔ YES" : "✕ NO"}</span>],
+  ["GOODIES",      <span className={`badge ${searchResult.goodiesCollected ? "badge-yes" : "badge-no"}`}>{searchResult.goodiesCollected ? "✔ Collected" : "✕ Not collected"}</span>],
+] as [string, React.ReactNode][]).map(([label, value]) => (
+  <div key={label} className="sr-row">
+    <span className="sr-l">{label}</span>
+    {value}
+  </div>
+))}
+        </div>
+
+        
+
+        {/* Payments section */}
+        <div className="section-label">Payments</div>
+        <div className="payments-grid">
+
+          
+ {[
+  ["Prime", searchResult.paidForPrime],
+  ["T-shirt", searchResult.paidForTshirt],
+  ["Accomm.", searchResult.paidForaccoModation],
+].map(([label, status]) => {
+  const s = getStatus(status);
+
+  return (
+    <div key={label} className="pay-cell">
+      <span className="pay-label">{label}</span>
+      <span className={`pay-val ${s.class}`}>
+        {s.text}
+      </span>
+    </div>
+  );
+})}
+</div>
+      </div>
+    )}
+  </div>
+)}
 
         {/* GOODIES */}
         {panel === "goodies" && (
@@ -870,25 +921,254 @@ export default function AdminClient({ payments, eventRegs, contacts, stats }: {
         @keyframes sp{to{transform:rotate(360deg)}}
 
         /* SEARCH / FORMS */
-        .search-box{display:flex;flex-wrap:wrap;margin-bottom:20px;border-radius:8px;overflow:hidden;border:1px solid #1e2535;}
-        .s-prefix{background:#1e2535;color:#818cf8;font-family:'Inter',sans-serif;font-size:13px;font-weight:700;padding:11px 14px;display:flex;align-items:center;white-space:nowrap;border-right:1px solid #2a3347;}
-        .s-input{flex:1;background:#161b27;border:none;color:#f1f5f9;font-family:'Inter',sans-serif;font-size:14px;padding:11px 14px;outline:none;height:42px;}
-        .s-input::placeholder{color:#334155;}
-        textarea.s-input{height:auto;resize:vertical;min-height:100px;}
-        select.s-input{appearance:none;cursor:pointer;}
-        .s-btn{background:#6366f1;border:none;color:#fff;font-family:'Inter',sans-serif;font-size:12px;font-weight:600;letter-spacing:0.3px;padding:11px 20px;cursor:pointer;transition:background 0.15s;white-space:nowrap;display:flex;align-items:center;gap:6px;}
-        .s-btn:hover:not(:disabled){background:#4f46e5;}
-        .s-btn:disabled{opacity:0.4;cursor:not-allowed;}
-        .err-msg{color:#ef4444;font-size:13px;font-weight:500;margin-bottom:14px;padding:10px 14px;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);border-radius:6px;}
-        .result-card{background:#161b27;border:1px solid #1e2535;border-radius:10px;padding:20px;position:relative;max-width:520px;animation:cardIn 0.25s ease both;}
-        .sr-row{display:flex;align-items:center;gap:16px;padding:11px 0;border-bottom:1px solid #1e2535;}
-        .sr-row:last-child{border-bottom:none;}
-        .sr-l{font-size:10px;font-weight:600;letter-spacing:1.5px;color:#475569;width:90px;flex-shrink:0;text-transform:uppercase;}
-        .sr-v{font-size:14px;font-weight:500;color:#e2e8f0;}
-        .ok{color:#22c55e;font-weight:600;} .no{color:#ef4444;font-weight:600;}
-        .form-stack{display:flex;flex-direction:column;gap:16px;max-width:100%;}
-        .form-field{display:flex;flex-direction:column;gap:6px;}
-        .form-label{font-size:11px;font-weight:600;letter-spacing:1px;color:#64748b;text-transform:uppercase;}
+          /* ── Search Box ─────────────────────────────────────────── */
+.search-box {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1.25rem;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid #1e2535;
+}
+
+.s-prefix {
+  background: #1e2535;
+  color: #818cf8;
+  font-size: 15px;
+  font-weight: 700;
+  padding: 0 16px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+  border-right: 1px solid #2a3347;
+  letter-spacing: 0.05em;
+}
+
+.s-input {
+  flex: 1;
+  background: #161b27;
+  border: none;
+  color: #f1f5f9;
+  font-size: 15px;
+  padding: 0 16px;
+  outline: none;
+  height: 48px;
+}
+
+.s-input::placeholder {
+  color: #334155;
+}
+
+.s-btn {
+  background: #6366f1;
+  border: none;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  padding: 0 22px;
+  height: 48px;
+  cursor: pointer;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: background 0.15s;
+}
+
+.s-btn:hover:not(:disabled) {
+  background: #4f46e5;
+}
+
+.s-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* ── Spinner ────────────────────────────────────────────── */
+.spin {
+  display: inline-block;
+  width: 15px;
+  height: 15px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ── Error Message ──────────────────────────────────────── */
+.err-msg {
+  color: #ef4444;
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 14px;
+  padding: 12px 16px;
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  border-radius: 8px;
+}
+
+/* ── Result Card ────────────────────────────────────────── */
+.result-card {
+  background: #161b27;
+  border: 1px solid #1e2535;
+  border-radius: 12px;
+  overflow: hidden;
+  margin-top: 0.5rem;
+}
+
+/* ── Card Header ────────────────────────────────────────── */
+.card-top {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid #1e2535;
+  background: #1a2032;
+}
+
+.avatar {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: #312e81;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: 700;
+  color: #a5b4fc;
+  flex-shrink: 0;
+  letter-spacing: 0.5px;
+}
+
+.card-name {
+  font-size: 20px;
+  font-weight: 600;
+  color: #f1f5f9;
+}
+
+.card-email {
+  font-size: 14px;
+  color: #64748b;
+  margin-top: 4px;
+}
+
+/* ── Info Rows ──────────────────────────────────────────── */
+.rows {
+  padding: 0.5rem 0;
+}
+
+.sr-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid #1e2535;
+}
+
+.sr-row:last-child {
+  border-bottom: none;
+}
+
+.sr-l {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: #475569;
+}
+
+.sr-v {
+  font-size: 16px;
+  font-weight: 500;
+  color: #e2e8f0;
+}
+
+/* ── Status Badges ──────────────────────────────────────── */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 6px 14px;
+  border-radius: 999px;
+  letter-spacing: 0.3px;
+}
+
+.badge-yes {
+  background: rgba(34, 197, 94, 0.12);
+  color: #4ade80;
+  border: 1px solid rgba(34, 197, 94, 0.25);
+}
+
+.badge-no {
+  background: rgba(239, 68, 68, 0.1);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+/* ── Payments Section ───────────────────────────────────── */
+.section-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: #334155;
+  padding: 1rem 1.5rem 0.6rem;
+  border-top: 1px solid #1e2535;
+  background: #131825;
+}
+
+.payments-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  padding: 0.75rem 1.5rem 1.25rem;
+  background: #131825;
+}
+
+.pay-cell {
+  background: #1a2032;
+  border: 1px solid #1e2535;
+  border-radius: 8px;
+  padding: 1rem 1.1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.pay-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: #475569;
+}
+
+.pay-val {
+  font-size: 16px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* ── Shared Status Colors ───────────────────────────────── */
+.ok { color: #4ade80; }
+.no { color: #f87171; }
+.warn { color: #FFEB3B;}
+
+
+
+
+
 
         /* STATS */
         .stat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px;padding:0 0 8px;}

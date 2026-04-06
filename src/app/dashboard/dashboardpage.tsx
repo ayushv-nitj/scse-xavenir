@@ -256,8 +256,8 @@ export default function Dashboard() {
           </p>
           <div className="db-badge-row">
             {user?.isNitian  && <span className="db-badge db-badge-cyan">◈ NIT JAMSHEDPUR</span>}
-            {user?.isFromCse && <span className="db-badge db-badge-pink">◆ SCSE MEMBER</span>}
-            {user?.isPrime   && <span className="db-badge db-badge-yellow">★ PRIME ACCESS</span>}
+            {/* {user?.isFromCse && <span className="db-badge db-badge-pink">◆ SCSE MEMBER</span>} */}
+            {user?.isPrime   && <span className="db-badge db-badge-yellow">★ SCSE MEMBER</span>}
           </div>
         </section>
 
@@ -442,11 +442,11 @@ export default function Dashboard() {
                       ◌ PENDING VERIFICATION:{" "}
                       {user?.isNitian
                         ? user?.paidForTshirt === "paid"
-                          ? "PRIME + T-SHIRT"
-                          : "PRIME"
+                          ? "SCSE MEMBER + T-SHIRT"
+                          : "SCSE MEMBER"
                         : user?.paidForaccoModation === "paid"
-                        ? "PRIME + ACCOMMODATION"
-                        : "PRIME"}
+                        ? "SCSE MEMBER + ACCOMMODATION"
+                        : "SCSE MEMBER"}
                     </span>
                     <p style={{ color: "rgba(180,200,255,0.4)", fontFamily: "'Rajdhani',sans-serif", fontSize: "0.85rem", marginTop: 8 }}>
                       Please wait while the admin verifies your transaction screenshot.
@@ -479,8 +479,8 @@ export default function Dashboard() {
                           >
                             <span>
                               {user?.isNitian 
-                                ? " PAY REGISTRATION FEES" 
-                                : " PAY REGISTRATION FEES — T-SHIRT FREE 🎁"}
+                                ? " PAY FOR SCSE MEMBERSHIP" 
+                                : " PAY FOR SCSE MEMBERSHIP — T-SHIRT FREE 🎁"}
                             </span>
                           </button>
                           ) : (
