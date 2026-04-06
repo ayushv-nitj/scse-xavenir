@@ -25,6 +25,9 @@ export async function POST(req: NextRequest) {
       name: user.fullName,
       id: user.userID,
       isPrime: user.isPrime,
+      paidForPrime: user.paidForPrime,
+      paidForTshirt: user.paidForTshirt,
+      paidForaccoModation: user.paidForaccoModation,
       goodiesCollected: user.isCollectedTshirt,
     });
   } catch (error) {
