@@ -4,6 +4,7 @@ import User from "@/models/userModel";
 import { connectDB } from "@/dbConfig/dbConfig";
 import { requireAdmin } from "@/lib/requireAdmin";
 import { notify } from "@/lib/notify";
+import Existing from "@/models/existingModel";
 
 export async function POST(req: NextRequest) {
   const auth = await requireAdmin(req);
@@ -41,6 +42,14 @@ export async function POST(req: NextRequest) {
         if (["reg_with_tshirt", "reg_without_tshirt", "reg_with_accom", "reg_without_accom", "registration_only"].includes(pt)) {
           userUpdate.isPrime = true;
           userUpdate.paidForPrime = "approved";
+          if(updated.email.includes("@nitjsr.ac.in")){
+            const regNumber = updated.email.split("@")[0];
+            await Existing.findOneAndUpdate(
+            { regNumber },
+            { regNumber },
+            { upsert: true }
+            );
+          }
         }
         if (pt === "reg_with_tshirt" || pt === "tshirt_only") {
           userUpdate.paidForTshirt = "approved";

@@ -469,52 +469,92 @@ export default function AdminClient({ payments, eventRegs, contacts, stats }: {
 
         {/* GOODIES */}
         {panel === "goodies" && (
-          <div className="content-panel">
-            <div className="page-header">
-              <h1 className="page-title">★ Goodies Collection</h1>
-              <p className="page-sub">Search a user by their Xavenir ID and mark their goodies as collected.</p>
-            </div>
-            <div className="search-box">
-              <span className="s-prefix">XAV-</span>
-              <input className="s-input" placeholder="XXXXXXX"
-                value={goodiesId} onChange={e => { setGoodiesId(e.target.value); setGoodiesResult(null); setGoodiesError(""); }}
-                onKeyDown={e => e.key === "Enter" && handleGoodies()} />
-              <button className="s-btn" onClick={handleGoodies} disabled={goodiesLoading}>
-                {goodiesLoading ? <span className="spin" /> : "SEARCH ▶"}
-              </button>
-            </div>
-            {goodiesError && <div className="err-msg">⚠ {goodiesError}</div>}
-            {goodiesResult && (
-              <div className="result-card">
-                <div className="card-accent" style={{background: goodiesResult.isCollectedTshirt ? "#00ffb3" : "#f59e0b"}} />
-                {[["NAME", goodiesResult.fullName], ["EMAIL", goodiesResult.email], ["USER ID", goodiesResult.userID]].map(([l,v]) => (
-                  <div key={l} className="sr-row"><span className="sr-l">{l}</span><span className="sr-v">{v}</span></div>
-                ))}
-                <div className="sr-row">
-                  <span className="sr-l">GOODIES</span>
-                  <span className={`sr-v ${goodiesResult.isCollectedTshirt ? "ok" : "no"}`}>{goodiesResult.isCollectedTshirt ? "✔ ALREADY COLLECTED" : "✕ NOT YET COLLECTED"}</span>
-                </div>
-                {!goodiesResult.isCollectedTshirt && (
-                  <button className="btn-approve" style={{marginTop:16, width:"100%"}} disabled={goodiesLoading}
-                    onClick={async () => {
-                      setGoodiesLoading(true);
-                      const res = await fetch("/api/admin/collect-goodies", {
-                        method: "POST", headers: {"Content-Type":"application/json"},
-                        body: JSON.stringify({ userID: goodiesResult.userID }),
-                      });
-                      const d = await res.json();
-                      if (res.ok) setGoodiesResult(d.data);
-                      else setGoodiesError(d.error || "Failed");
-                      setGoodiesLoading(false);
-                    }}>
-                    {goodiesLoading ? <span className="spin" /> : "★ MARK AS COLLECTED"}
-                  </button>
-                )}
-                {goodiesResult.isCollectedTshirt && <div className="final-badge badge-ok" style={{marginTop:16}}>✔ GOODIES COLLECTED</div>}
-              </div>
-            )}
+  <div className="content-panel">
+    <div className="page-header">
+      <h1 className="page-title">★ Goodies Collection</h1>
+      <p className="page-sub">Search a user by their Xavenir ID and mark their goodies as collected.</p>
+    </div>
+    <div className="search-box">
+      <span className="s-prefix">XAV-</span>
+      <input className="s-input" placeholder="XXXXXXX"
+        value={goodiesId} onChange={e => { setGoodiesId(e.target.value); setGoodiesResult(null); setGoodiesError(""); }}
+        onKeyDown={e => e.key === "Enter" && handleGoodies()} />
+      <button className="s-btn" onClick={handleGoodies} disabled={goodiesLoading}>
+        {goodiesLoading ? <span className="spin" /> : "SEARCH ▶"}
+      </button>
+    </div>
+    {goodiesError && <div className="err-msg">⚠ {goodiesError}</div>}
+    {goodiesResult && (
+      <div className="result-card">
+        <div className="card-accent" style={{ background: goodiesResult.isCollectedTshirt ? "#00ffb3" : "#f59e0b" }} />
+        {[
+          ["NAME", goodiesResult.fullName],
+          ["EMAIL", goodiesResult.email],
+          ["USER ID", goodiesResult.userID],
+        ].map(([l, v]) => (
+          <div key={l} className="sr-row">
+            <span className="sr-l">{l}</span>
+            <span className="sr-v">{v}</span>
           </div>
+        ))}
+
+        {/* Payment status row */}
+        <div className="sr-row">
+          <span className="sr-l">T-SHIRT PAYMENT STATUS</span>
+          <span className={`sr-v ${
+            goodiesResult.paidForTshirt === "approved" ? "ok" :
+            goodiesResult.paidForTshirt === "rejected" ? "no" : "warn"
+          }`}>
+            {goodiesResult.paidForTshirt === "approved" && "✔ APPROVED"}
+            {goodiesResult.paidForTshirt === "paid"     && "⏳ PENDING VERIFICATION"}
+            {goodiesResult.paidForTshirt === "unpaid"   && "✕ NOT PAID"}
+            {goodiesResult.paidForTshirt === "rejected" && "✕ REJECTED"}
+          </span>
+        </div>
+
+        {/* Goodies collection status row */}
+        <div className="sr-row">
+          <span className="sr-l">GOODIES</span>
+          <span className={`sr-v ${goodiesResult.isCollectedTshirt ? "ok" : "no"}`}>
+            {goodiesResult.isCollectedTshirt ? "✔ ALREADY COLLECTED" : "✕ NOT YET COLLECTED"}
+          </span>
+        </div>
+
+        {/* Mark as collected button — hidden if already collected, disabled if error or payment not approved */}
+        {!goodiesResult.isCollectedTshirt && (
+          <button
+            className="btn-approve"
+            style={{ marginTop: 16, width: "100%" }}
+            disabled={goodiesLoading || !!goodiesError || goodiesResult.paidForTshirt !== "approved"}
+            onClick={async () => {
+              setGoodiesLoading(true);
+              setGoodiesError("");
+              try {
+                const res = await fetch("/api/admin/collect-goodies", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ userID: goodiesResult.userID }),
+                });
+                const d = await res.json();
+                if (res.ok) setGoodiesResult(d.data);
+                else setGoodiesError(d.error || "Failed");
+              } catch {
+                setGoodiesError("Network error");
+              } finally {
+                setGoodiesLoading(false);
+              }
+            }}
+          >
+            {goodiesLoading ? <span className="spin" /> : "★ MARK AS COLLECTED"}
+          </button>
         )}
+        {goodiesResult.isCollectedTshirt && (
+          <div className="final-badge badge-ok" style={{ marginTop: 16 }}>✔ GOODIES COLLECTED</div>
+        )}
+      </div>
+    )}
+  </div>
+)}
 
         {/* ANNOUNCE */}
         {panel === "announce" && (
