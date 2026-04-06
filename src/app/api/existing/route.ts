@@ -294,7 +294,43 @@ export async function POST() {
   "2025ugcs049",
   "2025ugcs027",
   "2025ugcs023",
-  "2025ugcs032"
+  "2025ugcs032",
+  "2025ugcs044",
+  "2025ugcs092",
+  "2025ugcs065",
+  "2025ugcs048",
+  "2025ugcs022",
+  "2025ugcs112",
+  "2025ugcs118",
+  "2025ugcs047",
+  "2025ugcs096",
+  "2025ugcs006",
+  "2025ugcs001",
+  "2025ugcs038",
+  "2025ugcs111",
+  "2025ugcs058",
+  "2025ugcs054",
+  "2025ugcs066",
+  "2025ugcs093",
+  "2025ugcs115",
+  "2025ugcs019",
+  "2025ugcs016",
+  "2025ugcs090",
+  "2025ugcs039",
+  "2025ugcs070",
+  "2025ugcs068",
+  "2025ugcs009",
+  "2025ugcs091",
+  "2025ugcs037",
+  "2025ugcs057",
+  "2025ugcs086",
+  "2025ugcs080",
+  "2025ugcs109",
+  "2025ugcs087",
+  "2025ugcs104",
+  "2025ugcs025",
+  "2025ugcs085",
+  "2025ugcs031",
     ];
   
 
@@ -311,6 +347,7 @@ export async function POST() {
     });
 
   } catch (err: any) {
+    console.log("Error");
     return NextResponse.json(
       { message: "Error", error: err.message },
       { status: 500 }
