@@ -482,7 +482,7 @@ function CompRow({ index, comp }: { index: number; comp: { icon: string; title: 
 export default function LandingPage() {
   const { userData } = useContext(UserContext);
   const [activeComp, setActiveComp] = useState(0);
-  const countdown = useCountdown(new Date("2026-04-18T09:00:00+05:30"));
+  const countdown = useCountdown(new Date("2026-04-17T00:00:00+05:30"));
   const [loaded, setLoaded]       = useState(false);
   const [loaderDone, setLoaderDone] = useState(false);
   const [scrolled, setScrolled]   = useState(false);
@@ -822,20 +822,20 @@ useEffect(() => {
             <div className="tc-status">System Online</div>
           </div> */}
           <div className="timeline-card">
-            <div className="tc-date">17 April 2026</div>
-            <div className="tc-title">Day 1</div>
+            <div className="tc-date">Day 1</div>
+            <div className="tc-title">1 7 April 2026</div>
             <div className="tc-desc">Exciting workshops, tech talks, and mini-competitions to prepare you for the main event. The perfect tech warm-up.</div>
             <div className="tc-tag">FUN EVENTS &amp; COMPETITIONS</div>
           </div>
           <div className="timeline-card">
-            <div className="tc-date">18 April 2026</div>
-            <div className="tc-title">Day 2</div>
+            <div className="tc-date">Day 2</div>
+            <div className="tc-title">18 April 2026</div>
             <div className="tc-desc">Exciting workshops, tech talks, and mini-competitions to prepare you for the main event. The perfect tech warm-up.</div>
             <div className="tc-tag">FUN EVENTS &amp; COMPETITIONS</div>
           </div>
           <div className="timeline-card">
-            <div className="tc-date">19 April 2026</div>
-            <div className="tc-title">Day 3</div>
+            <div className="tc-date">Day 3</div>
+            <div className="tc-title">19 April 2026</div>
             <div className="tc-desc">The premier tech fest of the CSE Department. Where legends are made and futures are forged.</div>
             <div className="tc-tag tc-tag-pink">MAIN EVENT // PREMIER FEST</div>
           </div>
