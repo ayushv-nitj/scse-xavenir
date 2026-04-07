@@ -458,18 +458,15 @@ function CompRow({ index, comp }: { index: number; comp: { icon: string; title: 
           <div className="comp-detail-right">
             <div className="comp-detail-prize-big">{comp.prize}</div>
             <div className="comp-detail-label" style={{ marginTop: "1rem" }}>// status</div>
-            <div className="comp-detail-status">
-              <span className="comp-status-dot" />
-              REGISTRATION OPEN
-            </div>
-            {/* <Link
+            <Link
               href={`/eventDetails/${encodeURIComponent(comp.slug)}`}
               className="comp-detail-btn"
+              style={{ backgroundColor: '#00ffff', color: 'black', padding: '0.5rem 1rem', borderRadius: '4px', textDecoration: 'none', display: 'inline-block', boxShadow: '0 0 5px #00ffff' }}
               onClick={e => e.stopPropagation()}
             >
-              <span>INITIALIZE REGISTRATION</span>
+              <span>Initialize Registration</span>
               <span className="comp-detail-btn-arr">▶</span>
-            </Link> */}
+            </Link>
           </div>
  
         </div>
@@ -572,35 +569,35 @@ useEffect(() => {
  const competitions = [
   { icon: "🕵️", title: "Scavenger Hunt", slug: "Scavenger Hunt", desc: "Solve tech puzzles, hunt hidden clues, and outsmart rival teams in a fast-paced challenge.", prize: "₹5,000 PRIZE" },
 
-  { icon: "💃", title: "Paper Dance", slug: "Paper Dance", desc: "Dance with your partner on shrinking paper—balance, coordination, and fun combined.", prize: "₹3,000 PRIZE" },
+  // { icon: "💃", title: "Paper Dance", slug: "Paper Dance", desc: "Dance with your partner on shrinking paper—balance, coordination, and fun combined.", prize: "₹3,000 PRIZE" },
 
-  { icon: "🤖", title: "AI-ML Challenge", slug: "AI-ML Challenge", desc: "Build an AI/ML model to solve real-world problems under constraints.", prize: "₹8,000 PRIZE" },
+  // { icon: "🤖", title: "AI-ML Challenge", slug: "AI-ML Challenge", desc: "Build an AI/ML model to solve real-world problems under constraints.", prize: "₹8,000 PRIZE" },
 
-  { icon: "🎮", title: "PUBG, Valorant & Free Fire Tournament", slug: "PUBG, Valorant & Free Fire Tournament", desc: "Compete in high-intensity esports battles and prove your squad’s dominance.", prize: "₹3,000 PRIZE" },
+  // { icon: "🎮", title: "PUBG, Valorant & Free Fire Tournament", slug: "PUBG, Valorant & Free Fire Tournament", desc: "Compete in high-intensity esports battles and prove your squad’s dominance.", prize: "₹3,000 PRIZE" },
 
-  { icon: "🎨", title: "Frontend Design Contest", slug: "Frontend Design Contest", desc: "Design and build a stunning frontend UI from scratch—where creativity meets code.", prize: "₹4,000 PRIZE" },
+  // { icon: "🎨", title: "Frontend Design Contest", slug: "Frontend Design Contest", desc: "Design and build a stunning frontend UI from scratch—where creativity meets code.", prize: "₹4,000 PRIZE" },
 
-  { icon: "🔐", title: "Ethical Hacking Challenge", slug: "Ethical Hacking Challenge", desc: "Test your penetration testing and cybersecurity skills in a controlled environment.", prize: "₹5,000 PRIZE" },
+  // { icon: "🔐", title: "Ethical Hacking Challenge", slug: "Ethical Hacking Challenge", desc: "Test your penetration testing and cybersecurity skills in a controlled environment.", prize: "₹5,000 PRIZE" },
 
-  { icon: "🥟", title: "Golgappa Eating Challenge", slug: "Golgappa Eating Challenge", desc: "A fun-filled eating contest—push your limits in the ultimate golgappa showdown.", prize: "₹1,000 PRIZE" },
+  // { icon: "🥟", title: "Golgappa Eating Challenge", slug: "Golgappa Eating Challenge", desc: "A fun-filled eating contest—push your limits in the ultimate golgappa showdown.", prize: "₹1,000 PRIZE" },
 
-  { icon: "🤖", title: "Robotics Competition", slug: "Robotics Competition", desc: "Design, build, and program robots to complete exciting real-world challenges.", prize: "₹3,000 PRIZE" },
+  // { icon: "🤖", title: "Robotics Competition", slug: "Robotics Competition", desc: "Design, build, and program robots to complete exciting real-world challenges.", prize: "₹3,000 PRIZE" },
 
-  { icon: "🙈", title: "Blind Coding", slug: "Blind Coding", desc: "Code without seeing your screen—pure logic, memory, and confidence.", prize: "₹3,000 PRIZE" },
+  // { icon: "🙈", title: "Blind Coding", slug: "Blind Coding", desc: "Code without seeing your screen—pure logic, memory, and confidence.", prize: "₹3,000 PRIZE" },
 
-  { icon: "💡", title: "Ideathon", slug: "Ideathon", desc: "Pitch innovative tech ideas and showcase your creativity and problem-solving vision.", prize: "₹3,000 PRIZE" },
+  // { icon: "💡", title: "Ideathon", slug: "Ideathon", desc: "Pitch innovative tech ideas and showcase your creativity and problem-solving vision.", prize: "₹3,000 PRIZE" },
 
-  { icon: "🎬", title: "Movie Mania", slug: "Movie Mania", desc: "Enjoy a tech-themed movie screening followed by an engaging trivia challenge.", prize: "₹2,000 PRIZE" },
+  // { icon: "🎬", title: "Movie Mania", slug: "Movie Mania", desc: "Enjoy a tech-themed movie screening followed by an engaging trivia challenge.", prize: "₹2,000 PRIZE" },
 
-  { icon: "💻", title: "Competitive Programming", slug: "Competitive Programming", desc: "Solve algorithmic problems under time pressure and prove your coding skills.", prize: "₹8,000 PRIZE" },
+  // { icon: "💻", title: "Competitive Programming", slug: "Competitive Programming", desc: "Solve algorithmic problems under time pressure and prove your coding skills.", prize: "₹8,000 PRIZE" },
 
-  { icon: "⚡", title: "Hackathon", slug: "Hackathon", desc: "Build innovative solutions in an intense 24-hour coding marathon.", prize: "₹15,000 PRIZE" },
+  // { icon: "⚡", title: "Hackathon", slug: "Hackathon", desc: "Build innovative solutions in an intense 24-hour coding marathon.", prize: "₹15,000 PRIZE" },
 
-  { icon: "⌨️", title: "Computer Fundamentals Quiz", slug: "Computer Fundamentals Quiz", desc: "Test your knowledge of core computer science concepts in a competitive quiz.", prize: "₹8,000 PRIZE" },
+  // { icon: "⌨️", title: "Computer Fundamentals Quiz", slug: "Computer Fundamentals Quiz", desc: "Test your knowledge of core computer science concepts in a competitive quiz.", prize: "₹8,000 PRIZE" },
 
-  { icon: "⚡", title: "Typing Speed Challenge", slug: "Typing Speed Challenge", desc: "Compete on speed and accuracy—fastest fingers take the win.", prize: "₹3,000 PRIZE" },
+  // { icon: "⚡", title: "Typing Speed Challenge", slug: "Typing Speed Challenge", desc: "Compete on speed and accuracy—fastest fingers take the win.", prize: "₹3,000 PRIZE" },
 
-  { icon: "🎥", title: "Tech Reel", slug: "Tech Reel", desc: "Create a short, engaging video capturing the essence of technology trends.", prize: "₹2,000 PRIZE" }
+  // { icon: "🎥", title: "Tech Reel", slug: "Tech Reel", desc: "Create a short, engaging video capturing the essence of technology trends.", prize: "₹2,000 PRIZE" }
 ];
 
   return (
@@ -611,7 +608,7 @@ useEffect(() => {
           <div className="loader-logo">SCSE</div>
           <div className="loader-text">Initializing System...</div>
           <div className="loader-bar-wrap"><div className="loader-bar" /></div>
-          <div className="loader-sub">NIT JAMSHEDPUR // CSE DEPARTMENT</div>
+          <div className="loader-sub">NIT JAMSHEDPUR - CSE DEPARTMENT</div>
         </div>
       )}
 
@@ -863,7 +860,7 @@ useEffect(() => {
     </div>
 
     {/* Coming soon placeholder */}
-    <div style={{ padding: "60px 20px", textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center", gap: "18px" }}>
+    {/* <div style={{ padding: "60px 20px", textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center", gap: "18px" }}>
       <span style={{ fontSize: "2.5rem", opacity: 0.5 }}>⚡</span>
       <div style={{ fontFamily: "'Orbitron',monospace", fontSize: "1.1rem", letterSpacing: "0.2em", color: "var(--cyan)" }}>
         EVENTS COMING SOON
@@ -871,14 +868,14 @@ useEffect(() => {
       <div style={{ fontFamily: "'Share Tech Mono',monospace", fontSize: "0.78rem", letterSpacing: "0.12em", color: "rgba(200,220,255,0.35)" }}>
         // competitions will be listed here once registration opens
       </div>
-    </div>
+    </div> */}
 
-    {/* Competition rows — commented out until registration opens */}
-    {/* <div className="comp-list">
+    {/* Competition rows — commented out until registration opens  */}
+    <div className="comp-list">
       {competitions.map((c, i) => (
         <CompRow key={i} index={i} comp={c} />
       ))}
-    </div> */}
+    </div>
  
     {/* Bottom prompt line */}
     <div className="comp-prompt">
