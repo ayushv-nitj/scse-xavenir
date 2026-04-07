@@ -10,6 +10,9 @@ export interface Event extends Document {
   rules: string;
   minPart: number;
   maxPart: number;
+  eventDate: Date;
+  registerThroughForm: boolean;
+  linkToRegister: string;
 }
 
 const EventSchema: Schema<Event> = new Schema(
@@ -55,6 +58,21 @@ const EventSchema: Schema<Event> = new Schema(
       type: Number,
       required: true,
       default: 1,
+    },
+    eventDate: {
+      type: Date,
+      required: true,
+      default: new Date(),
+    },
+    registerThroughForm: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
+    linkToRegister: {
+      type: String,
+      required: false,
+      default: "",
     },
   },
   { timestamps: true }

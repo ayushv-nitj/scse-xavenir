@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { useParams, useRouter } from "next/navigation";
 import RegisterForEvent from "@/components/RegisterForEvent";
 
@@ -15,8 +15,47 @@ interface EventType {
   more: string;
   maxPart: number;
   minPart: number;
+  eventDetails?: string;
+  contactInfo?: string;
+  eventDate: Date;
+  registerThroughForm: boolean;
+  linkToRegister: string; 
 }
 
+/* ── Extract the Contacts block out of raw HTML ── */
+function parseMoreHTML(html: string): { details: string; contacts: string } {
+  if (typeof window === "undefined") return { details: html, contacts: "" };
+  const div = document.createElement("div");
+  div.innerHTML = html;
+
+  let contactsHTML = "";
+  const allH3s = Array.from(div.querySelectorAll("h3"));
+
+  for (const h3 of allH3s) {
+    if (/contact/i.test(h3.textContent || "")) {
+      // collect siblings after this h3 until the next h3/h2 or end
+      let node: Element | null = h3;
+      const contactNodes: string[] = [`<strong style="display:block;margin-bottom:6px;color:#00fff0;font-family:'Orbitron',sans-serif;font-size:.78rem;letter-spacing:.18em;">CONTACT COORDINATORS</strong>`];
+      while (node.nextElementSibling && !["H2", "H3"].includes(node.nextElementSibling.tagName)) {
+        node = node.nextElementSibling;
+        contactNodes.push(node.outerHTML);
+      }
+      contactsHTML = contactNodes.join("");
+      // remove the h3 + its siblings from div
+      let rem: Element | null = h3;
+      const toRemove: Element[] = [];
+      toRemove.push(rem);
+      while (rem.nextElementSibling && !["H2", "H3"].includes(rem.nextElementSibling.tagName)) {
+        rem = rem.nextElementSibling;
+        toRemove.push(rem);
+      }
+      toRemove.forEach(el => el.remove());
+      break;
+    }
+  }
+
+  return { details: div.innerHTML, contacts: contactsHTML };
+}
 
 /* ── tiny reusable section block ── */
 function InfoBlock({ title, children }: { title: string; children: React.ReactNode }) {
@@ -30,14 +69,14 @@ function InfoBlock({ title, children }: { title: string; children: React.ReactNo
       </div>
       <div className="ib-body">{children}</div>
       <style>{`
-        .ib-wrap { margin-bottom: 24px; }
-        .ib-header { display:flex; align-items:center; gap:8px; margin-bottom:10px; }
+        .ib-wrap { margin-bottom: 28px; }
+        .ib-header { display:flex; align-items:center; gap:8px; margin-bottom:12px; }
         .ib-bracket { color:#00fff0; font-family:'Share Tech Mono',monospace; font-size:1rem; }
         .ib-title { font-family:'Orbitron',sans-serif; font-size:.85rem; font-weight:700;
           letter-spacing:.2em; color:#00fff0; }
         .ib-line { flex:1; height:1px;
-          background:linear-gradient(90deg,rgba(0,255,240,.28),transparent); }
-        .ib-body { padding-left:14px; border-left:2px solid rgba(0,255,240,.12); }
+          background:linear-gradient(90deg,rgba(0,255,240,.35),transparent); }
+        .ib-body { padding-left:14px; border-left:2px solid rgba(0,255,240,.18); }
       `}</style>
     </div>
   );
@@ -71,12 +110,22 @@ export default function RegisterEventPage() {
     fetchEvent();
   }, [eventName, router]);
 
+  /* ── Parse more HTML into details + contacts on the client ── */
+  const { details: parsedDetails, contacts: parsedContacts } = useMemo(() => {
+    if (!eventData?.more) return { details: "", contacts: "" };
+    // Use dedicated fields if they exist, else parse `more`
+    if (eventData.eventDetails) {
+      return { details: eventData.eventDetails, contacts: eventData.contactInfo || "" };
+    }
+    return parseMoreHTML(eventData.more);
+  }, [eventData]);
+
   /* ── Loading ── */
   if (loading) return (
     <>
       <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet"/>
       <div className="state-screen">
-        <div/><div className="bg-glow c"/><div className="bg-glow m"/>
+        <div className="bg-glow c"/><div className="bg-glow m"/>
         <div className="state-inner">
           <span className="blink">▋</span>
           <span className="state-txt">DECRYPTING NODE DATA...</span>
@@ -91,7 +140,7 @@ export default function RegisterEventPage() {
     <>
       <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet"/>
       <div className="state-screen">
-        <div className="bg-grid"/><div className="bg-glow c"/><div className="bg-glow m"/>
+        <div className="bg-glow c"/><div className="bg-glow m"/>
         <div className="state-inner err">
           <span className="err-icon">⚠</span>
           <span className="state-txt">{errorMsg.toUpperCase()}</span>
@@ -103,13 +152,20 @@ export default function RegisterEventPage() {
 
   if (!eventData) return null;
 
+  /* ── Parse rules into numbered list ── */
+  const ruleLines = eventData.rules
+    .split(/\n/)
+    .map(l => l.trim())
+    .filter(Boolean);
+
+  /* Determine which contacts to show in the left col */
+  const contactsToShow = parsedContacts || eventData.contactInfo || "";
+
   return (
     <>
       <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet"/>
 
       <div className="cp-root">
-        {/* Backgrounds */}
-        <div className="bg-grid"/>
         <div className="bg-glow c"/>
         <div className="bg-glow m"/>
 
@@ -158,9 +214,9 @@ export default function RegisterEventPage() {
                 </div>
                 <div className="img-wrap">
                   <img
-                  src={eventData.logo}
-                  alt={eventData.name}
-                  className="img-obj absolute inset-0 w-full h-full"
+                    src={eventData.logo}
+                    alt={eventData.name}
+                    className="img-obj absolute inset-0 w-full h-full"
                   />
                   <div className="img-scanlines"/>
                   <div className="img-overlay"/>
@@ -177,10 +233,10 @@ export default function RegisterEventPage() {
 
               {/* Stats grid */}
               <div className="stats-grid">
-                <StatCard accent="cyan" label="PRIZE POOL" value={`₹${eventData.prizepool.toLocaleString("en-IN")}`}/>
-                <StatCard accent="magenta" label="REG FEES" value={eventData.regFees === 0 ? "FREE" : `₹${eventData.regFees}`}/>
-                <StatCard accent="purple" label="MIN TEAM" value={`${eventData.minPart}P`}/>
-                <StatCard accent="purple" label="MAX TEAM" value={`${eventData.maxPart}P`}/>
+                <StatCard accent="cyan"    label="PRIZE POOL" value={`₹${eventData.prizepool.toLocaleString("en-IN")}`}/>
+                <StatCard accent="magenta" label="REG FEES"   value={eventData.regFees === 0 ? "FREE" : `₹${eventData.regFees}`}/>
+                <StatCard accent="purple"  label="MIN TEAM"   value={`${eventData.minPart}`}/>
+                <StatCard accent="purple"  label="MAX TEAM"   value={`${eventData.maxPart}`}/>
               </div>
 
               {/* Team dot visualizer */}
@@ -198,15 +254,50 @@ export default function RegisterEventPage() {
                 </span>
               </div>
 
-              {/* Register button (component) */}
-              <div className="reg-wrap">
-                <RegisterForEvent
-                  eventName={eventData.name}
-                  maxPart={eventData.maxPart}
-                  minPart={eventData.minPart}
-                  regFees={eventData.regFees}
-                />
-              </div>
+             {/* Register button */}
+<div className="reg-wrap">
+  {(() => {
+    const isPast = eventData.eventDate
+      ? new Date(eventData.eventDate) < new Date(new Date().setHours(0,0,0,0))
+      : false;
+
+    if (isPast) {
+      return (
+        <div className="reg-expired">
+          <span className="re-icon">⊘</span>
+          REGISTRATION CLOSED
+          <span className="re-sub">// EVENT COMPLETED</span>
+        </div>
+      );
+    }
+
+    if (eventData.registerThroughForm && eventData.linkToRegister) {
+      return (
+
+        <a
+        
+          href={eventData.linkToRegister}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="form-reg-btn"
+        >
+          <span className="frb-icon">⬡</span>
+          REGISTER VIA GOOGLE FORM
+          <span className="frb-arrow">↗</span>
+        </a>
+      );
+    }
+
+    return (
+      <RegisterForEvent
+        eventName={eventData.name}
+        maxPart={eventData.maxPart}
+        minPart={eventData.minPart}
+        regFees={eventData.regFees}
+      />
+    );
+  })()}
+</div>
 
               {/* WhatsApp */}
               <a
@@ -214,9 +305,28 @@ export default function RegisterEventPage() {
                 target="_blank"
                 className="wa-btn"
               >
-                <img src="/whatsapp.svg" alt="WhatsApp" className="wa-icon"/>
+                <img src="/whatsapp.png" alt="WhatsApp" className="wa-icon"/>
                 JOIN WHATSAPP GROUP
               </a>
+
+              {/* ── Contact Details (below WhatsApp, parsed from `more`) ── */}
+              {contactsToShow && (
+                <div className="contact-block">
+                  <div className="contact-header">
+                    <div className="contact-icon-wrap">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#00fff0" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.62 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.6a16 16 0 0 0 5.55 5.55l.96-.96a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>
+                      </svg>
+                    </div>
+                    <span className="contact-label">CONTACT COORDINATORS</span>
+                    <div className="contact-pulse"/>
+                  </div>
+                  <div
+                    className="contact-body"
+                    dangerouslySetInnerHTML={{ __html: contactsToShow }}
+                  />
+                </div>
+              )}
             </div>
 
             {/* ── RIGHT: Info ── */}
@@ -233,14 +343,14 @@ export default function RegisterEventPage() {
                       <span className="pay-highlight">₹{eventData.regFees}</span>
                     </p>
                     <div className="pay-checks">
-                      <span className="pay-check">✓ Single team payment</span>
+                      <span className="pay-check">✓ Single time payment</span>
                       <span className="pay-check">✓ Get QR after filling team details</span>
                     </div>
                   </div>
                 </div>
               </InfoBlock>
 
-              <InfoBlock title="PRIME MEMBERSHIP">
+              {/* <InfoBlock title="PRIME MEMBERSHIP">
                 <div className="pay-card red">
                   <div className="pay-icon">⚠</div>
                   <div>
@@ -252,18 +362,30 @@ export default function RegisterEventPage() {
                     </ul>
                   </div>
                 </div>
-              </InfoBlock>
+              </InfoBlock> */}
 
+              {/* ══ COMPETITION RULES ══ */}
               <InfoBlock title="COMPETITION RULES">
-                <p className="rules-text">{eventData.rules}</p>
+                <div className="rules-container">
+                  {ruleLines.length > 1 ? (
+                    <ol className="rules-list">
+                      {ruleLines.map((rule, idx) => (
+                        <li key={idx} className="rule-item">
+                          <span className="rule-num">{String(idx + 1).padStart(2, "0")}</span>
+                          <span className="rule-text">{rule}</span>
+                        </li>
+                      ))}
+                    </ol>
+                  ) : (
+                    <p className="rule-text-plain">{eventData.rules}</p>
+                  )}
+                </div>
               </InfoBlock>
 
-              {eventData.more && (
-                <InfoBlock title="ADDITIONAL INTEL">
-                  <div
-                    className="more-html"
-                    dangerouslySetInnerHTML={{ __html: eventData.more }}
-                  />
+              {/* ══ EVENT DETAILS — parsed from `more`, styled same as rules ══ */}
+              {parsedDetails && (
+                <InfoBlock title="EVENT DETAILS">
+                  <div className="event-details-html" dangerouslySetInnerHTML={{ __html: parsedDetails }} />
                 </InfoBlock>
               )}
             </div>
@@ -272,6 +394,77 @@ export default function RegisterEventPage() {
       </div>
 
       <style>{`
+
+      .reg-expired {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 14px 20px;
+  background: rgba(80,80,100,.08);
+  border: 1px solid rgba(120,120,150,.25);
+  color: rgba(150,155,175,.5);
+  font-family: 'Orbitron', sans-serif;
+  font-size: .88rem;
+  font-weight: 700;
+  letter-spacing: .14em;
+  border-radius: 2px;
+  cursor: not-allowed;
+  flex-direction: column;
+  gap: 5px;
+}
+.re-icon {
+  font-size: 1.2rem;
+  opacity: .5;
+  display: block;
+}
+.re-sub {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: .65rem;
+  letter-spacing: .18em;
+  color: rgba(120,125,145,.45);
+  font-weight: 400;
+}
+  .form-reg-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    padding: 14px 20px;
+    background: rgba(123,47,247,.12);
+    border: 1px solid rgba(123,47,247,.5);
+    color: #a070ff;
+    font-family: 'Orbitron', sans-serif;
+    font-size: .88rem;
+    font-weight: 700;
+    letter-spacing: .14em;
+    text-decoration: none;
+    border-radius: 2px;
+    cursor: pointer;
+    transition: all .2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .form-reg-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent, rgba(123,47,247,.08), transparent);
+    transform: translateX(-100%);
+    transition: transform .4s;
+  }
+  .form-reg-btn:hover::before { transform: translateX(100%); }
+  .form-reg-btn:hover {
+    background: rgba(123,47,247,.22);
+    border-color: rgba(123,47,247,.85);
+    box-shadow: 0 0 18px rgba(123,47,247,.3);
+    color: #c0a0ff;
+  }
+  .frb-icon { font-size: 1rem; opacity: .7; }
+  .frb-arrow { font-size: 1rem; margin-left: auto; }
+
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
         .cp-root {
@@ -283,16 +476,6 @@ export default function RegisterEventPage() {
           padding-bottom: 80px;
         }
 
-        // /* Backgrounds */
-        // .bg-grid {
-        //   position: fixed; inset: 0;
-        //   background-image:
-        //     linear-gradient(rgba(0,255,240,.038) 1px, transparent 1px),
-        //     linear-gradient(90deg, rgba(0,255,240,.038) 1px, transparent 1px);
-        //   background-size: 55px 55px;
-        //   pointer-events: none; z-index: 0;
-        // }
-        
         .bg-glow {
           position: fixed; border-radius: 50%;
           pointer-events: none; z-index: 0; filter: blur(140px);
@@ -340,7 +523,7 @@ export default function RegisterEventPage() {
         .header-left { flex: 1; min-width: 280px; }
         .header-sub-eye {
           font-size: .78rem; letter-spacing: .22em;
-          color: rgba(0,255,240,.4); margin-bottom: 10px;
+          color: rgba(0,255,240,.5); margin-bottom: 10px;
         }
         .header-title {
           font-family: 'Orbitron', sans-serif;
@@ -355,8 +538,8 @@ export default function RegisterEventPage() {
           margin-bottom: 14px;
         }
         .header-desc {
-          font-size: .95rem; color: rgba(200,220,255,.55);
-          line-height: 1.65; max-width: 520px;
+          font-size: 1rem; color: rgba(210,225,255,.7);
+          line-height: 1.7; max-width: 520px;
         }
 
         /* Badge */
@@ -365,12 +548,12 @@ export default function RegisterEventPage() {
           padding: 13px 18px; min-width: 220px; flex-shrink: 0;
           box-shadow: 0 0 18px rgba(0,255,240,.12), inset 0 0 18px rgba(0,255,240,.03);
         }
-        .hb-rdy { font-size:.7rem; letter-spacing:.18em; color:rgba(0,255,240,.45); display:block; margin-bottom:7px; }
+        .hb-rdy { font-size:.7rem; letter-spacing:.18em; color:rgba(0,255,240,.55); display:block; margin-bottom:7px; }
         .hb-row { display:flex; justify-content:space-between; align-items:baseline; }
         .hb-scse { font-family:'Orbitron',sans-serif; font-size:1.9rem; font-weight:900; color:#00fff0; text-shadow:0 0 16px rgba(0,255,240,.55); }
         .hb-date { font-family:'Orbitron',sans-serif; font-size:1.9rem; font-weight:900; color:#ff2d78; text-shadow:0 0 16px rgba(255,45,120,.55); }
         .hb-sub-row { display:flex; justify-content:space-between; margin-top:4px; }
-        .hb-sub { font-size:.7rem; letter-spacing:.13em; color:rgba(200,220,255,.35); }
+        .hb-sub { font-size:.7rem; letter-spacing:.13em; color:rgba(200,220,255,.45); }
 
         /* Body layout */
         .cp-body {
@@ -434,14 +617,14 @@ export default function RegisterEventPage() {
         .team-vis {
           display:flex; flex-direction:column; gap:8px;
           padding:12px 14px;
-          border:1px solid rgba(0,255,240,.12);
+          border:1px solid rgba(0,255,240,.14);
           background:rgba(0,8,26,.7);
         }
-        .tv-label { font-size:.75rem; letter-spacing:.2em; color:rgba(0,255,240,.4); }
+        .tv-label { font-size:.75rem; letter-spacing:.2em; color:rgba(0,255,240,.5); }
         .tv-dots { display:flex; gap:7px; flex-wrap:wrap; }
         .tv-dot { width:13px; height:13px; border-radius:50%; background:rgba(0,255,240,.12); }
         .tv-dot.active { background:#00fff0; box-shadow:0 0 8px rgba(0,255,240,.55); }
-        .tv-range { font-size:.88rem; color:rgba(200,220,255,.5); }
+        .tv-range { font-size:.9rem; color:rgba(200,220,255,.65); }
 
         /* Register wrap */
         .reg-wrap { }
@@ -454,7 +637,7 @@ export default function RegisterEventPage() {
           color:rgba(37,211,102,.9);
           font-family:'Orbitron',sans-serif; font-size:.85rem; font-weight:700; letter-spacing:.12em;
           padding:10px 18px; border-radius:2px; cursor:pointer; text-decoration:none;
-          transition:all .2s;
+          transition:all .2s; width:100%; justify-content:center;
         }
         .wa-btn:hover {
           background:rgba(37,211,102,.22);
@@ -462,6 +645,81 @@ export default function RegisterEventPage() {
           box-shadow:0 0 16px rgba(37,211,102,.25);
         }
         .wa-icon { width:18px; height:18px; }
+
+        /* ══ Contact block — redesigned ══ */
+        .contact-block {
+          border: 1px solid rgba(0,255,240,.25);
+          background: rgba(0,8,26,.85);
+          border-radius: 2px;
+          overflow: hidden;
+        }
+        .contact-header {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          padding: 10px 16px;
+          background: rgba(0,255,240,.06);
+          border-bottom: 1px solid rgba(0,255,240,.18);
+        }
+        .contact-icon-wrap {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 26px; height: 26px;
+          border: 1px solid rgba(0,255,240,.35);
+          border-radius: 50%;
+          flex-shrink: 0;
+        }
+        .contact-label {
+          font-family: 'Orbitron', sans-serif;
+          font-size: .75rem;
+          font-weight: 700;
+          letter-spacing: .18em;
+          color: #00fff0;
+          flex: 1;
+        }
+        .contact-pulse {
+          width: 7px; height: 7px; border-radius: 50%;
+          background: #00fff0;
+          box-shadow: 0 0 6px #00fff0;
+          animation: pulse-anim 1.8s ease-in-out infinite;
+          flex-shrink: 0;
+        }
+        @keyframes pulse-anim {
+          0%, 100% { opacity: 1; transform: scale(1); }
+          50% { opacity: .4; transform: scale(.7); }
+        }
+        .contact-body {
+          padding: 14px 16px;
+          font-family: 'Share Tech Mono', monospace;
+          font-size: .92rem;
+          line-height: 1.85;
+          color: rgba(210,225,255,.85);
+        }
+        .contact-body strong { color: #fff; }
+        .contact-body a { color: #00fff0; text-decoration: underline; }
+        .contact-body ul { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 6px; margin-top: 4px; }
+        .contact-body li {
+          display: flex;
+          align-items: flex-start;
+          gap: 8px;
+          padding: 8px 12px;
+          border: 1px solid rgba(0,255,240,.1);
+          background: rgba(0,255,240,.03);
+          border-radius: 2px;
+          transition: background .15s, border-color .15s;
+        }
+        .contact-body li:hover {
+          background: rgba(0,255,240,.07);
+          border-color: rgba(0,255,240,.22);
+        }
+        .contact-body li::before {
+          content: '▸';
+          color: #00fff0;
+          font-size: .75rem;
+          margin-top: 2px;
+          flex-shrink: 0;
+        }
 
         /* Right col */
         .right-col { }
@@ -488,32 +746,167 @@ export default function RegisterEventPage() {
         }
         .pay-card.green .pay-title { color:#00ff80; }
         .pay-card.red .pay-title { color:#ff2d78; }
-        .pay-desc { font-size:.9rem; color:rgba(200,220,255,.65); line-height:1.55; }
+        .pay-desc { font-size:.95rem; color:rgba(210,225,255,.8); line-height:1.6; }
         .pay-highlight { color:#00fff0; font-weight:700; }
         .pay-checks { display:flex; flex-direction:column; gap:4px; margin-top:8px; }
-        .pay-check { font-size:.85rem; color:rgba(0,255,128,.75); }
+        .pay-check { font-size:.88rem; color:rgba(0,255,128,.85); }
         .pay-list {
           list-style:none; display:flex; flex-direction:column; gap:4px;
           margin-top:6px;
         }
-        .pay-list li { font-size:.88rem; color:rgba(255,150,150,.75); }
+        .pay-list li { font-size:.9rem; color:rgba(255,160,160,.85); }
         .pay-list li::before { content:'→ '; color:#ff2d78; }
 
-        /* Rules */
-        .rules-text {
-          font-size:.95rem; line-height:1.75;
-          color:rgba(180,200,230,.65);
-          white-space:pre-wrap;
+        /* ══ RULES ══ */
+        .rules-container { padding: 4px 0; }
+        .rules-list {
+          list-style: none;
+          display: flex;
+          flex-direction: column;
+          gap: 0;
+        }
+        .rule-item {
+          display: flex;
+          align-items: flex-start;
+          gap: 14px;
+          padding: 13px 14px;
+          border-bottom: 1px solid rgba(0,255,240,.08);
+          transition: background .15s;
+        }
+        .rule-item:first-child { border-top: 1px solid rgba(0,255,240,.08); }
+        .rule-item:hover { background: rgba(0,255,240,.04); }
+        .rule-num {
+          font-family: 'Orbitron', sans-serif;
+          font-size: .82rem;
+          font-weight: 700;
+          color: #00fff0;
+          opacity: .7;
+          flex-shrink: 0;
+          min-width: 26px;
+          margin-top: 2px;
+        }
+        .rule-text {
+          font-family: 'Share Tech Mono', monospace;
+          font-size: 1rem;
+          line-height: 1.7;
+          color: rgba(220,235,255,.9);
+          letter-spacing: .01em;
+        }
+        .rule-text-plain {
+          font-family: 'Share Tech Mono', monospace;
+          font-size: 1rem;
+          line-height: 1.8;
+          color: rgba(220,235,255,.9);
+          white-space: pre-wrap;
+          letter-spacing: .01em;
         }
 
-        /* More HTML */
-        .more-html {
-          font-size:.95rem; line-height:1.75;
-          color:rgba(180,200,230,.65);
+        /* ══ EVENT DETAILS — styled to match rules section ══ */
+        .event-details-html {
+          font-family: 'Share Tech Mono', monospace;
+          font-size: .97rem;
+          line-height: 1.8;
+          color: rgba(215,230,255,.88);
+          letter-spacing: .01em;
         }
-        .more-html a { color:#00fff0; }
-        .more-html strong { color:#fff; }
-        .more-html ul, .more-html ol { padding-left:18px; }
+        .event-details-html h2 {
+          font-family: 'Orbitron', sans-serif;
+          font-size: 1rem; font-weight: 700;
+          color: #00fff0; letter-spacing: .15em;
+          margin: 18px 0 10px;
+          padding-bottom: 6px;
+          border-bottom: 1px solid rgba(0,255,240,.18);
+          display: none; /* top-level h2 is redundant — block title covers it */
+        }
+        .event-details-html h3 {
+          font-family: 'Orbitron', sans-serif;
+          font-size: .82rem; font-weight: 700;
+          color: rgba(0,255,240,.8);
+          letter-spacing: .15em;
+          margin: 18px 0 8px;
+          padding: 6px 10px;
+          background: rgba(0,255,240,.05);
+          border-left: 3px solid rgba(0,255,240,.5);
+        }
+        .event-details-html p {
+          color: rgba(215,230,255,.82);
+          line-height: 1.8;
+          margin-bottom: 8px;
+        }
+        .event-details-html ul,
+        .event-details-html ol {
+          padding-left: 0;
+          list-style: none;
+          display: flex;
+          flex-direction: column;
+          gap: 0;
+          margin: 6px 0 10px;
+          border-top: 1px solid rgba(0,255,240,.08);
+        }
+        .event-details-html li {
+          display: flex;
+          align-items: flex-start;
+          gap: 12px;
+          padding: 10px 12px;
+          border-bottom: 1px solid rgba(0,255,240,.08);
+          color: rgba(215,230,255,.88);
+          transition: background .15s;
+          counter-increment: list-counter;
+        }
+        .event-details-html ol { counter-reset: list-counter; }
+        .event-details-html li:hover { background: rgba(0,255,240,.04); }
+        .event-details-html ul li::before {
+          content: '▸';
+          color: #00fff0;
+          font-size: .75rem;
+          margin-top: 3px;
+          flex-shrink: 0;
+          opacity: .7;
+        }
+        .event-details-html ol li::before {
+          content: counter(list-counter, decimal-leading-zero);
+          font-family: 'Orbitron', sans-serif;
+          font-size: .78rem;
+          font-weight: 700;
+          color: #00fff0;
+          opacity: .7;
+          flex-shrink: 0;
+          min-width: 24px;
+          margin-top: 2px;
+        }
+        /* Nested lists inside event details */
+        .event-details-html li ul,
+        .event-details-html li ol {
+          margin: 8px 0 0;
+          border-top: none;
+          padding-left: 4px;
+        }
+        .event-details-html li li {
+          border-bottom: 1px solid rgba(0,255,240,.05);
+          padding: 7px 10px;
+          font-size: .92rem;
+          color: rgba(200,218,255,.78);
+        }
+        .event-details-html a { color: #00fff0; text-decoration: underline; }
+        .event-details-html strong { color: #fff; font-weight: 700; }
+        .event-details-html table {
+          width: 100%; border-collapse: collapse;
+          margin-top: 10px;
+        }
+        .event-details-html th {
+          font-family: 'Orbitron', sans-serif;
+          font-size: .78rem; letter-spacing: .12em;
+          color: #00fff0; text-align: left;
+          border-bottom: 1px solid rgba(0,255,240,.25);
+          padding: 8px 10px;
+        }
+        .event-details-html td {
+          font-size: .92rem; color: rgba(210,225,255,.8);
+          padding: 9px 10px;
+          border-bottom: 1px solid rgba(0,255,240,.07);
+        }
+        .event-details-html tr:hover td { background: rgba(0,255,240,.03); }
+        .event-details-html section > div > div { margin-bottom: 6px; }
       `}</style>
     </>
   );
@@ -535,8 +928,8 @@ function StatCard({ label, value, accent }: { label:string; value:string; accent
         borderTop:`1.5px solid ${c.tick}`,borderLeft:`1.5px solid ${c.tick}`}}/>
       <span style={{position:"absolute",bottom:4,right:4,width:8,height:8,
         borderBottom:`1.5px solid ${c.tick}`,borderRight:`1.5px solid ${c.tick}`}}/>
-      <p style={{fontFamily:"'Share Tech Mono',monospace",fontSize:".68rem",letterSpacing:".15em",
-        color:"rgba(200,220,255,.38)",marginBottom:5}}>{label}</p>
+      <p style={{fontFamily:"'Share Tech Mono',monospace",fontSize:".7rem",letterSpacing:".15em",
+        color:"rgba(200,220,255,.55)",marginBottom:5}}>{label}</p>
       <p style={{fontFamily:"'Orbitron',sans-serif",fontSize:"1.5rem",fontWeight:700,color:c.val,lineHeight:1}}>{value}</p>
     </div>
   );
@@ -546,14 +939,12 @@ function StatCard({ label, value, accent }: { label:string; value:string; accent
 function StateStyles() {
   return <style>{`
     .state-screen{position:relative;min-height:100vh;background:#060818;display:flex;align-items:center;justify-content:center}
-    // .bg-grid{position:fixed;inset:0;background-image:linear-gradient(rgba(0,255,240,.038) 1px,transparent 1px),linear-gradient(90deg,rgba(0,255,240,.038) 1px,transparent 1px);background-size:55px 55px;pointer-events:none;z-index:0}
     .bg-glow{position:fixed;border-radius:50%;pointer-events:none;z-index:0;filter:blur(140px)}
     .bg-glow.c{width:600px;height:600px;top:-120px;left:-200px;background:#00fff0;opacity:.065}
     .bg-glow.m{width:700px;height:700px;bottom:-200px;right:-200px;background:#ff2d78;opacity:.065}
-    .state-inner{position:relative;z-index:1;display:flex;align-items:center;gap:12px;font-family:'Orbitron',sans-serif;font-size:.9rem;letter-spacing:.15em;color:rgba(0,255,240,.75)}
+    .state-inner{position:relative;z-index:1;display:flex;align-items:center;gap:12px;font-family:'Orbitron',sans-serif;font-size:.9rem;letter-spacing:.15em;color:rgba(0,255,240,.85)}
     .state-inner.err{color:#ff2d78}
     .err-icon{font-size:1.4rem}
-    .state-txt{}
     .blink{animation:bl 1s step-end infinite}
     @keyframes bl{0%,100%{opacity:1}50%{opacity:0}}
   `}</style>;

@@ -14,6 +14,7 @@ interface Event {
   rules: string;
   minPart: number;
   maxPart: number;
+  eventDate?: string;
 }
 
 const toPath = (name: string) => encodeURIComponent(name);
@@ -147,6 +148,7 @@ export default function EventsPage() {
   const [error, setError] = useState<string | null>(null);
   const [tick, setTick] = useState(0);
   const [search, setSearch] = useState("");
+  const [filter, setFilter] = useState("all");
 
   useEffect(() => {
     fetch("/api/events")
@@ -162,9 +164,16 @@ export default function EventsPage() {
   }, []);
 
   const count = events.length;
-  const filtered = search.trim()
-    ? events.filter(e => e.name.toLowerCase().includes(search.toLowerCase()))
-    : events;
+ const today = new Date(); today.setHours(0,0,0,0);
+const filtered = events
+  .filter(e => search.trim() ? e.name.toLowerCase().includes(search.toLowerCase()) : true)
+  .filter(e => {
+    if (filter === "all" || !e.eventDate) return true;
+    const d = new Date(e.eventDate);
+    return filter === "completed" ? d < today : d >= today;
+  });
+
+    
 
   return (
     <>
@@ -327,7 +336,33 @@ export default function EventsPage() {
             )}
           </div>
 
-          {/* <div className="egrid">
+
+          {/* ── Filter Toggles ── */}
+<div className="ev-filter-wrap">
+  {/* <button
+    className={`ev-filter-btn${filter === "all" ? " active-all" : ""}`}
+    onClick={() => setFilter("all")}
+  >
+    <span className="efb-dot all" />
+    ALL
+  </button> */}
+  <button
+    className={`ev-filter-btn${filter === "upcoming" ? " active-upcoming" : ""}`}
+    onClick={() => setFilter("upcoming")}
+  >
+    <span className="efb-dot upcoming" />
+    UPCOMING EVENTS
+  </button>
+  <button
+    className={`ev-filter-btn${filter === "completed" ? " active-completed" : ""}`}
+    onClick={() => setFilter("completed")}
+  >
+    <span className="efb-dot completed" />
+    COMPLETED EVENTS
+  </button>
+</div>
+
+          <div className="egrid">
             {loading
               ? Array.from({length:6}).map((_,i)=><SkeletonCard key={i}/>)
               : error
@@ -336,19 +371,82 @@ export default function EventsPage() {
               ? <div className="serr">// NO MATCHES FOUND</div>
               : filtered.map((ev,i)=><EventCard key={ev._id} event={ev} index={i}/>)
             }
-          </div> */}
-          <div className="egrid">
+          </div>
+
+
+
+
+          {/* <div className="egrid">
   <div className="coming-soon">
     <div className="cs-icon">◎</div>
     <h2 className="cs-title">EVENTS COMING SOON</h2>
     <p className="cs-sub">// Encrypted event nodes are being prepared. Stand by.</p>
     <div className="cs-bar"><div className="cs-bar-fill"/></div>
   </div>
-</div>
+</div> */}
+
+
+
+
+
         </section>
       </div>
 
       <style>{`
+
+
+
+.ev-filter-wrap {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 24px;
+}
+.ev-filter-btn {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 18px;
+  background: rgba(0, 8, 26, 0.85);
+  border: 1px solid rgba(0, 255, 240, 0.15);
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.15em;
+  color: rgba(200, 220, 255, 0.4);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.ev-filter-btn:hover {
+  border-color: rgba(0, 255, 240, 0.4);
+  color: rgba(200, 220, 255, 0.75);
+}
+.efb-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.efb-dot.all      { background: rgba(200, 220, 255, 0.35); }
+.efb-dot.upcoming { background: #00fff0; }
+.efb-dot.completed{ background: #ff2d78; }
+
+/* Active states */
+.ev-filter-btn.active-all {
+  border-color: rgba(200, 220, 255, 0.45);
+  color: #fff;
+  background: rgba(200, 220, 255, 0.06);
+}
+.ev-filter-btn.active-upcoming {
+  border-color: #00fff0;
+  color: #00fff0;
+  background: rgba(0, 255, 240, 0.07);
+  box-shadow: 0 0 12px rgba(0, 255, 240, 0.1);
+}
+.ev-filter-btn.active-completed {
+  border-color: #ff2d78;
+  color: #ff2d78;
+  background: rgba(255, 45, 120, 0.07);
+  box-shadow: 0 0 12px rgba(255, 45, 120, 0.1);
+}
 
 //events coming soon styles
 

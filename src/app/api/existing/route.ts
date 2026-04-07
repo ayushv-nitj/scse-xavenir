@@ -6,7 +6,6 @@ export async function POST() {
   try {
     await connectDB();
 
-    // 🔥 Your hardcoded regNumbers array
     const regNumbers = [
   "2024ugcs017",
   "2024ugcs104",
