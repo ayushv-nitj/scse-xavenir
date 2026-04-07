@@ -823,7 +823,7 @@ useEffect(() => {
           </div> */}
           <div className="timeline-card">
             <div className="tc-date">Day 1</div>
-            <div className="tc-title">17 April 2026</div>
+            <div className="tc-title">1 7 April 2026</div>
             <div className="tc-desc">Exciting workshops, tech talks, and mini-competitions to prepare you for the main event. The perfect tech warm-up.</div>
             <div className="tc-tag">FUN EVENTS &amp; COMPETITIONS</div>
           </div>
