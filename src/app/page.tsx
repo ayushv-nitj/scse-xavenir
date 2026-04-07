@@ -482,7 +482,7 @@ function CompRow({ index, comp }: { index: number; comp: { icon: string; title: 
 export default function LandingPage() {
   const { userData } = useContext(UserContext);
   const [activeComp, setActiveComp] = useState(0);
-  const countdown = useCountdown(new Date("2026-04-18T09:00:00+05:30"));
+  const countdown = useCountdown(new Date("2026-04-17T00:00:00+05:30"));
   const [loaded, setLoaded]       = useState(false);
   const [loaderDone, setLoaderDone] = useState(false);
   const [scrolled, setScrolled]   = useState(false);
