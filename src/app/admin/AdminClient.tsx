@@ -199,57 +199,483 @@ export default function AdminClient({ payments, eventRegs, contacts, stats }: {
         )}
 
         {/* STATS */}
-        {panel === "stats" && (
-          <div className="content-panel">
-            <div className="page-header">
-              <h1 className="page-title">◈ Stats Overview</h1>
-              <p className="page-sub">Live snapshot of platform activity.</p>
-            </div>
+        {panel === "stats" && (() => {
+          // — Batch-query filter state —
+          const [bqDegree, setBqDegree] = useState<"btech"|"mca"|"mtech"|"rs"|"">("");
+          const [bqYear,     setBqYear]     = useState<string>("");
+          const [bqPaid,     setBqPaid]     = useState<"paid"|"unpaid"|"">("");
+          const [bqLoading,  setBqLoading]  = useState(false);
+          const [bqResult,   setBqResult]   = useState<any>(null);
+          const [bqError,    setBqError]    = useState("");
 
-            {/* Top stat cards */}
-            <div className="stat-grid">
-              {[
-                { label: "Total Users",         value: stats.totalUsers,                       color: "#6366f1", icon: "👤" },
-                { label: "Prime Members",        value: stats.primeUsers,                       color: "#22c55e", icon: "★"  },
-                { label: "Non-Prime",            value: stats.totalUsers - stats.primeUsers,    color: "#f59e0b", icon: "◎"  },
-                { label: "Visitor Count",        value: stats.visitorCount-40000,                     color: "#8b5cf6", icon: "👁" },
-                { label: "Confirmed Event Regs", value: stats.confirmedEventRegs,               color: "#06b6d4", icon: "◉"  },
-                { label: "Pending Payments",     value: stats.pendingPayments,                  color: "#f59e0b", icon: "◆"  },
-                { label: "Pending Event Regs",   value: stats.pendingEventRegs,                 color: "#ef4444", icon: "⚡" },
-                { label: "Contact Messages",     value: stats.contactCount,                     color: "#6366f1", icon: "✉"  },
-              ].map(s => (
-                <div key={s.label} className="scard" style={{"--sc": s.color} as any}>
-                  <div className="scard-icon">{s.icon}</div>
-                  <div className="scard-val">{s.value.toLocaleString()}</div>
-                  <div className="scard-label">{s.label}</div>
-                  <div className="scard-bar" />
-                </div>
-              ))}
-            </div>
+          const degreeToCode: Record<string, string> = {
+            btech: "ugcs",
+            mca:   "pgcsca",
+            mtech: "pgcsds",
+          };
 
-            {/* Per-event breakdown */}
-            {stats.eventRegsByName.length > 0 && (
-              <div style={{marginTop: 32}}>
-                <div className="divider-row">
-                  <span className="divider-lbl">// EVENT REGISTRATIONS BREAKDOWN</span>
-                  <div className="divider-line" />
-                </div>
-                <div className="evt-table">
-                  <div className="evt-thead">
-                    <span>EVENT</span><span>TEAMS</span><span>PARTICIPANTS</span>
-                  </div>
-                  {stats.eventRegsByName.map((e, i) => (
-                    <div key={i} className="evt-row">
-                      <span className="evt-name">{e._id}</span>
-                      <span className="evt-num">{e.count}</span>
-                      <span className="evt-num" style={{color:"#00ffb3"}}>{e.participants}</span>
-                    </div>
-                  ))}
-                </div>
+          const handleBatchQuery = async () => {
+          if (!bqDegree || !bqPaid || (bqDegree !== "rs" && !bqYear)) {
+            setBqError("Please select all required filters."); return;
+          }
+          setBqLoading(true); setBqResult(null); setBqError("");
+
+          // For RS: send just "rs" as batch, no year prefix
+          const code = bqDegree === "rs" ? "rs" : `${bqYear}${degreeToCode[bqDegree]}`;
+
+          try {
+            const res = await fetch(
+              `/api/admin/batch-stats?batch=${encodeURIComponent(code)}&paid=${bqPaid}`
+            );
+            const d = await res.json();
+            if (!res.ok) { setBqError(d.error || "Failed to fetch"); return; }
+            setBqResult(d);
+          } catch { setBqError("Network error"); }
+          finally { setBqLoading(false); }
+          };
+          // Add this function alongside handleBatchQuery:
+          const exportBatchCSV = () => {
+            if (!bqResult) return;
+
+            const batchLabel = bqDegree === "rs"
+              ? "rs"
+              : `${bqYear}${degreeToCode[bqDegree]}`;
+
+            const rows: string[] = [];
+
+            // Section 1: Stats
+            rows.push("STAT,VALUE");
+            rows.push(`batch,${batchLabel}`);
+            rows.push(`paid_status,${bqPaid}`);
+            Object.entries(bqResult)
+              .filter(([key]) => !["batch", "paid", "regNumbers"].includes(key))
+              .forEach(([key, val]) => {
+                rows.push(`${key},${val}`);
+              });
+
+            // Section 2: Reg numbers
+            if (bqResult.regNumbers?.length > 0) {
+              rows.push(""); // blank line separator
+              rows.push("INDEX,REGISTRATION_NUMBER,STATUS");
+              bqResult.regNumbers.forEach((r: string, idx: number) => {
+                rows.push(`${idx + 1},${r},${bqPaid}`);
+              });
+            }
+
+            const csvContent = rows.join("\n");
+            // we are creating file in memory
+            const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+            const url = URL.createObjectURL(blob);
+            // we are creating download link
+            const link = document.createElement("a");
+            link.href = url;
+            // this is file name
+            link.download = `batch_${batchLabel}_${bqPaid}_${Date.now()}.csv`;
+            link.click();
+            URL.revokeObjectURL(url);
+          };
+
+  return (
+    <div className="content-panel">
+      <div className="page-header">
+        <h1 className="page-title">◈ Stats Overview</h1>
+        <p className="page-sub">Live snapshot of platform activity.</p>
+      </div>
+
+      {/* Top stat cards */}
+      <div className="stat-grid">
+        {[
+          { label: "Total Users",         value: stats.totalUsers,                       color: "#6366f1", icon: "👤" },
+          { label: "Prime Members",        value: stats.primeUsers,                       color: "#22c55e", icon: "★"  },
+          { label: "Non-Prime",            value: stats.totalUsers - stats.primeUsers,    color: "#f59e0b", icon: "◎"  },
+          { label: "Visitor Count",        value: stats.visitorCount-40000,               color: "#8b5cf6", icon: "👁" },
+          { label: "Confirmed Event Regs", value: stats.confirmedEventRegs,               color: "#06b6d4", icon: "◉"  },
+          { label: "Pending Payments",     value: stats.pendingPayments,                  color: "#f59e0b", icon: "◆"  },
+          { label: "Pending Event Regs",   value: stats.pendingEventRegs,                 color: "#ef4444", icon: "⚡" },
+          { label: "Contact Messages",     value: stats.contactCount,                     color: "#6366f1", icon: "✉"  },
+        ].map(s => (
+          <div key={s.label} className="scard" style={{"--sc": s.color} as any}>
+            <div className="scard-icon">{s.icon}</div>
+            <div className="scard-val">{s.value.toLocaleString()}</div>
+            <div className="scard-label">{s.label}</div>
+            <div className="scard-bar" />
+          </div>
+        ))}
+      </div>
+
+      {/* Per-event breakdown */}
+      {stats.eventRegsByName.length > 0 && (
+        <div style={{marginTop: 32}}>
+          <div className="divider-row">
+            <span className="divider-lbl">// EVENT REGISTRATIONS BREAKDOWN</span>
+            <div className="divider-line" />
+          </div>
+          <div className="evt-table">
+            <div className="evt-thead">
+              <span>EVENT</span><span>TEAMS</span><span>PARTICIPANTS</span>
+            </div>
+            {stats.eventRegsByName.map((e, i) => (
+              <div key={i} className="evt-row">
+                <span className="evt-name">{e._id}</span>
+                <span className="evt-num">{e.count}</span>
+                <span className="evt-num" style={{color:"#00ffb3"}}>{e.participants}</span>
               </div>
-            )}
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* ── BATCH QUERY FILTER ── */}
+<div style={{marginTop: 40}}>
+  <div className="divider-row">
+    <span className="divider-lbl">// BATCH QUERY</span>
+    <div className="divider-line" />
+  </div>
+
+  <div style={{
+    background: "linear-gradient(135deg, #0f1420 0%, #161b27 100%)",
+    border: "1px solid #1e2535", borderRadius: 14,
+    padding: "28px", display: "flex", flexDirection: "column", gap: 24,
+    boxShadow: "0 4px 24px rgba(0,0,0,0.3)"
+  }}>
+
+    {/* Filter Row */}
+    <div style={{display: "flex", gap: 20, flexWrap: "wrap"}}>
+
+      {/* Degree */}
+      <div style={{flex: "1 1 200px"}}>
+        <div style={{
+          fontSize: 9, fontWeight: 800, letterSpacing: "2px", color: "#334155",
+          textTransform: "uppercase", marginBottom: 10, display: "flex", alignItems: "center", gap: 6
+        }}>
+          <span style={{color:"#6366f1"}}>01</span> DEGREE / PROGRAM
+        </div>
+        <div style={{display: "flex", gap: 7, flexWrap: "wrap"}}>
+          {(["btech","mca","mtech","rs"] as const).map(d => (
+            <button
+              key={d}
+              onClick={() => { setBqDegree(bqDegree === d ? "" : d); if (d === "rs") setBqYear(""); }}
+              style={{
+                padding: "8px 14px", borderRadius: 8, fontSize: 11, fontWeight: 700,
+                cursor: "pointer", letterSpacing: "0.5px", transition: "all 0.2s",
+                border: bqDegree === d ? "1px solid #6366f1" : "1px solid #1e2535",
+                background: bqDegree === d
+                  ? "linear-gradient(135deg, rgba(99,102,241,0.25), rgba(99,102,241,0.1))"
+                  : "#0f1420",
+                color: bqDegree === d ? "#a5b4fc" : "#475569",
+                boxShadow: bqDegree === d ? "0 0 12px rgba(99,102,241,0.2)" : "none",
+              }}>
+              {d === "rs" ? "RS" : d.toUpperCase()}
+              {bqDegree === d && <span style={{marginLeft: 5, fontSize: 9}}>✓</span>}
+            </button>
+          ))}
+        </div>
+        {bqDegree && (
+          <div style={{
+            fontSize: 10, color: "#334155", marginTop: 8, display: "flex", alignItems: "center", gap: 5
+          }}>
+            <span style={{color:"#1e2535"}}>→</span>
+            <span style={{
+              color: "#6366f1", background: "rgba(99,102,241,0.08)",
+              padding: "2px 8px", borderRadius: 4, border: "1px solid rgba(99,102,241,0.15)",
+              fontFamily: "monospace", fontSize: 10
+            }}>
+              {bqDegree === "rs" ? "rs · no year required" : degreeToCode[bqDegree]}
+            </span>
           </div>
         )}
+      </div>
+
+      {/* Divider */}
+      <div style={{width: 1, background: "#1e2535", alignSelf: "stretch", flexShrink: 0}} />
+
+      {/* Year — hidden for RS */}
+      {bqDegree !== "rs" && (
+        <>
+          <div style={{flex: "1 1 150px"}}>
+            <div style={{
+              fontSize: 9, fontWeight: 800, letterSpacing: "2px", color: "#334155",
+              textTransform: "uppercase", marginBottom: 10, display: "flex", alignItems: "center", gap: 6
+            }}>
+              <span style={{color:"#6366f1"}}>02</span> BATCH YEAR
+            </div>
+            <select
+              value={bqYear}
+              onChange={e => setBqYear(e.target.value)}
+              style={{
+                width: "100%", padding: "9px 12px", borderRadius: 8, fontSize: 12, fontWeight: 600,
+                background: "#0f1420", border: "1px solid " + (bqYear ? "#6366f1" : "#1e2535"),
+                color: bqYear ? "#a5b4fc" : "#334155",
+                cursor: "pointer", outline: "none", transition: "border-color 0.2s",
+                boxShadow: bqYear ? "0 0 10px rgba(99,102,241,0.15)" : "none"
+              }}>
+              <option value="">Select year…</option>
+              {[2020,2021,2022,2023,2024,2025].map(y => (
+                <option key={y} value={String(y)}>{y}</option>
+              ))}
+            </select>
+          </div>
+
+          {/* Divider */}
+          <div style={{width: 1, background: "#1e2535", alignSelf: "stretch", flexShrink: 0}} />
+        </>
+      )}
+
+      {/* Paid / Unpaid */}
+      <div style={{flex: "1 1 150px"}}>
+        <div style={{
+          fontSize: 9, fontWeight: 800, letterSpacing: "2px", color: "#334155",
+          textTransform: "uppercase", marginBottom: 10, display: "flex", alignItems: "center", gap: 6
+        }}>
+          <span style={{color:"#6366f1"}}>{bqDegree === "rs" ? "02" : "03"}</span> PAYMENT STATUS
+        </div>
+        <div style={{display: "flex", gap: 8}}>
+          {(["paid","unpaid"] as const).map(p => (
+            <button
+              key={p}
+              onClick={() => setBqPaid(bqPaid === p ? "" : p)}
+              style={{
+                flex: 1, padding: "9px 10px", borderRadius: 8, fontSize: 11,
+                fontWeight: 700, cursor: "pointer", letterSpacing: "0.5px", transition: "all 0.2s",
+                border: bqPaid === p
+                  ? (p === "paid" ? "1px solid #22c55e" : "1px solid #ef4444")
+                  : "1px solid #1e2535",
+                background: bqPaid === p
+                  ? (p === "paid" ? "rgba(34,197,94,0.12)" : "rgba(239,68,68,0.1)")
+                  : "#0f1420",
+                color: bqPaid === p
+                  ? (p === "paid" ? "#4ade80" : "#f87171")
+                  : "#334155",
+                boxShadow: bqPaid === p
+                  ? (p === "paid" ? "0 0 10px rgba(34,197,94,0.15)" : "0 0 10px rgba(239,68,68,0.15)")
+                  : "none"
+              }}>
+              {p === "paid" ? "✓ PAID" : "✕ UNPAID"}
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+
+    {/* Query Preview Bar */}
+    {(bqDegree || bqYear || bqPaid) && (
+      <div style={{
+        display: "flex", alignItems: "center", gap: 10,
+        padding: "10px 16px", borderRadius: 8,
+        background: "#0a0e18", border: "1px solid #1e2535",
+      }}>
+        <span style={{fontSize: 9, fontWeight: 800, letterSpacing: "2px", color: "#334155", textTransform: "uppercase"}}>
+          QUERY
+        </span>
+        <span style={{width: 1, height: 14, background: "#1e2535"}} />
+        <span style={{fontFamily: "monospace", fontSize: 12, color: "#6366f1"}}>
+          batch=<span style={{color:"#a5b4fc"}}>
+            {bqDegree === "rs" ? "rs" : `${bqYear || "??"}${bqDegree ? degreeToCode[bqDegree] : "??"}`}
+          </span>
+        </span>
+        <span style={{fontFamily: "monospace", fontSize: 12, color: "#6366f1"}}>
+          &amp;paid=<span style={{
+            color: bqPaid === "paid" ? "#4ade80" : bqPaid === "unpaid" ? "#f87171" : "#475569"
+          }}>{bqPaid || "??"}</span>
+        </span>
+        <span style={{marginLeft: "auto", fontSize: 9, color: "#1e2535"}}>
+          GET /api/admin/batch-stats
+        </span>
+      </div>
+    )}
+
+    {/* Fetch Button */}
+    <div style={{display: "flex", alignItems: "center", gap: 12}}>
+      <button
+        onClick={handleBatchQuery}
+        disabled={bqLoading || !bqDegree || !bqPaid || (bqDegree !== "rs" && !bqYear)}
+        style={{
+          padding: "11px 32px", borderRadius: 8, fontSize: 12, fontWeight: 800,
+          letterSpacing: "1px", cursor: "pointer", transition: "all 0.2s",
+          display: "flex", alignItems: "center", gap: 8,
+          background: (!bqDegree || !bqPaid || (bqDegree !== "rs" && !bqYear))
+            ? "#0f1420"
+            : "linear-gradient(135deg, rgba(99,102,241,0.3), rgba(99,102,241,0.15))",
+          border: "1px solid " + ((!bqDegree || !bqPaid || (bqDegree !== "rs" && !bqYear))
+            ? "#1e2535" : "#6366f1"),
+          color: (!bqDegree || !bqPaid || (bqDegree !== "rs" && !bqYear)) ? "#2a3347" : "#a5b4fc",
+          boxShadow: (!bqDegree || !bqPaid || (bqDegree !== "rs" && !bqYear))
+            ? "none" : "0 0 20px rgba(99,102,241,0.2)"
+        }}>
+        {bqLoading
+          ? <><span className="spin" /> FETCHING…</>
+          : <> ▶ RUN QUERY</>}
+      </button>
+      {bqLoading && (
+        <span style={{fontSize: 11, color: "#334155", fontFamily: "monospace"}}>
+          querying database…
+        </span>
+      )}
+    </div>
+
+    {/* Error */}
+    {bqError && (
+      <div style={{
+        fontSize: 12, color: "#f87171", padding: "12px 16px",
+        background: "rgba(239,68,68,0.06)", border: "1px solid rgba(239,68,68,0.15)",
+        borderRadius: 8, display: "flex", alignItems: "center", gap: 8
+      }}>
+        <span style={{fontSize: 16}}>✕</span> {bqError}
+      </div>
+    )}
+
+    {/* Result */}
+    {bqResult && (
+  <div style={{ borderTop: "1px solid #1e2535", paddingTop: 28 }}>
+
+    {/* Result Header */}
+    <div style={{
+      display: "flex", alignItems: "center", justifyContent: "space-between",
+      marginBottom: 20, flexWrap: "wrap", gap: 8
+    }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+        <span style={{
+          width: 8, height: 8, borderRadius: "50%", background: "#22c55e",
+          boxShadow: "0 0 6px #22c55e", display: "inline-block", flexShrink: 0
+        }} />
+        <span style={{
+          fontSize: 12, fontWeight: 800, letterSpacing: "2px",
+          color: "#64748b", textTransform: "uppercase"
+        }}>
+          Results
+        </span>
+      </div>
+      <span style={{
+        fontFamily: "monospace", fontSize: 13,
+        color: "#64748b", background: "#0a0e18",
+        padding: "5px 12px", borderRadius: 6, border: "1px solid #1e2535"
+      }}>
+        {bqDegree === "rs"
+          ? `rs / ${bqPaid}`
+          : `${bqYear}${bqDegree ? degreeToCode[bqDegree] : ""} / ${bqPaid}`}
+      </span>
+    </div>
+
+    {/* Stat Cards */}
+    <div className="stat-grid" style={{ marginBottom: 24 }}>
+      {Object.entries(bqResult)
+        .filter(([key]) => !["batch", "paid", "regNumbers"].includes(key))
+        .map(([key, val]) => {
+          const color = key.includes("unpaid") ? "#ef4444"
+            : key.includes("paid") ? "#22c55e"
+            : key.includes("strength") ? "#8b5cf6"
+            : "#6366f1";
+          return (
+            <div key={key} className="scard" style={{ "--sc": color } as any}>
+              <div className="scard-val" style={{ color: "#f1f5f9", fontSize: 28, fontWeight: 700 }}>
+                {typeof val === "number" ? (val as number).toLocaleString() : String(val)}
+              </div>
+              <div className="scard-label" style={{ fontSize: 12, letterSpacing: "1px", marginTop: 6 }}>
+                {key.replace(/_/g, " ").toUpperCase()}
+              </div>
+              <div className="scard-bar" />
+            </div>
+          );
+        })}
+    </div>
+
+    {/* Registration Numbers */}
+    {bqResult.regNumbers?.length > 0 && (
+      <div style={{
+        background: "#0a0e18", border: "1px solid #1e2535",
+        borderRadius: 10, overflow: "hidden"
+      }}>
+        <div style={{
+          display: "flex", alignItems: "center", justifyContent: "space-between",
+          padding: "14px 18px", borderBottom: "1px solid #1e2535",
+          background: "#0f1420"
+        }}>
+          <span style={{
+            fontSize: 11, fontWeight: 800, letterSpacing: "2px",
+            color: "#64748b", textTransform: "uppercase"
+          }}>
+            Registration Numbers
+          </span>
+          <span style={{
+            fontSize: 12, fontWeight: 700, color: "#6366f1",
+            background: "rgba(99,102,241,0.1)", padding: "4px 12px",
+            borderRadius: 999, border: "1px solid rgba(99,102,241,0.2)"
+          }}>
+            {bqResult.regNumbers.length} records
+          </span>
+        </div>
+
+        <div style={{ maxHeight: 300, overflowY: "auto", scrollbarWidth: "thin" }}>
+          {bqResult.regNumbers.map((r: string, idx: number) => (
+            <div
+              key={r}
+              style={{
+                display: "flex", alignItems: "center", gap: 14,
+                padding: "12px 18px",
+                borderBottom: "1px solid #0f1420",
+                transition: "background 0.12s",
+              }}
+              onMouseEnter={e => (e.currentTarget.style.background = "#161b27")}
+              onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
+            >
+              <span style={{
+                fontSize: 11, fontWeight: 700, color: "#2a3347",
+                minWidth: 32, textAlign: "right", fontFamily: "monospace"
+              }}>
+                {String(idx + 1).padStart(3, "0")}
+              </span>
+              <span style={{ width: 1, height: 16, background: "#1e2535", flexShrink: 0 }} />
+              <span style={{
+                fontFamily: "monospace", fontSize: 14, fontWeight: 600,
+                color: "#818cf8", letterSpacing: "0.5px", flex: 1
+              }}>
+                {r}
+              </span>
+              <span style={{
+                fontSize: 11, color: bqPaid === "paid" ? "#4ade80" : "#f87171",
+                fontFamily: "monospace", fontWeight: 700
+              }}>
+                {bqPaid === "paid" ? "✓" : "✕"}
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+    )}
+
+    {/* ── Export CSV Button ── */}
+    <div style={{ marginTop: 20, display: "flex", justifyContent: "flex-end" }}>
+      <button
+        onClick={exportBatchCSV}
+        style={{
+          display: "flex", alignItems: "center", gap: 8,
+          padding: "10px 22px", borderRadius: 8,
+          fontSize: 12, fontWeight: 800, letterSpacing: "1px",
+          cursor: "pointer", transition: "all 0.2s",
+          background: "rgba(34,197,94,0.1)",
+          border: "1px solid rgba(34,197,94,0.3)",
+          color: "#4ade80",
+        }}
+        onMouseEnter={e => {
+          (e.currentTarget as HTMLButtonElement).style.background = "rgba(34,197,94,0.18)";
+          (e.currentTarget as HTMLButtonElement).style.boxShadow = "0 0 16px rgba(34,197,94,0.15)";
+        }}
+        onMouseLeave={e => {
+          (e.currentTarget as HTMLButtonElement).style.background = "rgba(34,197,94,0.1)";
+          (e.currentTarget as HTMLButtonElement).style.boxShadow = "none";
+        }}
+      >
+        ↓ Export as CSV
+      </button>
+    </div>
+  </div>
+)}
+  </div>
+</div>
+
+    </div>
+  );
+})()}
 
         {/* PAYMENTS */}
         {panel === "payments" && (<>
