@@ -30,6 +30,13 @@ function Page() {
     try {
       const userResponse = await axios.get("/api/auth/getTempUser");
       const storedEmail = userResponse.data.email;
+      if (storedEmail) {
+        setFormData((prev) => ({
+          ...prev,
+          email: storedEmail,
+          ...(storedEmail.endsWith("@nitjsr.ac.in") && { collegeName: "NIT Jamshedpur" }),
+        }));
+      }
       console.log("stored email", storedEmail);
 
       if (storedEmail) {
@@ -95,7 +102,7 @@ function Page() {
     { name: "email",       label: "EMAIL_ADDRESS",  type: "email",    placeholder: "auto-filled from Google",  readOnly: true,  icon: "✉" },
     { name: "fullName",    label: "FULL_NAME",       type: "text",     placeholder: "Enter your full name",     readOnly: false, icon: "◈" },
     { name: "password",    label: "PASSWORD",        type: showPassword ? "text" : "password", placeholder: "Create a strong password", readOnly: false, icon: "◆" },
-    { name: "collegeName", label: "COLLEGE_NAME",    type: "text",     placeholder: "Enter your college name",  readOnly: false, icon: "⬡" },
+    { name: "collegeName", label: "COLLEGE_NAME",    type: "text",     placeholder: "Enter your college name",  readOnly: formData.email.endsWith("@nitjsr.ac.in"), icon: "⬡" },
   ];
 
   return (
