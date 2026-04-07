@@ -77,8 +77,71 @@ export default function AdminClient({ payments, eventRegs, contacts, stats }: {
   const [annMsg,    setAnnMsg]    = useState("");
   const [annTarget, setAnnTarget] = useState("");
   const [annEvent,  setAnnEvent]  = useState("");
+  const [annMode,   setAnnMode]   = useState<"all"|"event"|"user">("all");
   const [announcing,setAnnouncing]= useState(false);
   const [annResult, setAnnResult] = useState("");
+  const [annEvents, setAnnEvents] = useState<{name:string}[]>([]);
+  const [annEventsLoading, setAnnEventsLoading] = useState(false);
+
+  const fetchAnnEvents = async () => {
+    if (annEvents.length > 0) return; // already fetched
+    setAnnEventsLoading(true);
+    try {
+      const res = await fetch("/api/events");
+      const d = await res.json();
+      if (d.success) setAnnEvents(d.events);
+    } catch { /* silent */ }
+    finally { setAnnEventsLoading(false); }
+  };
+
+  // batch query
+  const [bqDegree, setBqDegree] = useState<"btech"|"mca"|"mtech"|"rs"|"">("");
+  const [bqYear,   setBqYear]   = useState<string>("");
+  const [bqPaid,   setBqPaid]   = useState<"paid"|"unpaid"|"">("");
+  const [bqLoading,setBqLoading]= useState(false);
+  const [bqResult, setBqResult] = useState<any>(null);
+  const [bqError,  setBqError]  = useState("");
+
+  const degreeToCode: Record<string, string> = { btech: "ugcs", mca: "pgcsca", mtech: "pgcsds" };
+
+  const handleBatchQuery = async () => {
+    if (!bqDegree || !bqPaid || (bqDegree !== "rs" && !bqYear)) {
+      setBqError("Please select all required filters."); return;
+    }
+    setBqLoading(true); setBqResult(null); setBqError("");
+    const code = bqDegree === "rs" ? "rs" : `${bqYear}${degreeToCode[bqDegree]}`;
+    try {
+      const res = await fetch(`/api/admin/batch-stats?batch=${encodeURIComponent(code)}&paid=${bqPaid}`);
+      const d = await res.json();
+      if (!res.ok) { setBqError(d.error || "Failed to fetch"); return; }
+      setBqResult(d);
+    } catch { setBqError("Network error"); }
+    finally { setBqLoading(false); }
+  };
+
+  const exportBatchCSV = () => {
+    if (!bqResult) return;
+    const batchLabel = bqDegree === "rs" ? "rs" : `${bqYear}${degreeToCode[bqDegree]}`;
+    const rows: string[] = [];
+    rows.push("STAT,VALUE");
+    rows.push(`batch,${batchLabel}`);
+    rows.push(`paid_status,${bqPaid}`);
+    Object.entries(bqResult)
+      .filter(([key]) => !["batch", "paid", "regNumbers"].includes(key))
+      .forEach(([key, val]) => { rows.push(`${key},${val}`); });
+    if (bqResult.regNumbers?.length > 0) {
+      rows.push("");
+      rows.push("INDEX,REGISTRATION_NUMBER,STATUS");
+      bqResult.regNumbers.forEach((r: string, idx: number) => { rows.push(`${idx + 1},${r},${bqPaid}`); });
+    }
+    const blob = new Blob([rows.join("\n")], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `batch_${batchLabel}_${bqPaid}_${Date.now()}.csv`;
+    link.click();
+    URL.revokeObjectURL(url);
+  };
 
   // certificates
   const [certEvent,    setCertEvent]    = useState("");
@@ -199,84 +262,8 @@ export default function AdminClient({ payments, eventRegs, contacts, stats }: {
         )}
 
         {/* STATS */}
-        {panel === "stats" && (() => {
-          // — Batch-query filter state —
-          const [bqDegree, setBqDegree] = useState<"btech"|"mca"|"mtech"|"rs"|"">("");
-          const [bqYear,     setBqYear]     = useState<string>("");
-          const [bqPaid,     setBqPaid]     = useState<"paid"|"unpaid"|"">("");
-          const [bqLoading,  setBqLoading]  = useState(false);
-          const [bqResult,   setBqResult]   = useState<any>(null);
-          const [bqError,    setBqError]    = useState("");
-
-          const degreeToCode: Record<string, string> = {
-            btech: "ugcs",
-            mca:   "pgcsca",
-            mtech: "pgcsds",
-          };
-
-          const handleBatchQuery = async () => {
-          if (!bqDegree || !bqPaid || (bqDegree !== "rs" && !bqYear)) {
-            setBqError("Please select all required filters."); return;
-          }
-          setBqLoading(true); setBqResult(null); setBqError("");
-
-          // For RS: send just "rs" as batch, no year prefix
-          const code = bqDegree === "rs" ? "rs" : `${bqYear}${degreeToCode[bqDegree]}`;
-
-          try {
-            const res = await fetch(
-              `/api/admin/batch-stats?batch=${encodeURIComponent(code)}&paid=${bqPaid}`
-            );
-            const d = await res.json();
-            if (!res.ok) { setBqError(d.error || "Failed to fetch"); return; }
-            setBqResult(d);
-          } catch { setBqError("Network error"); }
-          finally { setBqLoading(false); }
-          };
-          // Add this function alongside handleBatchQuery:
-          const exportBatchCSV = () => {
-            if (!bqResult) return;
-
-            const batchLabel = bqDegree === "rs"
-              ? "rs"
-              : `${bqYear}${degreeToCode[bqDegree]}`;
-
-            const rows: string[] = [];
-
-            // Section 1: Stats
-            rows.push("STAT,VALUE");
-            rows.push(`batch,${batchLabel}`);
-            rows.push(`paid_status,${bqPaid}`);
-            Object.entries(bqResult)
-              .filter(([key]) => !["batch", "paid", "regNumbers"].includes(key))
-              .forEach(([key, val]) => {
-                rows.push(`${key},${val}`);
-              });
-
-            // Section 2: Reg numbers
-            if (bqResult.regNumbers?.length > 0) {
-              rows.push(""); // blank line separator
-              rows.push("INDEX,REGISTRATION_NUMBER,STATUS");
-              bqResult.regNumbers.forEach((r: string, idx: number) => {
-                rows.push(`${idx + 1},${r},${bqPaid}`);
-              });
-            }
-
-            const csvContent = rows.join("\n");
-            // we are creating file in memory
-            const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-            const url = URL.createObjectURL(blob);
-            // we are creating download link
-            const link = document.createElement("a");
-            link.href = url;
-            // this is file name
-            link.download = `batch_${batchLabel}_${bqPaid}_${Date.now()}.csv`;
-            link.click();
-            URL.revokeObjectURL(url);
-          };
-
-  return (
-    <div className="content-panel">
+        {panel === "stats" && (
+  <div className="content-panel">
       <div className="page-header">
         <h1 className="page-title">◈ Stats Overview</h1>
         <p className="page-sub">Live snapshot of platform activity.</p>
@@ -674,8 +661,7 @@ export default function AdminClient({ payments, eventRegs, contacts, stats }: {
 </div>
 
     </div>
-  );
-})()}
+        )}
 
         {/* PAYMENTS */}
         {panel === "payments" && (<>
@@ -1038,81 +1024,187 @@ export default function AdminClient({ payments, eventRegs, contacts, stats }: {
           <div className="content-panel">
             <div className="page-header">
               <h1 className="page-title">📢 Broadcast Announcement</h1>
-              <p className="page-sub">Send to all users, a specific event's participants, or a single user.</p>
+              <p className="page-sub">Send a notification to all users, a specific event's participants, or a single user.</p>
             </div>
-            <div className="form-stack">
-              <div className="form-field">
-                <label className="form-label">TITLE *</label>
-                <input className="s-input" style={{borderRight:"1px solid #1e2535"}} placeholder="Announcement title" value={annTitle} onChange={e => setAnnTitle(e.target.value)} />
-              </div>
-              <div className="form-field">
-                <label className="form-label">MESSAGE *</label>
-                <textarea className="s-input" style={{minHeight:100,resize:"vertical"}} placeholder="Announcement message..." value={annMsg} onChange={e => setAnnMsg(e.target.value)} />
-              </div>
 
-              {/* Target selector */}
-              <div className="form-field">
-                <label className="form-label">TARGET</label>
-                <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
-                  {(["all","event","user"] as const).map(t => {
-                    const active = (t === "all" && !annEvent && !annTarget) || (t === "event" && !!annEvent) || (t === "user" && !!annTarget);
-                    return (
-                      <button key={t} type="button"
-                        style={{padding:"6px 16px",borderRadius:6,border:"1px solid",fontSize:12,fontWeight:600,cursor:"pointer",flex:"1 1 auto",minWidth:0,
-                          background: active ? "rgba(99,102,241,0.15)" : "transparent",
-                          borderColor: active ? "#6366f1" : "#2a3347",
-                          color: active ? "#818cf8" : "#64748b",
-                        }}
-                        onClick={() => { setAnnEvent(""); setAnnTarget(""); }}>
-                        {t === "all" ? "All Users" : t === "event" ? "Event" : "Single User"}
-                      </button>
-                    );
-                  })}
+            <div className="ann-grid" style={{display:"grid",gridTemplateColumns:"1fr 340px",gap:20,marginTop:8,alignItems:"start"}}>
+
+              {/* ── LEFT: Form ── */}
+              <div style={{display:"flex",flexDirection:"column",gap:16}}>
+
+                {/* Title */}
+                <div style={{background:"#161b27",border:"1px solid #1e2535",borderRadius:10,overflow:"hidden"}}>
+                  <div style={{padding:"10px 16px",borderBottom:"1px solid #1e2535",background:"#131825",display:"flex",alignItems:"center",gap:8}}>
+                    <span style={{fontSize:10,fontWeight:800,letterSpacing:"2px",color:"#475569",textTransform:"uppercase"}}>Title</span>
+                    <span style={{fontSize:10,color:"#ef4444",fontWeight:700}}>*</span>
+                  </div>
+                  <input
+                    style={{width:"100%",background:"transparent",border:"none",outline:"none",color:"#f1f5f9",fontSize:15,fontWeight:500,padding:"14px 16px",fontFamily:"'Inter',sans-serif"}}
+                    placeholder="e.g. Event Registration Deadline Extended"
+                    value={annTitle} onChange={e => setAnnTitle(e.target.value)}
+                  />
                 </div>
-              </div>
-              {/* Event picker */}
-              <div className="form-field">
-                <label className="form-label">EVENT <span style={{opacity:0.4}}>(select to target event participants)</span></label>
-                <select className="s-input" style={{borderRight:"1px solid #1e2535", height:42, paddingTop:0, paddingBottom:0}}
-                  value={annEvent} onChange={e => { setAnnEvent(e.target.value); setAnnTarget(""); }}>
-                  <option value="">— All users (no event filter) —</option>
-                  {stats.eventRegsByName.map(e => (
-                    <option key={e._id} value={e._id}>{e._id} ({e.participants} participants)</option>
-                  ))}
-                </select>
+
+                {/* Message */}
+                <div style={{background:"#161b27",border:"1px solid #1e2535",borderRadius:10,overflow:"hidden"}}>
+                  <div style={{padding:"10px 16px",borderBottom:"1px solid #1e2535",background:"#131825",display:"flex",alignItems:"center",gap:8}}>
+                    <span style={{fontSize:10,fontWeight:800,letterSpacing:"2px",color:"#475569",textTransform:"uppercase"}}>Message</span>
+                    <span style={{fontSize:10,color:"#ef4444",fontWeight:700}}>*</span>
+                  </div>
+                  <textarea
+                    style={{width:"100%",background:"transparent",border:"none",outline:"none",color:"#f1f5f9",fontSize:14,padding:"14px 16px",fontFamily:"'Inter',sans-serif",resize:"vertical",minHeight:130,lineHeight:1.6}}
+                    placeholder="Write your announcement here..."
+                    value={annMsg} onChange={e => setAnnMsg(e.target.value)}
+                  />
+                </div>
+
+                {/* Send button */}
+                <button
+                  disabled={announcing || !annTitle || !annMsg}
+                  onClick={async () => {
+                    setAnnouncing(true); setAnnResult("");
+                    const res = await fetch("/api/admin/announce", {
+                      method:"POST", headers:{"Content-Type":"application/json"},
+                      body: JSON.stringify({
+                        title: annTitle, message: annMsg,
+                        targetUserID: annTarget || undefined,
+                        eventName: annEvent || undefined,
+                      }),
+                    });
+                    const d = await res.json();
+                    setAnnResult(res.ok ? d.message : (d.error || "Failed"));
+                    if (res.ok) { setAnnTitle(""); setAnnMsg(""); setAnnTarget(""); setAnnEvent(""); setAnnMode("all"); }
+                    setAnnouncing(false);
+                  }}
+                  style={{
+                    padding:"13px 28px",borderRadius:8,border:"1px solid",fontSize:13,fontWeight:700,
+                    letterSpacing:"0.5px",cursor:"pointer",display:"flex",alignItems:"center",gap:10,
+                    alignSelf:"flex-start",transition:"all 0.2s",
+                    background: (!annTitle||!annMsg) ? "#0f1420" : "linear-gradient(135deg,rgba(99,102,241,0.3),rgba(99,102,241,0.15))",
+                    borderColor: (!annTitle||!annMsg) ? "#1e2535" : "#6366f1",
+                    color: (!annTitle||!annMsg) ? "#2a3347" : "#a5b4fc",
+                    boxShadow: (!annTitle||!annMsg) ? "none" : "0 0 20px rgba(99,102,241,0.2)",
+                    opacity: announcing ? 0.6 : 1,
+                  }}
+                >
+                  {announcing ? <><span className="spin" /> Sending…</> : <>📢 Send Announcement</>}
+                </button>
+
+                {/* Result */}
+                {annResult && (
+                  <div style={{
+                    display:"flex",alignItems:"center",gap:10,padding:"12px 16px",borderRadius:8,fontSize:13,fontWeight:500,
+                    background: (annResult.toLowerCase().includes("sent") || annResult.toLowerCase().includes("success"))
+                      ? "rgba(34,197,94,0.08)" : "rgba(239,68,68,0.08)",
+                    border: `1px solid ${(annResult.toLowerCase().includes("sent") || annResult.toLowerCase().includes("success"))
+                      ? "rgba(34,197,94,0.25)" : "rgba(239,68,68,0.25)"}`,
+                    color: (annResult.toLowerCase().includes("sent") || annResult.toLowerCase().includes("success"))
+                      ? "#4ade80" : "#f87171",
+                  }}>
+                    <span style={{fontSize:16}}>
+                      {(annResult.toLowerCase().includes("sent") || annResult.toLowerCase().includes("success")) ? "✔" : "✕"}
+                    </span>
+                    {annResult}
+                  </div>
+                )}
               </div>
 
-              {/* Single user override */}
-              <div className="form-field">
-                <label className="form-label">SINGLE USER ID <span style={{opacity:0.4}}>(overrides event filter)</span></label>
-                <input className="s-input" style={{borderRight:"1px solid #1e2535", height:42}} placeholder="XAV-XXXXXXX (optional)"
-                  value={annTarget} onChange={e => { setAnnTarget(e.target.value); if (e.target.value) setAnnEvent(""); }} />
-              </div>
+              {/* ── RIGHT: Targeting ── */}
+              <div style={{display:"flex",flexDirection:"column",gap:12}}>
 
-              {/* Preview */}
-              <div style={{padding:"10px 14px",background:"rgba(99,102,241,0.06)",border:"1px solid rgba(99,102,241,0.2)",borderRadius:6,fontSize:12,color:"#94a3b8"}}>
-                {annTarget ? `→ Sending to user: ${annTarget}` : annEvent ? `→ Sending to all participants of: ${annEvent}` : `→ Broadcasting to all ${stats.totalUsers} users`}
-              </div>
+                {/* Audience selector */}
+                <div style={{background:"#161b27",border:"1px solid #1e2535",borderRadius:10,overflow:"hidden"}}>
+                  <div style={{padding:"10px 16px",borderBottom:"1px solid #1e2535",background:"#131825"}}>
+                    <span style={{fontSize:10,fontWeight:800,letterSpacing:"2px",color:"#475569",textTransform:"uppercase"}}>Audience</span>
+                  </div>
+                  <div style={{padding:12,display:"flex",flexDirection:"column",gap:8}}>
+                    {([
+                      { key:"all",   icon:"👥", label:"All Users",    desc:`${stats.totalUsers} users` },
+                      { key:"event", icon:"◉",  label:"Event",        desc:"Target by event" },
+                      { key:"user",  icon:"◎",  label:"Single User",  desc:"One specific user" },
+                    ] as const).map(opt => (
+                      <button key={opt.key} type="button"
+                      onClick={() => { setAnnMode(opt.key); setAnnEvent(""); setAnnTarget(""); if (opt.key === "event") fetchAnnEvents(); }}
+                        style={{
+                          display:"flex",alignItems:"center",gap:12,padding:"10px 12px",borderRadius:8,
+                          border:`1px solid ${annMode===opt.key ? "#6366f1" : "#1e2535"}`,
+                          background: annMode===opt.key ? "rgba(99,102,241,0.12)" : "transparent",
+                          cursor:"pointer",textAlign:"left",transition:"all 0.15s",
+                        }}>
+                        <span style={{fontSize:16,width:22,textAlign:"center"}}>{opt.icon}</span>
+                        <div style={{flex:1,minWidth:0}}>
+                          <div style={{fontSize:13,fontWeight:600,color: annMode===opt.key ? "#a5b4fc" : "#94a3b8"}}>{opt.label}</div>
+                          <div style={{fontSize:11,color:"#475569",marginTop:1}}>{opt.desc}</div>
+                        </div>
+                        {annMode===opt.key && <span style={{width:8,height:8,borderRadius:"50%",background:"#6366f1",boxShadow:"0 0 6px #6366f1",flexShrink:0}} />}
+                      </button>
+                    ))}
+                  </div>
+                </div>
 
-              <button className="s-btn" style={{alignSelf:"flex-start"}} disabled={announcing || !annTitle || !annMsg}
-                onClick={async () => {
-                  setAnnouncing(true); setAnnResult("");
-                  const res = await fetch("/api/admin/announce", {
-                    method:"POST", headers:{"Content-Type":"application/json"},
-                    body: JSON.stringify({
-                      title: annTitle, message: annMsg,
-                      targetUserID: annTarget || undefined,
-                      eventName: annEvent || undefined,
-                    }),
-                  });
-                  const d = await res.json();
-                  setAnnResult(res.ok ? d.message : (d.error || "Failed"));
-                  if (res.ok) { setAnnTitle(""); setAnnMsg(""); setAnnTarget(""); setAnnEvent(""); }
-                  setAnnouncing(false);
-                }}>
-                {announcing ? <span className="spin" /> : "📢 SEND"}
-              </button>
-              {annResult && <p style={{color: annResult.includes("Sent") || annResult.includes("sent") ? "#22c55e" : "#ef4444", fontFamily:"'Inter',sans-serif",fontSize:13}}>{annResult}</p>}
+                {/* Event picker — shown when event mode active */}
+                {annMode === "event" && (
+                <div style={{background:"#161b27",border:"1px solid #1e2535",borderRadius:10,overflow:"hidden"}}>
+                  <div style={{padding:"10px 16px",borderBottom:"1px solid #1e2535",background:"#131825",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+                    <span style={{fontSize:10,fontWeight:800,letterSpacing:"2px",color:"#475569",textTransform:"uppercase"}}>Select Event</span>
+                    {annEventsLoading && <span className="spin" style={{width:12,height:12,borderWidth:1.5}} />}
+                  </div>
+                  <div style={{padding:12}}>
+                    <select
+                      value={annEvent}
+                      onChange={e => setAnnEvent(e.target.value)}
+                      style={{
+                        width:"100%",background:"#0f1420",border:`1px solid ${annEvent ? "#6366f1" : "#1e2535"}`,
+                        borderRadius:8,color: annEvent ? "#a5b4fc" : "#475569",fontSize:13,
+                        padding:"9px 12px",outline:"none",cursor:"pointer",
+                        boxShadow: annEvent ? "0 0 10px rgba(99,102,241,0.15)" : "none",
+                      }}>
+                      <option value="">{annEventsLoading ? "Loading events…" : "— Select an event —"}</option>
+                      {annEvents.map(e => (
+                        <option key={e.name} value={e.name}>{e.name}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+                )}
+
+                {/* Single user */}
+                {/* Single user — shown when user mode active */}
+                {annMode === "user" && (
+                <div style={{background:"#161b27",border:"1px solid #1e2535",borderRadius:10,overflow:"hidden"}}>
+                  <div style={{padding:"10px 16px",borderBottom:"1px solid #1e2535",background:"#131825"}}>
+                    <span style={{fontSize:10,fontWeight:800,letterSpacing:"2px",color:"#475569",textTransform:"uppercase"}}>Single User ID</span>
+                  </div>
+                  <div style={{padding:12,display:"flex",alignItems:"center",gap:0,border:"1px solid transparent",borderRadius:8,overflow:"hidden"}}>
+                    <span style={{background:"#1e2535",color:"#818cf8",fontSize:13,fontWeight:700,padding:"9px 12px",whiteSpace:"nowrap",borderRadius:"6px 0 0 6px",border:"1px solid #2a3347",borderRight:"none"}}>XAV-</span>
+                    <input
+                      style={{flex:1,background:"#0f1420",border:`1px solid ${annTarget ? "#6366f1" : "#1e2535"}`,borderLeft:"none",borderRadius:"0 6px 6px 0",color:"#f1f5f9",fontSize:13,padding:"9px 12px",outline:"none",fontFamily:"monospace"}}
+                      placeholder="XXXXXXX"
+                      value={annTarget.replace(/^XAV-/,"")}
+                      onChange={e => { const v = e.target.value; setAnnTarget(v ? `XAV-${v}` : ""); }}
+                    />
+                  </div>
+                </div>
+                )}
+
+                {/* Live preview */}
+                <div style={{padding:"12px 14px",background:"rgba(99,102,241,0.06)",border:"1px solid rgba(99,102,241,0.2)",borderRadius:8}}>
+                  <div style={{fontSize:9,fontWeight:800,letterSpacing:"2px",color:"#334155",textTransform:"uppercase",marginBottom:6}}>Preview</div>
+                  <div style={{fontSize:12,color:"#818cf8",fontFamily:"monospace"}}>
+                    {annMode === "user" && annTarget
+                      ? <>→ <span style={{color:"#a5b4fc"}}>{annTarget}</span></>
+                      : annMode === "event" && annEvent
+                      ? <>→ participants of <span style={{color:"#a5b4fc"}}>{annEvent}</span></>
+                      : annMode === "event"
+                      ? <span style={{color:"#475569"}}>← select an event above</span>
+                      : annMode === "user"
+                      ? <span style={{color:"#475569"}}>← enter a user ID above</span>
+                      : <>→ all <span style={{color:"#a5b4fc"}}>{stats.totalUsers}</span> users</>
+                    }
+                  </div>
+                </div>
+
+              </div>
             </div>
           </div>
         )}
@@ -1647,6 +1739,7 @@ export default function AdminClient({ payments, eventRegs, contacts, stats }: {
           .mob-menu-btn span{display:block;width:16px;height:2px;background:#94a3b8;border-radius:2px;}
           .mob-title{font-size:15px;font-weight:700;color:#f1f5f9;}
           .sb-backdrop{position:fixed;inset:0;top:70px;z-index:199;background:rgba(0,0,0,0.5);}
+          .ann-grid{grid-template-columns:1fr !important;}
         }
         @media(min-width:769px){
           .mob-topbar{display:none;}
