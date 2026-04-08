@@ -68,7 +68,7 @@ function EventCard({ event, index }: { event: Event; index: number }) {
         </div>
         <span className="hud tl"/><span className="hud tr"/>
         <span className="hud bl"/><span className="hud br"/>
-        <div className="c-date-badge">APR 17-19</div>
+        <div className="c-date-badge">{formatDayMonth(event.eventDate)}</div>
       </div>
       <div className="c-status">
         <span className="c-decrypt-lbl">{decryptLabel}</span>
@@ -121,7 +121,13 @@ function EventCard({ event, index }: { event: Event; index: number }) {
     </div>
   );
 }
-
+// Add this helper near the top of your component
+const formatDayMonth = (date:any) => {
+  if (!date) return "";
+  const d = new Date(date);
+  return d.toLocaleDateString("en-GB", { day: "2-digit", month: "short" }).toUpperCase();
+  // Output: "08 APR"
+};
 function SkeletonCard() {
   return (
     <div style={{display:"flex",flexDirection:"column",opacity:.4,animation:"skP 1.5s ease infinite"}}>
