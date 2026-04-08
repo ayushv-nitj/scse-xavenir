@@ -768,7 +768,7 @@ useEffect(() => {
 
                   <video
                       ref={videoRef}
-                      src="teaser2.mp4"
+                      src="teaser3.mp4"
                       className="video-iframe"
                       loop
                       playsInline

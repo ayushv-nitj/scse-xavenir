@@ -1070,12 +1070,17 @@ export default function Dashboard() {
                   <div className="db-contact-list">
                     {[
                       { type: "GENERAL ENQUIRY", name: "Organizer Team", phone: "+91 97986 87024", desc: "Event information and general inquiries" },
-                      { type: "PORTAL SUPPORT",  name: "Tech Team",      phone: "+91 8936081707", desc: "Technical support and portal-related queries" },
+                      { type: "PORTAL SUPPORT", name: "Tech Team", phone: ["+91 8789633693","+91 8936081707"], desc: "Technical support and portal-related queries" },
                     ].map((c, i) => (
                       <div key={i} className="db-contact-item">
                         <span className="db-contact-type">{c.type}</span>
                         <span className="db-contact-name">{c.name}</span>
-                        <span className="db-contact-phone">📞 {c.phone}</span>
+                        <span className="db-contact-phone">
+                          {Array.isArray(c.phone)
+                            ? c.phone.map((p, j) => <span key={j} style={{ display: "block" }}>📞 {p}</span>)
+                            : <>📞 {c.phone}</>
+                          }
+                        </span>
                         <span className="db-contact-desc">{c.desc}</span>
                       </div>
                     ))}
