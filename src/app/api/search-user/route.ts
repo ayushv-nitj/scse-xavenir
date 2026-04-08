@@ -29,6 +29,7 @@ export async function POST(req: NextRequest) {
       paidForTshirt: user.paidForTshirt,
       paidForaccoModation: user.paidForaccoModation,
       goodiesCollected: user.isCollectedTshirt,
+      tshirtSize: user.tshirtSize,
     });
   } catch (error) {
     return NextResponse.json(

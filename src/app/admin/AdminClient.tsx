@@ -925,6 +925,14 @@ export default function AdminClient({ payments, eventRegs, contacts, stats }: {
   );
 })}
 </div>
+{(searchResult.paidForTshirt === "approved" || searchResult.paidForTshirt === "paid") && (
+  <div className="sr-row">
+    <span className="sr-l">T-SHIRT SIZE</span>
+    <span className="sr-v" style={{fontFamily:"monospace",fontWeight:700,color: searchResult.tshirtSize && searchResult.tshirtSize !== "none" ? "#00f5ff" : "#475569"}}>
+      {searchResult.tshirtSize && searchResult.tshirtSize !== "none" ? searchResult.tshirtSize : "— not set —"}
+    </span>
+  </div>
+)}
       </div>
     )}
   </div>
@@ -982,6 +990,16 @@ export default function AdminClient({ payments, eventRegs, contacts, stats }: {
             {goodiesResult.isCollectedTshirt ? "✔ ALREADY COLLECTED" : "✕ NOT YET COLLECTED"}
           </span>
         </div>
+
+        {/* T-shirt size row */}
+        {(goodiesResult.paidForTshirt === "approved" || goodiesResult.paidForTshirt === "paid") && (
+          <div className="sr-row">
+            <span className="sr-l">T-SHIRT SIZE</span>
+            <span className="sr-v" style={{fontFamily:"monospace",fontWeight:700,color: goodiesResult.tshirtSize && goodiesResult.tshirtSize !== "none" ? "#00f5ff" : "#475569"}}>
+              {goodiesResult.tshirtSize && goodiesResult.tshirtSize !== "none" ? goodiesResult.tshirtSize : "— not set —"}
+            </span>
+          </div>
+        )}
 
         {/* Mark as collected button — hidden if already collected, disabled if error or payment not approved */}
         {!goodiesResult.isCollectedTshirt && (

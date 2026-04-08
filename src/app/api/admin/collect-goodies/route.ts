@@ -13,7 +13,7 @@ export async function GET(req: NextRequest) {
     const userID = req.nextUrl.searchParams.get("userID");
     if (!userID) return NextResponse.json({ error: "userID is required" }, { status: 400 });
 
-    const user = await User.findOne({ userID }).select("userID fullName email paidForTshirt isCollectedTshirt").lean();
+    const user = await User.findOne({ userID }).select("userID fullName email paidForTshirt isCollectedTshirt tshirtSize").lean();
     if (!user) return NextResponse.json({ error: "User not found" }, { status: 404 });
 
     return NextResponse.json({ data: user }, { status: 200 });
@@ -50,7 +50,8 @@ export async function POST(req: NextRequest) {
       fullName: user.fullName, 
       email: user.email, 
       paidForTshirt: user.paidForTshirt, 
-      isCollectedTshirt: user.isCollectedTshirt, 
+      isCollectedTshirt: user.isCollectedTshirt,
+      tshirtSize: user.tshirtSize,
     }; 
     return NextResponse.json({ message: "Goodies marked as collected", data }, { status: 200 });
   } catch {
