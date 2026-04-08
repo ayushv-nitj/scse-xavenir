@@ -682,12 +682,12 @@ useEffect(() => {
           </div>
           <div className="stat-divider" />
           <div className="stat">
-            <StatNum target={12} />
+            <StatNum target={16} />
             <span className="stat-label">Events</span>
           </div>
           <div className="stat-divider" />
           <div className="stat">
-            <span className="stat-num">₹50K+</span>
+            <span className="stat-num">₹75K+</span>
             <span className="stat-label">Prize Pool</span>
           </div>
           <div className="stat-divider" />
