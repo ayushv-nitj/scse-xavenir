@@ -47,6 +47,8 @@ function PayRegForm() {
     transactionId2: "",
     transactionId3: "",
   });
+  const [tshirtSize, setTshirtSize] = useState<"none"|"36"|"38"|"40">("none");
+  const needsTshirtSize = ["reg_with_tshirt", "tshirt_only", "reg_with_accom", "reg_without_accom"].includes(typeParam);
 
   useEffect(() => {
     document.body.style.overflowY = "auto";
@@ -120,7 +122,7 @@ function PayRegForm() {
     setSubmitting(true);
     if (!imageUrl) { setError("Please upload payment proof."); setSubmitting(false); return; }
     if (!formData.transactionId1) { setError("Transaction ID 1 is required."); setSubmitting(false); return; }
-    const data = { ...formData, paymentProof: imageUrl, email: userData?.email, scseId: userData?.userID, paymentType: typeParam, expectedAmount: amount };
+    const data = { ...formData, paymentProof: imageUrl, email: userData?.email, scseId: userData?.userID, paymentType: typeParam, expectedAmount: amount, tshirtSize: needsTshirtSize ? tshirtSize : undefined };
     try {
       await axios.post("/api/collegepay", data);
       setShowSuccess(true);
@@ -270,6 +272,46 @@ function PayRegForm() {
                 </button>
               </div>
             </div>
+
+            {/* T-Shirt Size selector */}
+            {needsTshirtSize && (
+              <div style={s.fieldWrap}>
+                <label style={s.label}>
+                  T_SHIRT_SIZE <span style={{ color: "#ff0080", marginLeft: 4 }}>*</span>
+                </label>
+                <div style={{ display: "flex", gap: "0.6rem", flexWrap: "wrap" as const }}>
+                  {([
+                    { value: "none", label: "None" },
+                    { value: "36",   label: "S — 36" },
+                    { value: "38",   label: "M — 38" },
+                    { value: "40",   label: "L — 40" },
+                  ] as const).map(opt => (
+                    <button
+                      key={opt.value}
+                      type="button"
+                      onClick={() => setTshirtSize(opt.value)}
+                      style={{
+                        fontFamily: "'Share Tech Mono',monospace",
+                        fontSize: "0.72rem",
+                        letterSpacing: 2,
+                        padding: "8px 18px",
+                        cursor: "pointer",
+                        background: tshirtSize === opt.value
+                          ? "rgba(0,245,255,0.15)"
+                          : "rgba(0,5,20,0.7)",
+                        border: `1px solid ${tshirtSize === opt.value ? "#00f5ff" : "rgba(0,245,255,0.18)"}`,
+                        color: tshirtSize === opt.value ? "#00f5ff" : "rgba(0,245,255,0.45)",
+                        boxShadow: tshirtSize === opt.value ? "0 0 12px rgba(0,245,255,0.25)" : "none",
+                        clipPath: "polygon(0 0,calc(100% - 6px) 0,100% 6px,100% 100%,6px 100%,0 calc(100% - 6px))",
+                        transition: "all 0.15s",
+                      }}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {/* Divider */}
             <div style={s.divider}>

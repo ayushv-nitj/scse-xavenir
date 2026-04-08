@@ -11,6 +11,7 @@ export interface User extends Document {
   isNitian: boolean;
   isFromCse: boolean;
   isCollectedTshirt: boolean; // this is source of truth for hoodie 
+  tshirtSize: "none" | "36" | "38" | "40";
   paidForTshirt:  "unpaid" | "paid" | "approved" | "rejected";
   paidForaccoModation: "unpaid" | "paid" | "approved" | "rejected";
   paidForPrime: "paid" | "unpaid" |"approved" | "rejected";
@@ -91,6 +92,11 @@ const UserSchema: Schema<User> = new Schema(
       type: Boolean,
       required: true,
       default: false,
+    },
+    tshirtSize: {
+      type: String,
+      enum: ["none", "36", "38", "40"],
+      default: "none",
     },
     x: {
       type: Boolean,
