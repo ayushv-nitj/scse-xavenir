@@ -10,6 +10,7 @@ export interface User extends Document {
   isPrime: boolean;
   isNitian: boolean;
   isFromCse: boolean;
+  tshirtSize: "none" | "36" | "38" | "40";
   isCollectedTshirt: boolean; // this is source of truth for hoodie 
   paidForTshirt:  "unpaid" | "paid" | "approved" | "rejected";
   paidForaccoModation: "unpaid" | "paid" | "approved" | "rejected";
@@ -43,6 +44,11 @@ const UserSchema: Schema<User> = new Schema(
       enum: ["unpaid", "paid", "approved", "rejected"],
       required: true,
       default: "unpaid",
+    },
+    tshirtSize: {
+      type: String,
+      enum: ["none", "36", "38", "40"],
+      default: "none",
     },
     paidForaccoModation: {
       type: String,
