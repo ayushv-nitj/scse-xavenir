@@ -1409,7 +1409,7 @@ export default function AboutPage() {
         <section className="about-section about-section-alt">
           <SectionHeader label="web.team()" title="Web Team" />
           <p className="sec-desc">
-            // The engineers behind scse-xavenir.vercel.app — built with Next.js, TypeScript &amp; passion.
+            // The engineers behind scse-nitjsr.in — built with Next.js, TypeScript &amp; passion.
             &nbsp;{WEB_TEAM.length} DEVS ONLINE.
           </p>
           <div className="web-terminal">

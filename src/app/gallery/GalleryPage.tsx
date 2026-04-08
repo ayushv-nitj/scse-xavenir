@@ -219,7 +219,7 @@ export default function GalleryPage() {
         <div className="gal-hero-left">
           <p className="gal-hero-tag" style={{ fontSize: '1rem', letterSpacing: '0.2em' }}>
             <span className="gal-hero-tag-line" />
-            NIT Jamshedpur // CSE
+            NIT Jamshedpur - CSE
           </p>
           <h1 className="gal-hero-title" style={{ lineHeight: 1.05 }}>
             <span className="gal-glitch" data-text="GALLERY" style={{ fontSize: 'clamp(4rem, 9vw, 8rem)', display: 'block' }}>

@@ -735,7 +735,7 @@ useEffect(() => {
               </div>
             </div>
             <div className="cp-details">
-              <div>► THEME: <span className="cp-hl">CODE TO THE FUTURE</span></div>
+              <div>► THEME: <span className="cp-hl">CYBER PUNK</span></div>
               <div>► VENUE: <span className="cp-hl">NIT JAMSHEDPUR</span></div>
               <div>► STATUS: <span className="cp-active">ACTIVE ●</span></div>
             </div>
@@ -768,7 +768,7 @@ useEffect(() => {
 
                   <video
                       ref={videoRef}
-                      src="teaser2.mp4"
+                      src="teaser3.mp4"
                       className="video-iframe"
                       loop
                       playsInline
