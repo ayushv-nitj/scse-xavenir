@@ -160,7 +160,13 @@ export default function RegisterEventPage() {
 
   /* Determine which contacts to show in the left col */
   const contactsToShow = parsedContacts || eventData.contactInfo || "";
-
+  // Add this helper near the top of your component
+  const formatDayMonth = (date:any) => {
+    if (!date) return "";
+    const d = new Date(date);
+    return d.toLocaleDateString("en-GB", { day: "2-digit", month: "short" }).toUpperCase();
+    // Output: "08 APR"
+  };
   return (
     <>
       <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet"/>
@@ -222,7 +228,7 @@ export default function RegisterEventPage() {
                   <div className="img-overlay"/>
                   <span className="hud tl"/><span className="hud tr"/>
                   <span className="hud bl"/><span className="hud br"/>
-                  <div className="img-date-badge">APR 17-19</div>
+                  <div className="img-date-badge">{formatDayMonth(eventData.eventDate)}</div>
                 </div>
                 <div className="img-statusbar">
                   <span className="isb-dec">DECRYPTED</span>
@@ -338,14 +344,22 @@ export default function RegisterEventPage() {
                   <div className="pay-icon">⚡</div>
                   <div>
                     <p className="pay-title">Direct Registration</p>
-                    <p className="pay-desc">
-                      For <strong>non-CSE NIT students</strong>: Team fee{" "}
-                      <span className="pay-highlight">₹{eventData.regFees}</span>
-                    </p>
+                    {(eventData.name === "Scavenger Hunt" || eventData.name === "Meme to Mission") ? (
+  <p className="pay-desc">
+    Free for <strong>all NIT students</strong> 🎉
+  </p>
+) : (
+  <p className="pay-desc">
+    For <strong>non-CSE NIT students</strong>: Team fee{" "}
+    <span className="pay-highlight">₹{eventData.regFees}</span>
+  </p>
+)}
+                    {(eventData.name !== "Scavenger Hunt" && eventData.name !== "Meme to Mission") && (
                     <div className="pay-checks">
                       <span className="pay-check">✓ Single time payment</span>
                       <span className="pay-check">✓ Get QR after filling team details</span>
                     </div>
+                  )}
                   </div>
                 </div>
               </InfoBlock>

@@ -17,6 +17,7 @@ export async function POST(req: NextRequest) {
       transactionId3,
       paymentType,
       expectedAmount,
+      tshirtSize,
     } = await req.json();
 
     const token = req.cookies.get("logtok")?.value;
@@ -76,7 +77,13 @@ export async function POST(req: NextRequest) {
     } else if (paymentType === "accom_only") {
       userUpdate.paidForaccoModation = "paid";
     }
-    
+
+    // Save tshirt size for types that include a tshirt
+    const tshirtTypes = ["reg_with_tshirt", "tshirt_only", "reg_with_accom", "reg_without_accom"];
+    if (tshirtSize && tshirtSize !== "none" && tshirtTypes.includes(paymentType)) {
+      userUpdate.tshirtSize = tshirtSize;
+    }
+
     if (Object.keys(userUpdate).length > 0) {
       await User.findOneAndUpdate({ email }, userUpdate);
     }
