@@ -67,6 +67,7 @@ export default function Dashboard() {
   const [uploading, setUploading] = useState(false);
   const [picPreview, setPicPreview] = useState<string>("");
   const fileRef = useRef<HTMLInputElement>(null);
+  const [showTshirt, setShowTshirt] = useState(false);
 
   useEffect(() => {
     mountTime.current = Date.now();
@@ -264,10 +265,43 @@ export default function Dashboard() {
         {/* ── TERMINAL TAB BAR (desktop) ── */}
         <div className="db-terminal">
           <div className="db-term-bar">
-            <div className="db-term-dots"><span /><span /><span /></div>
-            <span className="db-term-title">xavenir@nitjsr:~/dashboard$</span>
-            <span className="db-term-status">SESSION ACTIVE</span>
-          </div>
+  <div className="db-term-dots"><span /><span /><span /></div>
+  <span className="db-term-title">xavenir@nitjsr:~/dashboard$</span>
+  <button
+    onClick={() => setShowTshirt(true)}
+    style={{
+      marginLeft: "auto",
+      marginRight: "10px",
+      fontFamily: "'Share Tech Mono', monospace",
+      fontSize: "0.62rem",
+      letterSpacing: "2px",
+      padding: "5px 14px",
+      border: "1px solid var(--cyan)",
+      color: "var(--cyan)",
+      background: "rgba(0,245,255,0.08)",
+      cursor: "pointer",
+      textTransform: "uppercase",
+      transition: "all 0.25s",
+      flexShrink: 0,
+      boxShadow: "0 0 10px rgba(0,245,255,0.4), 0 0 20px rgba(0,245,255,0.15), inset 0 0 8px rgba(0,245,255,0.08)",
+      textShadow: "0 0 8px var(--cyan)",
+      animation: "tshirtBtnPulse 2.5s ease-in-out infinite",
+    }}
+    onMouseEnter={e => {
+      (e.currentTarget as HTMLButtonElement).style.background = "rgba(0,245,255,0.18)";
+      (e.currentTarget as HTMLButtonElement).style.boxShadow = "0 0 18px rgba(0,245,255,0.7), 0 0 40px rgba(0,245,255,0.3), inset 0 0 12px rgba(0,245,255,0.15)";
+      (e.currentTarget as HTMLButtonElement).style.textShadow = "0 0 12px var(--cyan), 0 0 24px var(--cyan)";
+    }}
+    onMouseLeave={e => {
+      (e.currentTarget as HTMLButtonElement).style.background = "rgba(0,245,255,0.08)";
+      (e.currentTarget as HTMLButtonElement).style.boxShadow = "0 0 10px rgba(0,245,255,0.4), 0 0 20px rgba(0,245,255,0.15), inset 0 0 8px rgba(0,245,255,0.08)";
+      (e.currentTarget as HTMLButtonElement).style.textShadow = "0 0 8px var(--cyan)";
+    }}
+  >
+    ◈ CHECKOUT T-SHIRT
+  </button>
+  <span className="db-term-status">SESSION ACTIVE</span>
+</div>
           <div className="db-tabs">
             {tabs.map(t => (
               <button
@@ -1092,6 +1126,63 @@ export default function Dashboard() {
           )}
 
         </div>
+      
+
+      {/* T-Shirt Modal */}
+{showTshirt && (
+  <div
+    onClick={() => setShowTshirt(false)}
+    style={{
+      position: "fixed", inset: 0, zIndex: 1000,
+      background: "rgba(0,0,0,0.7)",
+      display: "flex", alignItems: "center", justifyContent: "center",
+      backdropFilter: "blur(4px)",
+    }}
+  >
+    <div
+      onClick={e => e.stopPropagation()}
+      style={{
+        background: "rgba(0,3,20,0.97)",
+        border: "1px solid rgba(0,245,255,0.25)",
+        padding: "2rem",
+        width: "min(500px, 92vw)",
+        position: "relative",
+        clipPath: "polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 16px 100%, 0 calc(100% - 16px))",
+      }}
+    >
+      {/* top glow line */}
+      <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: "1px", background: "linear-gradient(90deg, var(--cyan), var(--pink), transparent)" }} />
+      {/* corners */}
+      <div style={{ position: "absolute", top: -1, left: -1, width: 12, height: 12, borderTop: "2px solid var(--cyan)", borderLeft: "2px solid var(--cyan)" }} />
+      <div style={{ position: "absolute", bottom: -1, right: -1, width: 12, height: 12, borderBottom: "2px solid var(--pink)", borderRight: "2px solid var(--pink)" }} />
+
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
+        <span style={{ fontFamily: "'Share Tech Mono', monospace", fontSize: "0.68rem", letterSpacing: "3px", color: "var(--cyan)" }}>
+          // XAVENIR_TSHIRT
+        </span>
+        <button
+          onClick={() => setShowTshirt(false)}
+          style={{ background: "none", border: "none", color: "rgba(180,200,255,0.5)", cursor: "pointer", fontSize: "1.1rem", lineHeight: 1, padding: 0 }}
+        >
+          ✕
+        </button>
+      </div>
+
+      <img
+        src="https://res.cloudinary.com/dtieuimsz/image/upload/v1775765341/tshirt_eicl5h.jpg"
+        alt="Xavenir T-Shirt"
+        style={{ width: "100%", display: "block", borderRadius: 2, border: "1px solid rgba(0,245,255,0.1)" }}
+      />
+
+      <div style={{ marginTop: "1rem", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <span style={{ fontFamily: "'Orbitron', monospace", fontSize: "0.78rem", color: "#fff", letterSpacing: 2 }}>OFFICIAL TEE</span>
+        <span style={{ fontFamily: "'Share Tech Mono', monospace", fontSize: "0.62rem", color: "rgba(0,245,255,0.4)", letterSpacing: 1 }}>XAVENIR 2025</span>
+      </div>
+    </div>
+  </div>
+)}
+      
+      
       </div>
     </div>
   );
@@ -1101,6 +1192,11 @@ export default function Dashboard() {
 function DashStyles() {
   return (
     <style>{`
+
+      @keyframes tshirtBtnPulse {
+  0%, 100% { box-shadow: 0 0 10px rgba(0,245,255,0.4), 0 0 20px rgba(0,245,255,0.15), inset 0 0 8px rgba(0,245,255,0.08); }
+  50% { box-shadow: 0 0 16px rgba(0,245,255,0.65), 0 0 35px rgba(0,245,255,0.25), inset 0 0 10px rgba(0,245,255,0.12); }
+}
       @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Share+Tech+Mono&family=Rajdhani:wght@300;400;600;700&display=swap');
 
       :root {
