@@ -286,7 +286,7 @@ function PayRegForm() {
                     { value: "38",   label: "M — 38" },
                     { value: "40",   label: "L — 40" },
                     { value: "42",   label: "XL — 42" },
-                    { value: "44",   label: "XL — 44" },
+                    { value: "44",   label: "XXL — 44" },
                     
                   ] as const).map(opt => (
                     <button
