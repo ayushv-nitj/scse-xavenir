@@ -47,7 +47,7 @@ function PayRegForm() {
     transactionId2: "",
     transactionId3: "",
   });
-  const [tshirtSize, setTshirtSize] = useState<"none"|"36"|"38"|"40">("none");
+  const [tshirtSize, setTshirtSize] = useState<"none"|"36"|"38"|"40"|"42"|"44">("none");
   const needsTshirtSize = ["reg_with_tshirt", "tshirt_only", "reg_with_accom", "reg_without_accom"].includes(typeParam);
 
   useEffect(() => {
@@ -285,6 +285,9 @@ function PayRegForm() {
                     { value: "36",   label: "S — 36" },
                     { value: "38",   label: "M — 38" },
                     { value: "40",   label: "L — 40" },
+                    { value: "42",   label: "XL — 42" },
+                    { value: "44",   label: "XL — 44" },
+                    
                   ] as const).map(opt => (
                     <button
                       key={opt.value}
