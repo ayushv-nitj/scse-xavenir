@@ -159,8 +159,11 @@ export default function EventsPage() {
   useEffect(() => {
     fetch("/api/events")
       .then(r => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json(); })
-      .then(d => { setEvents(Array.isArray(d) ? d : d.events ?? []); setLoading(false); })
-      .catch(e => { setError(e.message); setLoading(false); });
+.then(d => { 
+  const arr = Array.isArray(d) ? d : d.events ?? [];
+  setEvents([...arr].reverse()); 
+  setLoading(false); 
+})      .catch(e => { setError(e.message); setLoading(false); });
   }, []);
 
   // Ticker pulse
