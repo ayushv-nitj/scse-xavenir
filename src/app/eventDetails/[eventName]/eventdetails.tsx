@@ -354,7 +354,7 @@ export default function RegisterEventPage() {
     <span className="pay-highlight">₹{eventData.regFees}</span>
   </p>
 )}
-                    {(eventData.name !== "Scavenger Hunt" && eventData.name !== "Meme to Mission") && (
+                    {(eventData.name !== "Scavenger Hunt" && eventData.name !== "Meme to Mission" && eventData.name !== "MR & MISS XAVENIR 2026") && (
                     <div className="pay-checks">
                       <span className="pay-check">✓ Single time payment</span>
                       <span className="pay-check">✓ Get QR after filling team details</span>
