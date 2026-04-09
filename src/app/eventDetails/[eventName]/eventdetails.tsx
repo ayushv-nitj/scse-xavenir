@@ -239,7 +239,7 @@ export default function RegisterEventPage() {
 
               {/* Stats grid */}
               <div className="stats-grid">
-                <StatCard accent="cyan"    label="PRIZE POOL" value={`₹${eventData.prizepool.toLocaleString("en-IN")}`}/>
+                <StatCard accent="cyan"    label="PRIZE POOL" value={eventData.prizepool === 0 ? "GOODIES 🎁" : `₹${eventData.prizepool.toLocaleString("en-IN")}`}/>
                 <StatCard accent="magenta" label="REG FEES"   value={eventData.regFees === 0 ? "FREE" : `₹${eventData.regFees}`}/>
                 <StatCard accent="purple"  label="MIN TEAM"   value={`${eventData.minPart}`}/>
                 <StatCard accent="purple"  label="MAX TEAM"   value={`${eventData.maxPart}`}/>
@@ -354,7 +354,7 @@ export default function RegisterEventPage() {
     <span className="pay-highlight">₹{eventData.regFees}</span>
   </p>
 )}
-                    {(eventData.name !== "Scavenger Hunt" && eventData.name !== "Meme to Mission") && (
+                    {(eventData.name !== "Scavenger Hunt" && eventData.name !== "Meme to Mission" && eventData.name !== "MR & MISS XAVENIR 2026") && (
                     <div className="pay-checks">
                       <span className="pay-check">✓ Single time payment</span>
                       <span className="pay-check">✓ Get QR after filling team details</span>

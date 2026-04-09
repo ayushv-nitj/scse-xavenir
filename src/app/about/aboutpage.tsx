@@ -259,7 +259,7 @@ const MEMBERS: Member[] = [
   {
     name: "Anuj Kumar",
     role: "EM Head",
-    img: "https://res.cloudinary.com/dtieuimsz/image/upload/v1774585360/sample_tl78ud.jpg",
+    img: "https://res.cloudinary.com/dnelqkopx/image/upload/v1775712528/IMG-20260409-WA0003_nvamyt.jpg",
     phone: "7858927896",
     email: "anujkumar@gmail.com",
     linkedin: "https://www.linkedin.com/in/anuj-kumar-14878b28a",
