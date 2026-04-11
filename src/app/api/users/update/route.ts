@@ -17,7 +17,7 @@ export async function PATCH(req: NextRequest) {
     }
 
     const body = await req.json();
-    const allowed = ["phone", "gender", "profilePic"];
+    const allowed = ["phone", "gender", "profilePic", "fullName"];
     const update: Record<string, any> = {};
     for (const key of allowed) {
       if (body[key] !== undefined) update[key] = body[key];

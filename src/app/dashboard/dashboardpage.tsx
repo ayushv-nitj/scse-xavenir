@@ -52,6 +52,7 @@ export default function Dashboard() {
   const [editMode, setEditMode] = useState(false);
   const [phone, setPhone] = useState("");
   const [gender, setGender] = useState("");
+  const [fullName, setFullName] = useState("");
   const [saving, setSaving] = useState(false);
   const [saveMsg, setSaveMsg] = useState("");
   const [showPaymentOptions, setShowPaymentOptions] = useState(false);
@@ -79,6 +80,7 @@ export default function Dashboard() {
         setUser(d.data);
         setPhone(d.data.phone || "");
         setGender(d.data.gender || "");
+        setFullName(d.data.fullName || "");
         setPicPreview(d.data.profilePic || "");
         setLoading(false);
 
@@ -142,7 +144,7 @@ export default function Dashboard() {
       const res = await fetch("/api/users/update", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ phone, gender }),
+        body: JSON.stringify({ phone, gender, fullName }),
       });
       const d = await res.json();
       if (res.ok) {
@@ -736,15 +738,22 @@ export default function Dashboard() {
 
                   <div className="db-edit-fields">
                     {[
-                      { label: "FULL NAME", val: user?.fullName, editable: false },
-                      { label: "EMAIL",     val: user?.email,    editable: false },
-                      { label: "COLLEGE",   val: user?.collegeName, editable: false },
+                      { label: "EMAIL",   val: user?.email,       editable: false },
+                      { label: "COLLEGE", val: user?.collegeName, editable: false },
                     ].map(f => (
                       <div key={f.label} className="db-edit-row">
                         <span className="db-edit-label">{f.label}</span>
                         <span className="db-edit-static">{f.val}</span>
                       </div>
                     ))}
+
+                    <div className="db-edit-row">
+                      <span className="db-edit-label">FULL NAME</span>
+                      {editMode
+                        ? <input className="db-input" value={fullName} onChange={e => setFullName(e.target.value)} placeholder="Your full name" />
+                        : <span className="db-edit-static">{user?.fullName || <span style={{ opacity: 0.35 }}>not set</span>}</span>
+                      }
+                    </div>
 
                     <div className="db-edit-row">
                       <span className="db-edit-label">PHONE</span>
