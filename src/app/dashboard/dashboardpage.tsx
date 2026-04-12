@@ -1178,7 +1178,7 @@ export default function Dashboard() {
       </div>
 
       <img
-        src="https://res.cloudinary.com/dtieuimsz/image/upload/v1775765341/tshirt_eicl5h.jpg"
+        src="https://res.cloudinary.com/dtieuimsz/image/upload/v1776017181/WhatsApp_Image_2026-04-12_at_11.28.26_PM_wsum1p.jpg"
         alt="Xavenir T-Shirt"
         style={{ width: "100%", display: "block", borderRadius: 2, border: "1px solid rgba(0,245,255,0.1)" }}
       />
