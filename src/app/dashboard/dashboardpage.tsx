@@ -1167,7 +1167,7 @@ export default function Dashboard() {
 
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
         <span style={{ fontFamily: "'Share Tech Mono', monospace", fontSize: "0.68rem", letterSpacing: "3px", color: "var(--cyan)" }}>
-          // XAVENIR_TSHIRT
+           XAVENIR_TSHIRT
         </span>
         <button
           onClick={() => setShowTshirt(false)}
@@ -1185,7 +1185,7 @@ export default function Dashboard() {
 
       <div style={{ marginTop: "1rem", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <span style={{ fontFamily: "'Orbitron', monospace", fontSize: "0.78rem", color: "#fff", letterSpacing: 2 }}>OFFICIAL TEE</span>
-        <span style={{ fontFamily: "'Share Tech Mono', monospace", fontSize: "0.62rem", color: "rgba(0,245,255,0.4)", letterSpacing: 1 }}>XAVENIR 2025</span>
+        <span style={{ fontFamily: "'Share Tech Mono', monospace", fontSize: "0.62rem", color: "rgba(0,245,255,0.4)", letterSpacing: 1 }}>Designed by - Miran</span>
       </div>
     </div>
   </div>
