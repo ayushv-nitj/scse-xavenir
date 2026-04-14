@@ -294,6 +294,34 @@ export default function RegisterEventPage() {
       );
     }
 
+    if (!eventData.registerThroughForm && eventData.linkToRegister) {
+      /* Convert any Google Drive share URL → inline preview URL */
+      const driveMatch = eventData.linkToRegister.match(/\/d\/([a-zA-Z0-9_-]+)/);
+      const pdfHref = driveMatch
+        ? `https://drive.google.com/file/d/${driveMatch[1]}/preview`
+        : eventData.linkToRegister;
+
+      return (
+        <a
+          href={pdfHref}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="pdf-prob-btn"
+        >
+          <span className="ppb-pulse" />
+          <span className="ppb-badge">PDF</span>
+          <span className="ppb-left">
+            <span className="ppb-icon">📄</span>
+            <span className="ppb-texts">
+              <span className="ppb-label">PROBLEM STATEMENT</span>
+              <span className="ppb-sub">// CLICK TO VIEW PDF ↗</span>
+            </span>
+          </span>
+          <span className="ppb-arrow">↗</span>
+        </a>
+      );
+    }
+
     return (
       <RegisterForEvent
         eventName={eventData.name}
@@ -478,6 +506,119 @@ export default function RegisterEventPage() {
   }
   .frb-icon { font-size: 1rem; opacity: .7; }
   .frb-arrow { font-size: 1rem; margin-left: auto; }
+
+  /* ══ PDF Problem Statement button ══ */
+  .pdf-prob-btn {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    width: 100%;
+    padding: 14px 18px;
+    background: linear-gradient(135deg, rgba(255,160,0,.10), rgba(255,45,120,.10));
+    border: 1.5px solid rgba(255,160,0,.7);
+    border-radius: 2px;
+    text-decoration: none;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: all .25s;
+    box-shadow: 0 0 18px rgba(255,160,0,.18), inset 0 0 18px rgba(255,160,0,.04);
+    animation: ppb-glow-pulse 2.2s ease-in-out infinite;
+  }
+  @keyframes ppb-glow-pulse {
+    0%, 100% { box-shadow: 0 0 18px rgba(255,160,0,.18), inset 0 0 18px rgba(255,160,0,.04); border-color: rgba(255,160,0,.7); }
+    50%       { box-shadow: 0 0 32px rgba(255,160,0,.42), inset 0 0 24px rgba(255,160,0,.09); border-color: rgba(255,200,0,.95); }
+  }
+  .pdf-prob-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent, rgba(255,180,0,.10), transparent);
+    transform: translateX(-100%);
+    transition: transform .5s;
+  }
+  .pdf-prob-btn:hover::before { transform: translateX(100%); }
+  .pdf-prob-btn:hover {
+    background: linear-gradient(135deg, rgba(255,160,0,.18), rgba(255,45,120,.16));
+    border-color: #ffb300;
+    box-shadow: 0 0 36px rgba(255,160,0,.45), 0 0 70px rgba(255,45,120,.18);
+    transform: translateY(-1px);
+  }
+
+  /* "PDF" floating badge */
+  .ppb-badge {
+    position: absolute;
+    top: -1px; left: -1px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: .58rem;
+    font-weight: 700;
+    letter-spacing: .12em;
+    color: #060818;
+    background: #ffb300;
+    padding: 2px 7px;
+    border-radius: 0 0 4px 0;
+    box-shadow: 0 0 8px rgba(255,180,0,.5);
+  }
+
+  /* Animated corner pulse dot */
+  .ppb-pulse {
+    position: absolute;
+    top: 7px; right: 7px;
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: #ffb300;
+    box-shadow: 0 0 8px #ffb300;
+    animation: ppb-dot 1.6s ease-in-out infinite;
+  }
+  @keyframes ppb-dot {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50%       { opacity: .35; transform: scale(.6); }
+  }
+
+  .ppb-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .ppb-icon {
+    font-size: 1.5rem;
+    filter: drop-shadow(0 0 6px rgba(255,160,0,.8));
+    animation: ppb-icon-shake 3s ease-in-out infinite;
+    flex-shrink: 0;
+  }
+  @keyframes ppb-icon-shake {
+    0%, 90%, 100% { transform: rotate(0deg); }
+    92% { transform: rotate(-8deg); }
+    96% { transform: rotate(8deg); }
+    98% { transform: rotate(-4deg); }
+  }
+  .ppb-texts {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .ppb-label {
+    font-family: 'Orbitron', sans-serif;
+    font-size: .92rem;
+    font-weight: 700;
+    letter-spacing: .18em;
+    color: #ffb300;
+    text-shadow: 0 0 10px rgba(255,180,0,.6);
+  }
+  .ppb-sub {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: .68rem;
+    letter-spacing: .18em;
+    color: rgba(255,180,0,.6);
+  }
+  .ppb-arrow {
+    font-size: 1.2rem;
+    color: #ffb300;
+    opacity: .8;
+    text-shadow: 0 0 8px rgba(255,180,0,.7);
+    flex-shrink: 0;
+  }
 
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
