@@ -183,19 +183,23 @@ export default function EventsPage() {
 const filtered = events
   .filter(e => search.trim() ? e.name.toLowerCase().includes(search.toLowerCase()) : true)
   .filter(e => {
-    if (filter === "all" || !e.eventDate) return true;
-    const d = new Date(e.eventDate);
-    return filter === "completed" ? d < today : d >= today;
-  })
-  .filter(e => {
-    if (dateFilter === "all") return true;
-    if (!e.eventDate) return false;
-    const day = new Date(e.eventDate).getDate();
-    return String(day) === dateFilter;
-  })
-  .filter(e => {
-    if (typeFilter === "all") return true;
-    return typeFilter === "tech" ? e.isTechEvent === true : e.isTechEvent === false;
+    if (filter === "completed") {
+      // show all completed regardless of date/type filters
+      if (!e.eventDate) return false;
+      return new Date(e.eventDate) < today;
+    }
+    if (filter === "upcoming" && e.eventDate) {
+      if (new Date(e.eventDate) < today) return false;
+    }
+    if (dateFilter !== "all") {
+      if (!e.eventDate) return false;
+      if (String(new Date(e.eventDate).getDate()) !== dateFilter) return false;
+    }
+    if (typeFilter !== "all") {
+      if (typeFilter === "tech" && e.isTechEvent !== true) return false;
+      if (typeFilter === "cultural" && e.isTechEvent !== false) return false;
+    }
+    return true;
   });
 
     
