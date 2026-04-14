@@ -567,37 +567,33 @@ useEffect(() => {
     };
   }, []);
  const competitions = [
-  { icon: "🕵️", title: "Scavenger Hunt", slug: "Scavenger Hunt", desc: "Solve tech puzzles, hunt hidden clues, and outsmart rival teams in a fast-paced challenge.", prize: "₹5,000 PRIZE" },
+  { icon: "🧠", title: "Quiz-o-Compute", slug: "Quiz-o-Compute", desc: "Computer Fundamentals Quiz testing core CS concepts including DBMS, OS, OOPs, STL, Web Tech and more.", prize: "₹8,000 PRIZE" },
 
-  // { icon: "💃", title: "Paper Dance", slug: "Paper Dance", desc: "Dance with your partner on shrinking paper—balance, coordination, and fun combined.", prize: "₹3,000 PRIZE" },
+  { icon: "🎨", title: "Pixel Sync", slug: "Pixel Sync", desc: "Frontend web development challenge focused on UI/UX creativity and responsiveness.", prize: "₹4,000 PRIZE" },
 
-  // { icon: "🤖", title: "AI-ML Challenge", slug: "AI-ML Challenge", desc: "Build an AI/ML model to solve real-world problems under constraints.", prize: "₹8,000 PRIZE" },
+  { icon: "🎯", title: "Mini Carnival Zone", slug: "Mini Carnival Zone", desc: "Multi-round elimination event testing knowledge, perception, and decision-making under pressure.", prize: "₹1,900 PRIZE" },
 
-  // { icon: "🎮", title: "PUBG, Valorant & Free Fire Tournament", slug: "PUBG, Valorant & Free Fire Tournament", desc: "Compete in high-intensity esports battles and prove your squad’s dominance.", prize: "₹3,000 PRIZE" },
+  { icon: "🧩", title: "Debug and Discover", slug: "Debug and Discover", desc: "Fun analytical and problem-solving event with secret rounds and unconventional challenges.", prize: "₹4,800 PRIZE" },
 
-  // { icon: "🎨", title: "Frontend Design Contest", slug: "Frontend Design Contest", desc: "Design and build a stunning frontend UI from scratch—where creativity meets code.", prize: "₹4,000 PRIZE" },
+  { icon: "⚡", title: "Web Hackathon", slug: "Web Hackathon", desc: "Full-stack hackathon testing system design, security, and resource management under real-time constraints.", prize: "₹14,500 PRIZE" },
 
-  // { icon: "🔐", title: "Ethical Hacking Challenge", slug: "Ethical Hacking Challenge", desc: "Test your penetration testing and cybersecurity skills in a controlled environment.", prize: "₹5,000 PRIZE" },
+  { icon: "💻", title: "Binary Blitz", slug: "Binary Blitz", desc: "Fast-paced 1v1 knockout coding contest testing speed and accuracy.", prize: "₹4,000 PRIZE" },
 
-  // { icon: "🥟", title: "Golgappa Eating Challenge", slug: "Golgappa Eating Challenge", desc: "A fun-filled eating contest—push your limits in the ultimate golgappa showdown.", prize: "₹1,000 PRIZE" },
+  { icon: "💡", title: "Ideathon", slug: "Ideathon", desc: "Innovation based idea pitching competition solving real world problems.", prize: "₹3,500 PRIZE" },
 
-  // { icon: "🤖", title: "Robotics Competition", slug: "Robotics Competition", desc: "Design, build, and program robots to complete exciting real-world challenges.", prize: "₹3,000 PRIZE" },
+  { icon: "🎮", title: "BGMI Tournament", slug: "BGMI Tournament", desc: "Competitive BGMI gaming tournament.", prize: "₹3,500 PRIZE" },
 
-  // { icon: "🙈", title: "Blind Coding", slug: "Blind Coding", desc: "Code without seeing your screen—pure logic, memory, and confidence.", prize: "₹3,000 PRIZE" },
+  { icon: "🤖", title: "AI ML Hackathon", slug: "AI ML Hackathon", desc: "AI/ML solution presentation event focusing on building models from scratch.", prize: "₹7,800 PRIZE" },
 
-  // { icon: "💡", title: "Ideathon", slug: "Ideathon", desc: "Pitch innovative tech ideas and showcase your creativity and problem-solving vision.", prize: "₹3,000 PRIZE" },
+  { icon: "🏆", title: "CodeZenith (CP Contest)", slug: "CodeZenith (CP Contest)", desc: "Competitive programming contest hosted on GFG.", prize: "₹8,000 PRIZE" },
 
-  // { icon: "🎬", title: "Movie Mania", slug: "Movie Mania", desc: "Enjoy a tech-themed movie screening followed by an engaging trivia challenge.", prize: "₹2,000 PRIZE" },
+  { icon: "🎬", title: "Movie Mania", slug: "Movie Mania", desc: "Fun movie-based trivia and acting competition for cinephiles.", prize: "₹2,000 PRIZE" },
 
-  // { icon: "💻", title: "Competitive Programming", slug: "Competitive Programming", desc: "Solve algorithmic problems under time pressure and prove your coding skills.", prize: "₹8,000 PRIZE" },
+  { icon: "💃", title: "Paper Dance", slug: "Paper Dance", desc: "Fun dance competition with shrinking paper challenge.", prize: "₹1,900 PRIZE" },
 
-  // { icon: "⚡", title: "Hackathon", slug: "Hackathon", desc: "Build innovative solutions in an intense 24-hour coding marathon.", prize: "₹15,000 PRIZE" },
+  { icon: "🥟", title: "Golgappa Challenge", slug: "Golgappa Challenge", desc: "Fun eating challenge exclusively for girls.", prize: "₹1,000 PRIZE" },
 
-  // { icon: "⌨️", title: "Computer Fundamentals Quiz", slug: "Computer Fundamentals Quiz", desc: "Test your knowledge of core computer science concepts in a competitive quiz.", prize: "₹8,000 PRIZE" },
-
-  // { icon: "⚡", title: "Typing Speed Challenge", slug: "Typing Speed Challenge", desc: "Compete on speed and accuracy—fastest fingers take the win.", prize: "₹3,000 PRIZE" },
-
-  // { icon: "🎥", title: "Tech Reel", slug: "Tech Reel", desc: "Create a short, engaging video capturing the essence of technology trends.", prize: "₹2,000 PRIZE" }
+  { icon: "📱", title: "Social Media Challenge", slug: "Social Media Challenge", desc: "Online reels and meme competition for social media engagement.", prize: "₹2,000 PRIZE" }
 ];
 
   return (
