@@ -148,7 +148,7 @@ function SkeletonCard() {
 const TICKER_ITEMS = [
   "XAVENIR 2026", "NIT JAMSHEDPUR", "SCSE OPS ACTIVE",
   "16 EVENTS LIVE", "APR 17-19", "CYBER WORLD", "CODE // CREATE // CONQUER",
-  "REGISTER NOW", "PRIZE POOL ₹50K+", "500+ PARTICIPANTS",
+  "REGISTER NOW", "PRIZE POOL ₹75K+", "500+ PARTICIPANTS",
 ];
 
 /* ── Page ── */
@@ -314,7 +314,7 @@ const filtered = events
               <div className="data-bar">
                 <span className="db-key">PRIZE POOL</span>
                 <div className="db-track"><div className="db-fill magenta" style={{width:"68%"}}/></div>
-                <span className="db-val db-val-m">₹50K+</span>
+                <span className="db-val db-val-m">₹75K+</span>
               </div>
               <div className="data-bar">
                 <span className="db-key">EVENTS</span>
