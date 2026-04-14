@@ -15,6 +15,7 @@ interface Event {
   minPart: number;
   maxPart: number;
   eventDate?: string;
+  isTechEvent?: boolean;
 }
 
 const toPath = (name: string) => encodeURIComponent(name);
@@ -147,7 +148,7 @@ function SkeletonCard() {
 const TICKER_ITEMS = [
   "XAVENIR 2026", "NIT JAMSHEDPUR", "SCSE OPS ACTIVE",
   "16 EVENTS LIVE", "APR 17-19", "CYBER WORLD", "CODE // CREATE // CONQUER",
-  "REGISTER NOW", "PRIZE POOL ₹50K+", "500+ PARTICIPANTS",
+  "REGISTER NOW", "PRIZE POOL ₹75K+", "500+ PARTICIPANTS",
 ];
 
 /* ── Page ── */
@@ -158,6 +159,8 @@ export default function EventsPage() {
   const [tick, setTick] = useState(0);
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("all");
+  const [dateFilter, setDateFilter] = useState("all"); // "all" | "17" | "18" | "19"
+  const [typeFilter, setTypeFilter] = useState("all"); // "all" | "tech" | "cultural"
 
   useEffect(() => {
     fetch("/api/events")
@@ -180,9 +183,23 @@ export default function EventsPage() {
 const filtered = events
   .filter(e => search.trim() ? e.name.toLowerCase().includes(search.toLowerCase()) : true)
   .filter(e => {
-    if (filter === "all" || !e.eventDate) return true;
-    const d = new Date(e.eventDate);
-    return filter === "completed" ? d < today : d >= today;
+    if (filter === "completed") {
+      // show all completed regardless of date/type filters
+      if (!e.eventDate) return false;
+      return new Date(e.eventDate) < today;
+    }
+    if (filter === "upcoming" && e.eventDate) {
+      if (new Date(e.eventDate) < today) return false;
+    }
+    if (dateFilter !== "all") {
+      if (!e.eventDate) return false;
+      if (String(new Date(e.eventDate).getDate()) !== dateFilter) return false;
+    }
+    if (typeFilter !== "all") {
+      if (typeFilter === "tech" && e.isTechEvent !== true) return false;
+      if (typeFilter === "cultural" && e.isTechEvent !== false) return false;
+    }
+    return true;
   });
 
     
@@ -297,7 +314,7 @@ const filtered = events
               <div className="data-bar">
                 <span className="db-key">PRIZE POOL</span>
                 <div className="db-track"><div className="db-fill magenta" style={{width:"68%"}}/></div>
-                <span className="db-val db-val-m">₹50K+</span>
+                <span className="db-val db-val-m">₹75K+</span>
               </div>
               <div className="data-bar">
                 <span className="db-key">EVENTS</span>
@@ -349,30 +366,74 @@ const filtered = events
           </div>
 
 
-          {/* ── Filter Toggles ── */}
+          {/* ── All Filters — single row ── */}
 <div className="ev-filter-wrap">
-  {/* <button
-    className={`ev-filter-btn${filter === "all" ? " active-all" : ""}`}
-    onClick={() => setFilter("all")}
-  >
-    <span className="efb-dot all" />
-    ALL
-  </button> */}
   <button
     className={`ev-filter-btn${filter === "upcoming" ? " active-upcoming" : ""}`}
     onClick={() => setFilter("upcoming")}
   >
     <span className="efb-dot upcoming" />
-    UPCOMING EVENTS
+    UPCOMING
   </button>
   <button
     className={`ev-filter-btn${filter === "completed" ? " active-completed" : ""}`}
     onClick={() => setFilter("completed")}
   >
     <span className="efb-dot completed" />
-    COMPLETED EVENTS
+    COMPLETED
   </button>
+
+  <span className="efb-sep" />
+
+  {(["17","18","19"] as const).map(d => (
+    <button
+      key={d}
+      className={`ev-filter-btn${dateFilter === d ? " active-upcoming" : ""}`}
+      onClick={() => setDateFilter(prev => prev === d ? "all" : d)}
+    >
+      <span className="efb-dot" style={{background: dateFilter===d ? "#00fff0" : "rgba(200,220,255,.25)"}}/>
+      {`APR ${d}`}
+    </button>
+  ))}
+
+  <span className="efb-sep" />
+
+  {([
+    { key:"tech",     label:"⚙ TECH" },
+    { key:"cultural", label:"★ CULTURAL" },
+  ] as const).map(t => (
+    <button
+      key={t.key}
+      className={`ev-filter-btn${typeFilter === t.key ? (t.key==="cultural" ? " active-completed" : " active-upcoming") : ""}`}
+      onClick={() => setTypeFilter(prev => prev === t.key ? "all" : t.key)}
+    >
+      <span className="efb-dot" style={{background: typeFilter===t.key ? (t.key==="cultural" ? "#ff2d78" : "#00fff0") : "rgba(200,220,255,.25)"}}/>
+      {t.label}
+    </button>
+  ))}
 </div>
+
+          {/* ── Dynamic heading ── */}
+          {(() => {
+            const typePart = typeFilter === "tech" ? "TECH EVENTS" : typeFilter === "cultural" ? "CULTURAL EVENTS" : "ALL EVENTS";
+            const datePart = dateFilter !== "all" ? ` · APR ${dateFilter}` : "";
+            const color = typeFilter === "cultural" ? "#ff2d78" : "#00fff0";
+            return (
+              <div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:6,marginBottom:28,textAlign:"center"}}>
+                <span style={{fontFamily:"'Orbitron',sans-serif",fontSize:"clamp(1.8rem,4vw,3rem)",fontWeight:900,letterSpacing:"0.08em",color,textShadow:`0 0 30px ${color}55`,lineHeight:1}}>
+                  {typePart}
+                </span>
+                {datePart && (
+                  <span style={{fontFamily:"'Orbitron',sans-serif",fontSize:"clamp(1rem,2vw,1.4rem)",fontWeight:600,letterSpacing:"0.2em",color:"rgba(200,220,255,0.45)"}}>
+                    {datePart}
+                  </span>
+                )}
+                <span style={{fontFamily:"'Share Tech Mono',monospace",fontSize:"0.6rem",letterSpacing:"0.14em",color:"rgba(200,220,255,0.2)",marginTop:2}}>
+                  {filtered.length} NODE{filtered.length !== 1 ? "S" : ""} FOUND
+                </span>
+              </div>
+            );
+          })()}
 
           <div className="egrid">
             {loading
@@ -410,8 +471,20 @@ const filtered = events
 
 .ev-filter-wrap {
   display: flex;
-  gap: 10px;
+  flex-wrap: wrap;
+  gap: 8px;
   margin-bottom: 24px;
+  align-items: center;
+}
+.efb-sep {
+  width: 1px;
+  height: 20px;
+  background: rgba(0,255,240,0.18);
+  flex-shrink: 0;
+  margin: 0 2px;
+}
+@media (min-width: 768px) {
+  .ev-filter-wrap { flex-wrap: nowrap; }
 }
 .ev-filter-btn {
   display: flex;
