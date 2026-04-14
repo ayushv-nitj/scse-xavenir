@@ -68,7 +68,10 @@ function EventCard({ event, index }: { event: Event; index: number }) {
         </div>
         <span className="hud tl"/><span className="hud tr"/>
         <span className="hud bl"/><span className="hud br"/>
-        <div className="c-date-badge">{formatDayMonth(event.eventDate)}</div>
+        <div className="c-date-badge">
+          {formatDayMonth(event.eventDate)}
+          {event.name === "AI ML Hackathon" && " - Presentation"}
+        </div>
       </div>
       <div className="c-status">
         <span className="c-decrypt-lbl">{decryptLabel}</span>
