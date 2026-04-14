@@ -13,6 +13,7 @@ export interface Event extends Document {
   eventDate: Date;
   registerThroughForm: boolean;
   linkToRegister: string;
+  isTechEvent: boolean;
 }
 
 const EventSchema: Schema<Event> = new Schema(
@@ -73,6 +74,11 @@ const EventSchema: Schema<Event> = new Schema(
       type: String,
       required: false,
       default: "",
+    },
+    isTechEvent: {
+      type: Boolean,
+      required: false,
+      default: true,
     },
   },
   { timestamps: true }
