@@ -2,262 +2,990 @@ import { connectDB } from "@/dbConfig/dbConfig";
 import Event from "@/models/eventModel";
 import { NextResponse } from "next/server";
 const events = [
-  {
-    "name": "Scavenger Hunt",
-    "description": "You can steal snatch or borrow . Solve tech puzzles and find hidden clues.",
-    "logo": "https://res.cloudinary.com/dzewgmuty/image/upload/v1774461903/scavengerhunt_z0zrqd.jpg",
-    "prizepool": 5000,
-    "regFees": 89,
-    "more": "<section>\n  <h2>SCAVENGERS HUNT</h2>\n  <div>\n    <div>\n      <h3>Event Overview</h3>\n      <ul>\n        <li>Event Name: SCAVENGERS HUNT</li>\n        <li>Date: 20th April 2026</li>\n        <li>Time: 3 PM</li>\n        <li>Location: DJLHC</li>\n        <li>Team size: 5 members max</li>\n      </ul>\n    </div>\n\n    <div>\n      <h3>Eligibility and Team Formation</h3>\n      <ul>\n        <li>Participants: Open to all currently enrolled students of NIT Jamshedpur.</li>\n        <li>Registration: All teams must register by the deadline.</li>\n      </ul>\n    </div>\n\n    <div>\n      <h3>Event Format and Rounds</h3>\n      <p>The scavenger hunt will consist of three rounds. Teams must qualify from one round to proceed to the next.</p>\n      <ul>\n        <li>\n          <strong>Round 1: Memes Challenge</strong>\n          <ul>\n            <li>Teams need to correctly guess the memes shown on the screen within a specified time.</li>\n          </ul>\n        </li>\n        <li>\n          <strong>Round 2: Task and Time-Based Round</strong>\n          <ul>\n            <li>Objective: Teams will complete 3 different tasks within a specified time. Their overall time will be recorded.</li>\n            <li>There will be a time limit for each task.</li>\n            <li>Each task allows up to 3 attempts. If not completed within attempts, the team moves to the next with a time penalty.</li>\n            <li>Scoring:</li>\n            <ul>\n              <li>The team with the shortest total time (across all 3 tasks) ranks highest.</li>\n              <li>Penalties: Teams failing to complete all tasks will receive a penalty per uncompleted task.</li>\n            </ul>\n            <li>Qualification: Top [specified number] of teams with the fastest adjusted time will proceed to Round 3.</li>\n          </ul>\n        </li>\n        <li>\n          <strong>Round 3: Item-Finding Task (Riddles)</strong>\n          <ul>\n            <li>Objective: Teams solve riddles that point to hidden items.</li>\n            <li>Teams must find and bring each item to a volunteer for verification.</li>\n            <li>Participants may beg, borrow, or steal items from anywhere on campus and return to the original location.</li>\n            <li>A time duration will be given for this round.</li>\n            <li>The team that finds all items in the shortest time wins.</li>\n            <li>Collaboration between teams is prohibited.</li>\n          </ul>\n        </li>\n      </ul>\n    </div>\n\n    <div>\n      <h3>Safety and Conduct</h3>\n      <ul>\n        <li>All participants must treat others and campus property with respect.</li>\n        <li>Harassment, vandalism, or disruptive behavior will not be tolerated.</li>\n        <li>In case of emergency, contact the event heads immediately.</li>\n      </ul>\n    </div>\n\n    <div>\n      <h3>Scoring and Winning</h3>\n      <p>The team that completes all tasks in Round 3 in the shortest time will be declared the overall winner.</p>\n    </div>\n\n    <div>\n      <h3>Disqualification and Penalties</h3>\n      <ul>\n        <li>Teams or individuals may be disqualified for rule violations, unsafe behavior, or failure to follow organizer instructions.</li>\n      </ul>\n    </div>\n\n    <div>\n      <h3>Liability and Insurance</h3>\n      <p>Participants acknowledge they are participating at their own risk. The college and organizers are not liable for any injuries, losses, or damages.</p>\n    </div>\n\n    <div>\n      <h3>Contacts</h3>\n      <ul>\n        <li>Event Heads: Khushbu: 7250347857 | Leeza: 9508810423 | Subham: 8125263711</li>\n        <li>President (Harshit): 8957144430</li>\n      </ul>\n    </div>\n  </div>\n</section>\n",
-    "rules": "Teams of 2-5. No external help allowed.",
-    "minPart": 2,
-    "maxPart": 5,
-    "eventDate": new Date("2026-04-18"),
-     "registerThroughForm": true,
-     "linkToRegister": "https://forms.gle/B9W7hqbE9y9bC1Ny6"
-  },
-  // {
-  //   "name": "Paper Dance",
-  //   "description": "Dance with your fav person.",
-  //   "logo": "https://res.cloudinary.com/dzewgmuty/image/upload/v1774461871/paperdance_qghdva.jpg",
-  //   "prizepool": 3000,
-  //   "regFees": 49,
-  //   "more": "<section>\n  <h2>PAPER DANCE</h2>\n  <div>\n    <div>\n      <h3>Event Overview</h3>\n      <p>\n        Paper Dance is a fun elimination-based game where teams must dance on a shrinking piece of paper without stepping outside its boundary. The last team standing wins.\n      </p>\n    </div>\n\n    <div>\n      <h3>Team Size and Eligibility</h3>\n      <ul>\n        <li>Each team must consist of exactly 2 members.</li>\n        <li>Teams may be formed as: two boys, two girls, or one boy and one girl.</li>\n        <li>Open to all currently enrolled students of NIT Jamshedpur.</li>\n      </ul>\n    </div>\n\n    <div>\n      <h3>Rules</h3>\n      <ul>\n        <li>Each team dances on a piece of paper placed on the floor.</li>\n        <li>When the music stops, the paper is folded to half its size.</li>\n        <li>Participants must continue dancing while staying entirely on the paper.</li>\n        <li>If any part of the body touches the floor outside the paper, the team is eliminated.</li>\n        <li>The paper keeps getting smaller after every round, increasing difficulty.</li>\n        <li>The last team standing on the paper wins the game.</li>\n      </ul>\n    </div>\n\n    <div>\n      <h3>Judging Criteria</h3>\n      <ul>\n        <li>Strict adherence to paper boundaries throughout the game.</li>\n        <li>Following music cues and instructions.</li>\n        <li>Maintaining balance and coordination as the paper size reduces.</li>\n      </ul>\n    </div>\n\n    <div>\n      <h3>Disqualification</h3>\n      <ul>\n        <li>Touching the floor outside the paper.</li>\n        <li>Ignoring organizer instructions or music cues.</li>\n        <li>Unsafe or inappropriate behavior.</li>\n      </ul>\n    </div>\n\n    <div>\n      <h3>Safety Guidelines</h3>\n      <ul>\n        <li>Wear comfortable, non-slippery footwear (avoid heels).</li>\n        <li>Be mindful of your partner and other teams while dancing.</li>\n        <li>Report any injury or concern to organizers immediately.</li>\n      </ul>\n    </div>\n\n    <div>\n      <h3>Contacts</h3>\n      <ul>\n        <li>Event Head: Khushbu– +91 7250347857</li>\n        <li> Leeza– +919508810423</li>\n        <li>President (Harshit): 8957144430</li>\n      </ul>\n    </div>\n  </div>\n</section>\n",
-  //   "rules": "Teams of 2. Come and enjoy.",
-  //   "minPart": 2,
-  //   "maxPart": 2,
-  //   "eventDate": new Date("2026-04-17")
-  // },
-  // {
-  //   "name": "AI-ML Challenge",
-  //   "description": "Build an AI/ML model for a given problem statement.",
-  //   "logo": "https://res.cloudinary.com/dzewgmuty/image/upload/v1774461667/aiml_e3wc6u.avif",
-  //   "prizepool": 8000,
-  //   "regFees": 248,
-  //   "more": "<section>\n  <h2>AI – ML Challenge</h2>\n  <div>\n    <div>\n      <h3>Objective</h3>\n      <p>\n        To encourage innovation and problem-solving using Machine Learning and Deep Learning techniques. Participants will receive real-world problem statements and must build models with a focus on performance, complexity, and interpretability.\n      </p>\n    </div>\n\n    <div>\n      <h3>Timeline</h3>\n      <ul>\n        <li>April 18: Problem Statement Release</li>\n        <li>April 18–25: Model Development & Documentation</li>\n        <li>April 26: Final Presentation & Evaluation</li>\n      </ul>\n    </div>\n\n    <div>\n      <h3>Event Details</h3>\n      <ul>\n        <li>Mode: Online + Offline (for presentation)</li>\n        <li>Team Size: 1–3 members</li>\n        <li>Resources Allowed: Any tools, libraries, frameworks, or online resources</li>\n      </ul>\n    </div>\n\n    <div>\n      <h3>Rules & Guidelines</h3>\n      <ol>\n        <li>Problem statements will be released on April 18.</li>\n        <li>Participants must build complete ML/DL solutions.</li>\n        <li>All steps (data preprocessing, modeling, tuning, training, evaluation) must be shown and explained.</li>\n        <li>Focus on both performance, computational complexity, and presentation.</li>\n        <li>Participants may use any tools, frameworks, or resources.</li>\n        <li>Final submission must include:\n          <ul>\n            <li>Source code</li>\n            <li>Presentation slides</li>\n          </ul>\n        </li>\n        <li>Presentations will be held on April 26 in front of a panel of judges.<br>\n            <strong>Presentation Duration:</strong> 7 minutes (presentation) + 5 minutes (Q&A)</li>\n        <li>The decision of judges will be final.</li>\n      </ol>\n    </div>\n\n    <div>\n      <h3>Contacts</h3>\n      <ul>\n        <li>Event Head: Pratap Kumar – 7061400771</li>\n        <li>Event Head: Pronajit Sarkar – 8617406246</li>\n        <li>President (Harshit Shrivastav): 8957144430</li>\n      </ul>\n    </div>\n  </div>\n</section>\n",
-  //   "rules": "Teams of up to 3. No pre-trained models allowed.",
-  //   "minPart": 1,
-  //   "maxPart": 3,
-  //   "eventDate": new Date("2026-04-19")
-  // },
-  // {
-  //   "name": "Robotics Competition",
-  //   "description": "Compete in a robotics showdown.",
-  //   "logo": "https://res.cloudinary.com/dzewgmuty/image/upload/v1774461888/robotics_cpxsri.jpg",
-  //   "prizepool": 3000,
-  //   "regFees": 88,
-  //   "more": "Design, build, and program robots to complete challenges.",
-  //   "rules": "Teams of 3-5. Only self-built robots allowed.",
-  //   "minPart": 3,
-  //   "maxPart": 5,
-  //   "eventDate": new Date("2026-04-17")
-  // },
-  // {
-  //   "name": "Blind Coding",
-  //   "description": "Code with your screen turned off.",
-  //   "logo": "https://res.cloudinary.com/dzewgmuty/image/upload/v1774461678/blindcoding_y20agp.jpg",
-  //   "prizepool": 3000,
-  //   "regFees": 48,
-  //   "more": "<section>\n  <h2>Blind Coding</h2>\n  <div>\n    <div>\n      <h3>Event Details</h3>\n      <ul>\n        <li>Mode: Offline</li>\n        <li>Team Size: Individual</li>\n        <li>Date: April 20</li>\n        <li>Programming Language: Any of your choice</li>\n      </ul>\n    </div>\n\n    <div>\n      <h3>Rules & Guidelines</h3>\n      <ul>\n        <li>All participants will be given one common programming problem.</li>\n        <li>Participants will have 2 minutes to view the problem on their screen.</li>\n        <li>They must memorize all key information including inputs, output format, constraints, and logic requirements.</li>\n        <li>Each participant will open a blank Notepad window to write their code.</li>\n        <li>After the 2-minute viewing time, the screen display will be disabled.</li>\n        <li>Participants must code blindly and should save their work regularly using Ctrl+S/Cmd+S.</li>\n        <li>Maximum time limit for the challenge is 30 minutes.</li>\n      </ul>\n    </div>\n\n    <div>\n      <h3>Winner Judgment Criteria</h3>\n      <ul>\n        <li>The winner is the participant whose program compiles and runs successfully according to the given test cases.</li>\n        <li>In case of a tie, the participant who submits first will be declared the winner.</li>\n        <li>If the program compiles but has incorrect output, judging will be based on the number of runtime and logical errors.</li>\n        <li>If there is still a tie, submission time will be the deciding factor.</li>\n        <li>If the program fails to compile, the number of syntax errors will be considered.</li>\n        <li>In all tie situations, the earlier submission time will determine the winner.</li>\n      </ul>\n    </div>\n\n    <div>\n      <h3>Contacts</h3>\n      <ul>\n        <li>Event Head: Shivam Kumar – 7488542587</li>\n        <li>President (Harshit Shrivastava): 8957144430</li>\n      </ul>\n    </div>\n  </div>\n</section>\n",
-  //   "rules": "Solo event. No debugging after submission.",
-  //   "minPart": 1,
-  //   "maxPart": 1,
-  //   "eventDate": new Date("2026-04-18")
-  // },
-  // {
-  //   "name": "Ideathon",
-  //   "description": "Pitch innovative tech ideas.",
-  //   "logo": "https://res.cloudinary.com/dzewgmuty/image/upload/v1774461814/ideathon_l9kggx.jpg",
-  //   "prizepool": 3000,
-  //   "regFees": 45,
-  //   "more": "<section>\n  <h2>Startup Ideathon</h2>\n  <div>\n    <div>\n      <h3>Event Overview</h3>\n      <p>\n        The Startup Ideathon is a premier platform for innovators and entrepreneurs to showcase their startup ideas and compete for seed funding.\n      </p>\n    </div>\n\n    <div>\n      <h3>Important Rules and Regulations</h3>\n      <ol>\n        <li>Team size: 1–4 members</li>\n        <li>Originality: All ideas must be original and not plagiarized</li>\n        <li>Submission: Submit your pitch deck (PDF or PPTX) along with the registration form</li>\n        <li>Registration deadline: April 15, 2026, 11:59 PM</li>\n        <li>Shortlisting and notifications will be sent after registration closure</li>\n      </ol>\n    </div>\n\n    <div>\n      <h3>Pitch Deck Guidelines</h3>\n      <ul>\n        <li>Include: team name, problem statement, solution, business model canvas, revenue projection, and marketing strategy</li>\n        <li>Ensure the pitch deck is concise and follows the required format</li>\n      </ul>\n    </div>\n\n    <div>\n      <h3>Contact</h3>\n      <ul>\n        <li>Event Head: Sulochan Khadka – +91 7480-831743</li>\n      </ul>\n    </div>\n  </div>\n</section>\n",
-  //   "rules": "Teams of 1-4. No plagiarism allowed.",
-  //   "minPart": 1,
-  //   "maxPart": 4,
-  //   "eventDate": new Date("2026-04-19")
-  // },
-  // {
-  //   "name": "Movie Mania",
-  //   "description": "A tech-themed movie screening and trivia night.",
-  //   "logo": "https://res.cloudinary.com/dzewgmuty/image/upload/v1774461828/moviemania_c6mkqb.jpg",
-  //   "prizepool": 2000,
-  //   "regFees": 31,
-  //   "more": "<section>\n  <h2>Movie Mania</h2>\n  <div>\n    <div>\n      <h3>Event Overview</h3>\n      <p>\n        Movie Mania is a fun and engaging quiz event where participants will watch movie clips or segments and answer questions based on what they’ve seen. Get ready to test your observation and memory!\n      </p>\n    </div>\n\n    <div>\n      <h3>Event Details</h3>\n      <ul>\n        <li>Mode: Offline</li>\n        <li>Team Size: Individual or team of 2 members</li>\n        <li>Genre: Questions may be based on Bollywood, Hollywood, or animated films</li>\n        <li>Round Structure: Multiple short clips followed by question sets</li>\n      </ul>\n    </div>\n\n    <div>\n      <h3>Rules & Guidelines</h3>\n      <ul>\n        <li>Clips will be shown only once — full focus required.</li>\n        <li>Each clip will be followed by a timed set of questions.</li>\n        <li>No use of mobile phones or external help is allowed during the event.</li>\n        <li>Each correct answer carries points; some may have negative marking.</li>\n        <li>In case of a tie, a rapid-fire movie trivia round will be conducted.</li>\n      </ul>\n    </div>\n\n    <div>\n      <h3>Judging Criteria</h3>\n      <ul>\n        <li>Total score across all rounds.</li>\n        <li>Accuracy and observation skills.</li>\n        <li>Speed in answering during the rapid-fire round (if applicable).</li>\n      </ul>\n    </div>\n\n    <div>\n      <h3>Disqualification</h3>\n      <ul>\n        <li>Use of phones or any form of cheating.</li>\n        <li>Disruptive behavior or non-cooperation with organizers.</li>\n      </ul>\n    </div>\n\n    <div>\n      <h3>Contacts</h3>\n      <ul>\n        <li>Event Head:Devender: +91 6302385671</li>\n        <li>Event Head:Pronajit: +91 8617406246</li>\n        <li>President (Harshit Shrivastava): 8957144430</li>\n      </ul>\n    </div>\n  </div>\n</section>\n",
-  //   "rules": "Solo or team event. No internet use allowed.",
-  //   "minPart": 1,
-  //   "maxPart": 2,
-  //   "eventDate": new Date("2026-04-17")
-  // },
-  // {
-  //   "name": "Competitive Programming",
-  //   "description": "A programming event where you can show you problem solving skill",
-  //   "logo": "https://res.cloudinary.com/dzewgmuty/image/upload/v1774461691/cp_jlnafm.avif",
-  //   "prizepool": 8000,
-  //   "regFees": 238,
-  //   "more": "<section>\n  <h2>Programming Contest</h2>\n  <div>\n    <div>\n      <h3>Objective</h3>\n      <p>\n        To challenge participants’ problem-solving and programming abilities through a set of curated algorithmic and logical problems.\n      </p>\n      <p>\n        Participants will be expected to solve:\n      </p>\n      <ul>\n        <li>8 to 10 questions</li>\n        <li>In 2 hours</li>\n      </ul>\n    </div>\n\n    <div>\n      <h3>Timeline</h3>\n      <ul>\n        <li>April 27: Contest Day</li>\n      </ul>\n    </div>\n\n    <div>\n      <h3>Event Details</h3>\n      <ul>\n        <li>Mode: Offline</li>\n        <li>Venue: LHC</li>\n        <li>Team Size: 1–3 members</li>\n        <li>Duration: 2 hours</li>\n        <li>Tools: Each participant can use their own laptop</li>\n      </ul>\n    </div>\n\n    <div>\n      <h3>Rules & Guidelines</h3>\n      <ol>\n        <li>The contest will be held on April 27 at the designated venue.</li>\n        <li>All team members must be present during the entire duration of the contest.</li>\n        <li>Code plagiarism and malpractice will lead to disqualification.</li>\n        <li>The decisions of the organizing committee and judges will be final and binding.</li>\n        <li>Teams must submit their final code before the time ends.</li>\n      </ol>\n    </div>\n\n    <div>\n      <h3>Contacts</h3>\n      <ul>\n        <li>Event Head: Hitanshu Gavri – 8601103675</li>\n        <li>Event Head: Abhishek Patel – 7753075152</li>\n        <li>President (Harshit Shrivastav): 8957144430</li>\n      </ul>\n    </div>\n  </div>\n</section>\n",
-  //   "rules": "Team participation event",
-  //   "minPart": 1,
-  //   "maxPart": 3,
-  //   "eventDate": new Date("2026-04-18")
-  // },
-  // {
-  //   "name": "Hackathon",
-  //   "description": "A 24-hour coding competition to develop innovative solutions.",
-  //   "logo": "https://res.cloudinary.com/dzewgmuty/image/upload/v1774461772/hackathon_joxhp8.jpg",
-  //   "prizepool": 15000,
-  //   "regFees": 298,
-  //   "more": "<section>\n  <h2>Hackathon</h2>\n  <div>\n    <div>\n      <h3>Event Details</h3>\n      <ul>\n        <li>Mode: Offline</li>\n        <li>Team Size: 2–4 members</li>\n        <li>Date: April 26th – 27th</li>\n        <li>Technology Stack: Open – Use any tools, languages, or frameworks</li>\n      </ul>\n    </div>\n\n    <div>\n      <h3>Rules & Guidelines</h3>\n      <ul>\n        <li>The problem statement will be revealed at the start of the hackathon.</li>\n        <li>Teams must build a working prototype within the given time limit.</li>\n        <li>Bring your own laptops and necessary tools.</li>\n        <li>Focus on creativity, innovation, and practicality.</li>\n        <li>Final submission must include source code and README/documentation.</li>\n        <li>Each team must present their project to the judges (10–15 minutes).</li>\n      </ul>\n    </div>\n\n    <div>\n      <h3>Duration</h3>\n      <ul>\n        <li>Total Coding Time: 24 hours</li>\n        <li>Finals: Submission & Presentations</li>\n      </ul>\n    </div>\n\n    <div>\n      <h3>Judging Criteria</h3>\n      <ul>\n        <li>Innovation & Creativity</li>\n        <li>Functionality & Usability</li>\n        <li>Code Quality & Structure</li>\n        <li>Relevance to Problem Statement</li>\n        <li>Presentation Skills</li>\n        <li>Submission Time (used as a tie-breaker)</li>\n      </ul>\n    </div>\n\n    <div>\n      <h3>Contacts</h3>\n      <ul>\n        <li>Event Head: Sulochan – 7480831743</li>\n        <li>Event Head: Akash – 7643050429</li>\n        <li>Event Head: Pratap – 7061400771</li>\n        <li>President (Harshit Shrivastav): 8957144430</li>\n      </ul>\n    </div>\n  </div>\n</section>\n",
-  //   "rules": "Teams of 2-4. No plagiarism allowed.",
-  //   "minPart": 2,
-  //   "maxPart": 4,
-  //   "eventDate": new Date("2026-04-19")
-  // },
-  // {
-  //   "name": "Computer Fundamentals Quiz",
-  //   "description": "A quiz focusing on core computer science concepts.",
-  //   "logo": "https://res.cloudinary.com/dzewgmuty/image/upload/v1774461854/quiz_ctpyhk.jpg",
-  //   "prizepool": 8000,
-  //   "regFees": 228,
-  //   "more": "<section>\n  <h2>Computer Fundamentals Quiz</h2>\n  <div>\n    <div>\n      <h3>Objective</h3>\n      <p>\n        To assess and strengthen participants' foundational knowledge in core computer science subjects. The quiz will cover topics such as:\n      </p>\n      <ul>\n        <li>Database Management Systems (DBMS)</li>\n        <li>Object-Oriented Programming (OOPs)</li>\n        <li>Operating Systems (OS)</li>\n        <li>Computer Networks (CN)</li>\n        <li>Standard Template Library (STL)</li>\n        <li>Basic C/C++ Programming</li>\n        <li>Basic Web Technologies (HTML, CSS, JavaScript)</li>\n      </ul>\n    </div>\n\n    <div>\n      <h3>Timeline</h3>\n      <ul>\n        <li>April 20: Quiz Event</li>\n      </ul>\n    </div>\n\n    <div>\n      <h3>Event Details</h3>\n      <ul>\n        <li>Mode: Offline</li>\n        <li>Venue: LHC</li>\n        <li>Team Size: 1–2 members</li>\n      </ul>\n    </div>\n\n    <div>\n      <h3>Rules & Guidelines</h3>\n      <ol>\n        <li>The quiz will be conducted on April 20.</li>\n        <li>All team members must be present during the quiz.</li>\n        <li>Fair participation is expected.</li>\n        <li>Final results will be announced after evaluation.</li>\n        <li>The decision of judges will be final.</li>\n      </ol>\n    </div>\n\n    <div>\n      <h3>Contacts</h3>\n      <ul>\n        <li>Event Head: Pratap Kumar – 7061400771</li>\n        <li>President (Harshit Shrivastav): 8957144430</li>\n      </ul>\n    </div>\n  </div>\n</section>\n",
-  //   "rules": "Team event. No external help allowed.",
-  //   "minPart": 1,
-  //   "maxPart": 2,
-  //   "eventDate": new Date("2026-04-17")
-  // },
-  // {
-  //   "name": "Typing Speed Challenge",
-  //   "description": "A test of speed and accuracy in typing.",
-  //   "logo": "https://res.cloudinary.com/dzewgmuty/image/upload/v1774461938/typingspeed_eb28pd.webp",
-  //   "prizepool": 3000,
-  //   "regFees": 41,
-  //   "more": "<section>\n  <h2>TYPING EVENT RULES</h2>\n  <div>\n    <div>\n      <h3>Event Overview</h3>\n      <p>\n        Compete to achieve the highest typing speed (WPM) and accuracy across three elimination rounds.\n      </p>\n    </div>\n    <div>\n      <h3>Eligibility</h3>\n      <ul>\n        <li>Open to registered participants</li>\n        <li>Devices: Laptop/desktop only (no mobile/tablet)</li>\n        <li>Stable internet + power backup required</li>\n      </ul>\n    </div>\n    <div>\n      <h3>Event Structure</h3>\n      <ul>\n        <li>\n          <strong>Round 1: Speed Test</strong>\n          <ul>\n            <li>Duration: 5 minutes</li>\n            <li>Content: Plain English text (no symbols/numbers)</li>\n            <li>Scoring: WPM × Accuracy</li>\n          </ul>\n        </li>\n        <li>\n          <strong>Round 2: Elimination</strong>\n          <ul>\n            <li>Duration: 2-3 minutes</li>\n            <li>Content: Text with numbers/symbols (e.g., @, #, 25%)</li>\n            <li>Scoring: Real-time leaderboard</li>\n          </ul>\n        </li>\n        <li>\n          <strong>Final Round: Advanced Challenge</strong>\n          <ul>\n            <li>Content: Advanced-level vocabulary and complex terms + code snippets</li>\n            <li>Winner: Highest composite score (Speed × Accuracy)</li>\n          </ul>\n        </li>\n      </ul>\n    </div>\n    <div>\n      <h3>Scoring System</h3>\n      <ol>\n        <li>Words Per Minute (WPM) = (Total characters ÷ 5) ÷ Time (minutes)</li>\n        <li>Accuracy = (Correct characters ÷ Total typed characters) × 100</li>\n        <li>Final Score = WPM × Accuracy (e.g., 70 WPM × 90% = 63)</li>\n      </ol>\n    </div>\n    <div>\n      <h3>Disqualification</h3>\n      <ul>\n        <li>Copy-pasting</li>\n        <li>Switching windows/tabs</li>\n        <li>Auto-typing tools × Misconduct</li>\n      </ul>\n    </div>\n    <div>\n      <h3>Logistics</h3>\n      <p>\n        Date: 26 April 2026 | Time: 1:00 PM IST | Venue: (Will be shared post-registration)\n      </p>\n    </div>\n    <div>\n      <h3>Contacts</h3>\n      <ul>\n        <li>Event Heads: Prateek Pandey: 9838387750 | Shubham: 8125263711</li>\n        <li>President (Harshit): 8957144430</li>\n      </ul>\n    </div>\n  </div>\n</section>\n",
-  //   "rules": "Solo event. No autocorrect or external tools allowed.",
-  //   "minPart": 1,
-  //   "maxPart": 1,
-  //   "eventDate": new Date("2026-04-18")
-  // },
-  // {
-  //   "name": "Tech Reel",
-  //   "description": "Create a short tech-related video reel.",
-  //   "logo": "https://res.cloudinary.com/dzewgmuty/image/upload/v1774462110/techreel_gwp4c0.jpg",
-  //   "prizepool": 2000,
-  //   "regFees": 40,
-  //   "more": "<section>\n  <h2>Tech Reel </h2>\n  <div>\n    <div>\n      <h3>Event Overview</h3>\n      <p>\n        Tech Reel is a creative and educational video-based event where participants are invited to make a short reel on any tech-related topic. Whether it’s a trending concept, a quick tutorial, myth-busting, or highlighting an innovation—educate and excite with your reel!\n      </p>\n    </div>\n\n    <div>\n      <h3>Event Details</h3>\n      <ul>\n        <li>Dates: 18th April – 26th April</li>\n        <li>Task: Create and upload a short tech reel</li>\n        <li>Platform: Any social media (Instagram, YouTube Shorts, etc.)</li>\n        <li>Hashtag: Use <strong>#TechReel2026</strong> and tag the event page </li>\n      </ul>\n    </div>\n\n    <div>\n      <h3>Guidelines</h3>\n      <ul>\n        <li>Reels must be uploaded between 18th–26th April.</li>\n        <li>Content must be original and related to technology.</li>\n        <li>Use of AI tools is allowed but should be disclosed if used.</li>\n        <li>Plagiarism or reuse of existing content will lead to disqualification.</li>\n        <li>Reel format: MP4 preferred (1080x1920 if possible).</li>\n      </ul>\n    </div>\n\n    <div>\n      <h3>Judging Criteria</h3>\n      <ul>\n        <li><strong>Engagement:</strong> Likes, shares, and comments on a single reel during the event window.</li>\n        <li><strong>Content Quality:</strong> Creativity, clarity, and informational value.</li>\n        <li><strong>Tech Relevance:</strong> Accuracy and relevance to current tech topics.</li>\n        <li><strong>Ethical Conduct:</strong> No fake engagement or misleading content.</li>\n      </ul>\n      <p><em>Note: While engagement is a key factor, final judgment will be made by the judging panel, and their decision will be final and binding.</em></p>\n    </div>\n\n    <div>\n      <h3>Contact</h3>\n      <ul>\n        <li>Event Head: Abhijeet Kr Trivedi</li>\n        <li>Contact: 6202076965</li>\n      </ul>\n      <ul>\n        <li>Event Head:Devender</li>\n        <li>Contact:6302385671</li>\n      </ul>\n    </div>\n  </div>\n</section>\n",
-  //   "rules": "Solo or team event. Must be original content.",
-  //   "minPart": 1,
-  //   "maxPart": 2,
-  //   "eventDate": new Date("2026-04-19")
-  // },
-  // {
-  //   "name": "PUBG, Valorant and FreeFire Tournament",
-  //   "description": "Competitive gaming showdown in PUBG and Valorant.",
-  //   "logo": "https://res.cloudinary.com/dzewgmuty/image/upload/v1774461979/valorant_a1lvas.avif",
-  //   "prizepool": 3000,
-  //   "regFees": 61,
-  //   "more": "<section>\n  <h2>PUBG, Valorant, and Free Fire Tournament</h2>\n  <div>\n    <div>\n      <h3>Event Overview</h3>\n      <p>\n        Competitive gaming showdown featuring PUBG, Valorant, and Free Fire in a knockout-style tournament. Cash prizes await the top players.\n      </p>\n    </div>\n\n    <div>\n      <h3>Event Details</h3>\n      <ul>\n        <li>Mode: Offline</li>\n        <li>Games: PUBG, Valorant & Free Fire</li>\n        <li>Team Size: 4–5 members per team</li>\n        <li>Prize Pool: ₹3000</li>\n        <li>Registration Fee: ₹61 per team</li>\n        <li>Format: Knockout-style tournament</li>\n      </ul>\n    </div>\n\n    <div>\n      <h3>Rules</h3>\n      <ul>\n        <li>Follow the standard rules of PUBG, Valorant, and Free Fire as applicable.</li>\n        <li>No cheating, use of hacks, or third-party tools is permitted.</li>\n        <li>Failure to adhere to rules will result in immediate disqualification.</li>\n      </ul>\n    </div>\n\n    <div>\n      <h3>Additional Info</h3>\n      <p>\n        Knockout-style tournament with cash prizes for winners. Ensure fair play and team coordination to advance through rounds.\n      </p>\n    </div>\n\n    <div>\n      <h3>Contacts</h3>\n      <ul>\n        <li>Event Head: Aryan Patole: +91 9221616761</li>\n        <li>Event Head: Hamad: +91 7462885920</li>\n        <li>President (Harshit Shrivastav): 8957144430</li>\n      </ul>\n    </div>\n  </div>\n</section>",
-  //   "rules": "Follow standard game rules. No cheating allowed.",
-  //   "minPart": 4,
-  //   "maxPart": 5,
-  //   "eventDate": new Date("2026-04-17")
-  // },
-  // {
-  //   "name": "Frontend Design Contest",
-  //   "description": "Design and build a stunning frontend UI.",
-  //   "logo": "https://res.cloudinary.com/dzewgmuty/image/upload/v1774461716/frontend_tfpi8a.jpg",
-  //   "prizepool": 4000,
-  //   "regFees": 109,
-  //   "more": "<section>\n  <h2>Frontend Design Challenge</h2>\n  <div>\n    <div>\n      <h3>Event Overview</h3>\n      <ul>\n        <li>Date: 19th April</li>\n        <li>Time Limit: 3 Hours</li>\n        <li>Venue: LHC</li>\n        <li>Team Size: 1–3 members</li>\n      </ul>\n      <p>\n        Unleash your creativity and frontend skills to build a visually appealing and responsive web interface based on a surprise theme or problem statement revealed at the start of the challenge.\n      </p>\n    </div>\n\n    <div>\n      <h3>Development Rules</h3>\n      <ol>\n        <li>\n          <strong>Time-Bound Challenge:</strong> All designing and coding must be completed within 3 hours. Late submissions will not be considered.\n        </li>\n        <li>\n          <strong>Team Composition:</strong> Teams may consist of 1 to 3 members. No external help or collaboration is allowed.\n        </li>\n        <li>\n          <strong>No Pre-Built Templates:</strong> Submissions must be made from scratch. Use of templates from platforms like ThemeForest, GitHub, etc., is prohibited.\n        </li>\n        <li>\n          <strong>Use of Styling Frameworks:</strong> Participants may use any styling frameworks such as Tailwind CSS, Bootstrap, or Material UI.\n        </li>\n        <li>\n          <strong>No Plagiarism:</strong> All designs must be original. Copying existing websites or code is strictly forbidden and will result in disqualification.\n        </li>\n      </ol>\n    </div>\n\n    <div>\n      <h3>Hosting Bonus</h3>\n      <p>\n        Participants who host their final project on platforms like Vercel, Netlify, GitHub Pages, etc., and provide a live link along with the code repository will earn bonus points.\n      </p>\n    </div>\n\n    <div>\n      <h3>Judging Criteria</h3>\n      <ul>\n        <li>Creativity & Innovation – Uniqueness of the idea and presentation</li>\n        <li>UI/UX Design – Interface cleanliness, intuitiveness, and usability</li>\n        <li>Responsiveness – Compatibility across various devices</li>\n        <li>Code Quality – Clean, readable, and well-structured code</li>\n        <li>Hosting – Bonus points for deployed and working live project</li>\n      </ul>\n    </div>\n\n    <div>\n      <h3>Disqualification Triggers</h3>\n      <ul>\n        <li>Submissions made after the deadline</li>\n        <li>Using pre-built templates or copied designs</li>\n        <li>Using AI tools without modification or understanding</li>\n        <li>Violating team-size limits or engaging in unfair practices</li>\n      </ul>\n    </div>\n\n    <div>\n      <h3>Contacts</h3>\n      <ul>\n        <li>Event Head: Abhijeet Kr Trivedi – 6202076965</li>\n      </ul>\n    </div>\n  </div>\n</section>\n",
-  //   "rules": "No templates allowed. Must be coded from scratch.",
-  //   "minPart": 1,
-  //   "maxPart": 3,
-  //   "eventDate": new Date("2026-04-18")
-  // },
-  // {
-  //   "name": "Ethical Hacking Challenge",
-  //   "description": "Test your penetration testing and cybersecurity skills.",
-  //   "logo": "https://res.cloudinary.com/dzewgmuty/image/upload/v1774461705/ethicalhacking_enp2rk.jpg",
-  //   "prizepool": 5000,
-  //   "regFees": 150,
-  //   "more": "<section>\n  <h2>Hack IT</h2>\n  <div>\n    <div>\n      <h3>Event Overview</h3>\n      <ul>\n        <li>Date: 27th April</li>\n        <li>Time Duration: 2 Hours</li>\n        <li>Venue: LHC</li>\n        <li>Team Size: 1–3 members</li>\n      </ul>\n      <p>\n        Welcome to Hack IT, a cybersecurity event designed to simulate real-world scenarios in web penetration testing. Participants will work with a given vulnerable website and perform tasks to uncover vulnerabilities. The goal is to think like a hacker—ethically—and identify potential threats before real attackers can.\n      </p>\n    </div>\n\n    <div>\n      <h3>Challenge Structure</h3>\n      <ul>\n        <li><strong>Target Website:</strong> A specially crafted website containing common web vulnerabilities will be provided.</li>\n        <li><strong>Primary Tasks:</strong> Participants are expected to identify vulnerabilities such as:\n          <ul>\n            <li>SQL Injection (SQLi)</li>\n            <li>Cross-Site Scripting (XSS)</li>\n            <li>Cross-Site Request Forgery (CSRF)</li>\n            <li>Authentication & Authorization Bypasses</li>\n          </ul>\n        </li>\n        <li><strong>Note:</strong> Focus will be on web-based attack vectors only — no network-level attacks or brute-forcing allowed.</li>\n      </ul>\n    </div>\n\n    <div>\n      <h3>Rules</h3>\n      <ul>\n        <li><strong>✔ Ethical Hacking Only:</strong> Use only techniques within ethical hacking scope. No destructive actions.</li>\n        <li><strong>✔ Stay Within Scope:</strong> Do not access or modify files/systems outside the target website.</li>\n        <li><strong>✔ Original Effort:</strong> All discoveries must be made during the event. No prior walkthroughs or online solutions.</li>\n        <li><strong>✔ Judges’ Decision is Final:</strong> All scoring decisions are final and non-negotiable.</li>\n        <li><strong>✔ Unfair Means = Disqualification:</strong> Malicious behavior, sharing answers, or misusing tools will lead to disqualification.</li>\n      </ul>\n    </div>\n\n    <div>\n      <h3>Judging Criteria</h3>\n      <ul>\n        <li><strong>Vulnerability Coverage:</strong> Number and variety of valid vulnerabilities identified</li>\n        <li><strong>Technical Understanding:</strong> Accuracy in explaining how each flaw works</li>\n        <li><strong>Reporting Clarity:</strong> Clear vulnerability report with potential impact and fix suggestions</li>\n        <li><strong>Ethical Conduct:</strong> Professional and responsible behavior throughout the event</li>\n      </ul>\n    </div>\n\n    <div>\n      <h3>Contacts</h3>\n      <ul>\n        <li>Event Head: Abhijeet Kr Trivedi – 6202076965</li>\n      </ul>\n    </div>\n  </div>\n</section>\n",
-  //   "rules": "No illegal activities. Only provided targets allowed.",
-  //   "minPart": 1,
-  //   "maxPart": 3,
-  //   "eventDate": new Date("2026-04-19")
-  // },
-  // {
-  //   "name": "Golgappa Eating Challange",
-  //   "description": "The golgappa eating challange for Girls only. Eat as much golgappa as you can",
-  //   "logo": "https://res.cloudinary.com/dzewgmuty/image/upload/v1774461733/golgappa_dm8zw0.jpg",
-  //   "maxPart": 1,
-  //   "minPart": 1,
-  //   "regFees": 30,
-  //   "prizepool": 1000,
-  //   "more": "<section>\n  <h2>Golgappa Challenge</h2>\n  <div>\n    <div>\n      <h3>Event Overview</h3>\n      <ul>\n        <li>Date: 26th April</li>\n        <li>Time Duration: 2 Hours</li>\n        <li>Venue: LHC</li>\n        <li>Team Size: Individual Participation</li>\n      </ul>\n      <p>\n        Welcome to the Golgappa Challenge — an exciting blend of fun, food, and friendly competition! The event will begin with a thrilling round of Musical Chairs to shortlist participants. Those who survive the first round will face off in the ultimate Golgappa eating contest. Show your reflexes, then your appetite!\n      </p>\n    </div>\n\n    <div>\n      <h3>Challenge Structure</h3>\n      <ul>\n        <li><strong>Round 1 – Musical Chair:</strong> All participants will play musical chairs. Those eliminated won’t proceed to the next round.</li>\n        <li><strong>Round 2 – Golgappa Eating:</strong> Finalists will compete to eat the maximum number of golgappas within a time limit. Water will be provided. No wastage allowed.</li>\n      </ul>\n    </div>\n\n    <div>\n      <h3>Rules</h3>\n      <ul>\n        <li><strong>✔ Fair Play:</strong> No pushing, pulling, or unfair tactics during Musical Chair.</li>\n        <li><strong>✔ Eat Responsibly:</strong> Golgappas must be properly consumed — no spitting, wasting, or throwing food.</li>\n        <li><strong>✔ Health First:</strong> If any participant feels unwell, they must immediately inform the coordinators.</li>\n        <li><strong>✔ Judges’ Decision is Final:</strong> All decisions made by judges will be final and binding.</li>\n      </ul>\n    </div>\n\n    <div>\n      <h3>Judging Criteria</h3>\n      <ul>\n        <li><strong>Musical Chair:</strong> Participants must survive Round 1 to qualify for Round 2.</li>\n        <li><strong>Golgappa Count:</strong> Number of golgappas eaten within the time limit</li>\n        <li><strong>Clean Eating:</strong> Eating without wastage or spillage</li>\n        <li><strong>Sportsmanship:</strong> Maintaining fun spirit and positive energy throughout the event</li>\n      </ul>\n    </div>\n\n    <div>\n      <h3>Contacts</h3>\n      <ul>\n        \n        <li>Khushbu– +91 7250347857</li>\n        <li> Leeza– +919508810423</li>\n        <li>Harshit – 8957144430</li>\n      </ul>\n    </div>\n  </div>\n</section>\n",
-  //   "rules": "Just come and enjoy.",
-  //   "eventDate": new Date("2026-04-17")
-  // },
-  // {
-  //   "name": "Social Media Challenge",
-  //   "description": "Show your creativity through reels and memes. Create engaging content and compete for the most impactful post.",
-  //   "logo": "https://res.cloudinary.com/dzewgmuty/image/upload/v1774461733/social_media_challenge.jpg",
-  //   "maxPart": 3,
-  //   "minPart": 1,
-  //   "regFees": 20,
-  //   "prizepool": 1500,
-  //   "more": "<section>\n  <h2>Social Media Challenge</h2>\n  <div>\n    <div>\n      <h3>Event Overview</h3>\n      <ul>\n        <li>Date: 26th April</li>\n        <li>Time Duration: 3 Hours</li>\n        <li>Venue: Online + Campus</li>\n        <li>Team Size: 1–3 Members</li>\n      </ul>\n      <p>\n        This is your chance to go viral! Participants will create reels or memes based on a given theme. Creativity, humor, and relatability will be the key factors. The content will be judged based on engagement and originality.\n      </p>\n    </div>\n\n    <div>\n      <h3>Challenge Structure</h3>\n      <ul>\n        <li><strong>Theme Reveal:</strong> A theme will be announced at the start.</li>\n        <li><strong>Content Creation:</strong> Participants will create reels or memes within the time limit.</li>\n        <li><strong>Submission:</strong> Upload content on social media platforms or submit directly.</li>\n      </ul>\n    </div>\n\n    <div>\n      <h3>Rules</h3>\n      <ul>\n        <li>✔ Content must be original</li>\n        <li>✔ No offensive or inappropriate material</li>\n        <li>✔ Must follow the given theme</li>\n        <li>✔ Plagiarism will lead to disqualification</li>\n      </ul>\n    </div>\n\n    <div>\n      <h3>Judging Criteria</h3>\n      <ul>\n        <li>Creativity & originality</li>\n        <li>Humor / engagement factor</li>\n        <li>Relevance to theme</li>\n        <li>Presentation quality</li>\n      </ul>\n    </div>\n\n    <div>\n      <h3>Contacts</h3>\n      <ul>\n        <li>Coordinator – +91 9000000001</li>\n        <li>Co-Coordinator – +91 9000000002</li>\n      </ul>\n    </div>\n  </div>\n</section>\n",
-  //   "rules": "Be creative, stay original, and keep it fun.",
-  //   "eventDate": new Date("2026-04-18")
-  // },
-  // {
-  //   "name": "Mini Carnival Zone",
-  //   "description": "A fun-filled race with multiple mini challenges. Complete all stages before others to win.",
-  //   "logo": "https://res.cloudinary.com/dzewgmuty/image/upload/v1774461733/carnival_zone.jpg",
-  //   "maxPart": 4,
-  //   "minPart": 2,
-  //   "regFees": 50,
-  //   "prizepool": 2000,
-  //   "more": "<section>\n  <h2>Mini Carnival Zone</h2>\n  <div>\n    <div>\n      <h3>Event Overview</h3>\n      <ul>\n        <li>Date: 26th April</li>\n        <li>Time Duration: 2 Hours</li>\n        <li>Venue: Campus Ground</li>\n        <li>Team Size: 2–4 Members</li>\n      </ul>\n      <p>\n        Experience the thrill of a carnival with a competitive twist! Teams will race through multiple fun stages like cup stacking, balloon popping, and more. Speed and coordination are key.\n      </p>\n    </div>\n\n    <div>\n      <h3>Challenge Structure</h3>\n      <ul>\n        <li><strong>Stage 1:</strong> Cup stacking challenge</li>\n        <li><strong>Stage 2:</strong> Balloon popping race</li>\n        <li><strong>Stage 3:</strong> Mystery task</li>\n        <li><strong>Final:</strong> Complete all stages in minimum time</li>\n      </ul>\n    </div>\n\n    <div>\n      <h3>Rules</h3>\n      <ul>\n        <li>✔ Teams must complete all stages</li>\n        <li>✔ No skipping tasks</li>\n        <li>✔ Fair play is mandatory</li>\n        <li>✔ Time penalties for rule violations</li>\n      </ul>\n    </div>\n\n    <div>\n      <h3>Judging Criteria</h3>\n      <ul>\n        <li>Completion time</li>\n        <li>Accuracy in tasks</li>\n        <li>Team coordination</li>\n      </ul>\n    </div>\n\n    <div>\n      <h3>Contacts</h3>\n      <ul>\n        <li>Coordinator – +91 9000000003</li>\n        <li>Co-Coordinator – +91 9000000004</li>\n      </ul>\n    </div>\n  </div>\n</section>\n",
-  //   "rules": "Finish all tasks as fast as possible with teamwork.",
-  //   "eventDate": new Date("2026-04-19")
-  // },
-  // {
-  //   "name": "Binary Blitz",
-  //   "description": "A rapid 1v1 coding knockout battle where only the fastest problem solver advances.",
-  //   "logo": "https://res.cloudinary.com/dzewgmuty/image/upload/v1774461733/binary_blitz.jpg",
-  //   "maxPart": 1,
-  //   "minPart": 1,
-  //   "regFees": 50,
-  //   "prizepool": 3000,
-  //   "more": "<section>\n  <h2>Binary Blitz</h2>\n  <div>\n    <div>\n      <h3>Event Overview</h3>\n      <ul>\n        <li>Date: 26th April</li>\n        <li>Time Duration: 3 Hours</li>\n        <li>Venue: Computer Lab</li>\n        <li>Team Size: Individual</li>\n      </ul>\n      <p>\n        A high-intensity coding tournament where participants go head-to-head in knockout rounds. Solve the problem faster than your opponent to move ahead.\n      </p>\n    </div>\n\n    <div>\n      <h3>Challenge Structure</h3>\n      <ul>\n        <li><strong>Round Format:</strong> 1v1 knockout matches</li>\n        <li><strong>Advancement:</strong> Winner of each round proceeds</li>\n        <li><strong>Final:</strong> Last match determines the champion</li>\n      </ul>\n    </div>\n\n    <div>\n      <h3>Rules</h3>\n      <ul>\n        <li>✔ No plagiarism or external help</li>\n        <li>✔ Code must pass all test cases</li>\n        <li>✔ Time is the deciding factor</li>\n      </ul>\n    </div>\n\n    <div>\n      <h3>Judging Criteria</h3>\n      <ul>\n        <li>Speed of solving</li>\n        <li>Correctness of code</li>\n        <li>Efficiency</li>\n      </ul>\n    </div>\n\n    <div>\n      <h3>Contacts</h3>\n      <ul>\n        <li>Coordinator – +91 9000000005</li>\n        <li>Co-Coordinator – +91 9000000006</li>\n      </ul>\n    </div>\n  </div>\n</section>\n",
-  //   "rules": "Fastest correct solution wins.",
-  //   "eventDate": new Date("2026-04-17")
-  // },
-  // {
-  //   "name": "Debug & Discover",
-  //   "description": "A unique blend of coding and treasure hunt where solving problems leads you to real-world clues.",
-  //   "logo": "https://res.cloudinary.com/dzewgmuty/image/upload/v1774461733/debug_discover.jpg",
-  //   "maxPart": 3,
-  //   "minPart": 2,
-  //   "regFees": 40,
-  //   "prizepool": 2500,
-  //   "more": "<section>\n  <h2>Debug & Discover</h2>\n  <div>\n    <div>\n      <h3>Event Overview</h3>\n      <ul>\n        <li>Date: 26th April</li>\n        <li>Time Duration: 3 Hours</li>\n        <li>Venue: Campus + Lab</li>\n        <li>Team Size: 2–3 Members</li>\n      </ul>\n      <p>\n        Combine logic with adventure! Teams will solve coding problems to unlock clues, leading them across campus. At each location, new challenges await.\n      </p>\n    </div>\n\n    <div>\n      <h3>Challenge Structure</h3>\n      <ul>\n        <li><strong>Round 1:</strong> Solve coding problem to get first clue</li>\n        <li><strong>Round 2:</strong> Find location and complete given tasks</li>\n        <li><strong>Final:</strong> Complete all tasks fastest to win</li>\n      </ul>\n    </div>\n\n    <div>\n      <h3>Rules</h3>\n      <ul>\n        <li>✔ Teams must stay together</li>\n        <li>✔ No unfair shortcuts</li>\n        <li>✔ All tasks must be completed</li>\n        <li>✔ Respect campus property</li>\n      </ul>\n    </div>\n\n    <div>\n      <h3>Judging Criteria</h3>\n      <ul>\n        <li>Completion time</li>\n        <li>Accuracy of solutions</li>\n        <li>Team coordination</li>\n      </ul>\n    </div>\n\n    <div>\n      <h3>Contacts</h3>\n      <ul>\n        <li>Coordinator – +91 9000000007</li>\n        <li>Co-Coordinator – +91 9000000008</li>\n      </ul>\n    </div>\n  </div>\n</section>\n",
-  //   "rules": "Solve, explore, and finish first.",
-  //   "eventDate": new Date("2026-04-18")
-  // },
-  {
-  "name": "Meme to Mission",
-  "description": "From laughs to logic, Meme to Mission is a one-of-a-kind multi-round event where fun meets adventure! Start with trending memes and level up into interactive challenges.",
-  "logo": "https://res.cloudinary.com/dtieuimsz/image/upload/v1775587043/WhatsApp_Image_2026-04-04_at_10.34.13_PM_icdjuy.jpg",
-  "prizepool": 3000,
-  "regFees": 0,
-  "more": "<section>\n  <h2>Meme to Mission</h2>\n  <div>\n    <div>\n      <h3>Event Overview</h3>\n      <p>\n        From laughs to logic, Meme to Mission is a one-of-a-kind multi-round event where fun meets adventure! Start with trending memes and level up into an exciting journey of interactive challenges.\n      </p>\n    </div>\n\n    <div>\n      <h3>Event Details</h3>\n      <ul>\n        <li>Date: 5th April 2026</li>\n        <li>Time: 2:00 PM – 6:00 PM</li>\n        <li>Requirement: Bring your laptops</li>\n        <li>Team Size: 2–4 Members</li>\n      </ul>\n    </div>\n\n    <div>\n      <h3>Registration</h3>\n      <p><a href=\"https://forms.gle/ephamYHDFn2JEkqQA\" target=\"_blank\" rel=\"noopener noreferrer\">Click here to register via Google Forms</a></p>\n    </div>\n\n    <div>\n      <h3>Contacts</h3>\n      <ul>\n        <li>Abhishek Kaushik: +91 9798687024</li>\n        <li>Sujal Kumar: +91 9693780078</li>\n      </ul>\n    </div>\n  </div>\n</section>\n",
-  "rules": "Teams of 2-4 members. Bring your laptops.",
-  "minPart": 2,
-  "maxPart": 4,
-  "eventDate": new Date("2026-04-05")
+{
+  name: "Quiz-o-Compute",
+
+  description: "Computer Fundamentals Quiz testing core CS concepts including DBMS, OS, OOPs, STL, Web Tech and more.",
+
+  logo: "https://res.cloudinary.com/dtieuimsz/image/upload/v1776108002/WhatsApp_Image_2026-04-14_at_12.47.17_AM_vkgo8z.jpg",
+
+  prizepool: 8000,
+
+  regFees: 200,
+
+  more: `<section>
+  <h2>Quiz-o-Compute</h2>
+
+  <div>
+    <h3>Event Overview</h3>
+    <ul>
+      <li>Date: 17th April 2026</li>
+      <li>Time: 9:00 AM – 11:30 AM</li>
+      <li>Venue: LHC, NIT Jamshedpur</li>
+      <li>Team Size: 1–2 Members</li>
+      <li>Mode: Offline</li>
+    </ul>
+
+    <h3>Topics Covered</h3>
+    <ul>
+      <li>DBMS</li>
+      <li>OOPs</li>
+      <li>Operating Systems</li>
+      <li>STL</li>
+      <li>C/C++ Basics</li>
+      <li>Web Technologies</li>
+      <li>Computer Organization</li>
+    </ul>
+
+    <h3>Contacts</h3>
+    <ul>
+      <li>Sankarsharn Rastogi - 8081252928</li>
+      <li>Tanishq Gupta - 6299354348</li>
+      <li>President (Abhishek): 9798687024</li>
+      <li>Event Coordinators: Raj Singh, Sujal Kumar</li>
+    </ul>
+  </div>
+</section>`,
+
+  rules: "No unfair means otherwise disqualification. Participants must attempt the quiz within the given time window at the venue. Judges decision final.",
+
+  minPart: 1,
+
+  maxPart: 2,
+
+  eventDate: new Date("2026-04-17"),
+
+  registerThroughForm: false,
+
+  linkToRegister: ""
+},
+
+{
+  name: "Pixel Sync",
+
+  description: "Frontend web development challenge focused on UI/UX creativity and responsiveness.",
+
+  logo: "https://res.cloudinary.com/dtieuimsz/image/upload/v1776108000/WhatsApp_Image_2026-04-14_at_12.48.35_AM_dkpjvr.jpg",
+
+  prizepool: 4000,
+
+  regFees: 100,
+
+  more: `<section>
+  <h2>Pixel Sync</h2>
+
+  <div>
+    <h3>Event Overview</h3>
+    <ul>
+      <li>Date: 17th April 2026</li>
+      <li>Time: 11:30 AM – 3:00 PM</li>
+      <li>Venue: LHC</li>
+      <li>Team Size: 1-2 Members</li>
+    </ul>
+
+
+    <h3>Rounds</h3>
+    <ul>
+      <li>Design Challenge (2 Hours)</li>
+      <li>Presentation Round (1 Hours)</li>
+    </ul>
+
+    <h3>Judging Criteria</h3>
+    <ul>
+      <li>UI/UX</li>
+      <li>Creativity and Innovation</li>
+      <li>Responsiveness</li>
+      <li>Code Quality</li>
+    </ul>
+
+    <h3>Contacts</h3>
+    <ul>
+      <li>Siya - 9310120759</li>
+      <li>Anurag - 6395319194</li>
+      <li>Aprajita - 9142765159</li>
+      <li>President (Abhishek): 9798687024</li>
+      <li>Event Coordinators: Raj Singh,Roshni Kumari,Riya</li>
+    </ul>
+
+  </div>
+</section>`,
+
+  rules: "Bring laptop. Use of any tech stack is allowed. No plagiarism otherwise disqualification. Late submission not accepted.",
+
+  minPart: 1,
+
+  maxPart: 2,
+
+  eventDate: new Date("2026-04-17"),
+
+  registerThroughForm: false,
+
+  linkToRegister: ""
+},
+
+{
+  name: "Mini Carnival Zone",
+
+  description: "Multi-round elimination event testing knowledge, perception, and decision-making under pressure.",
+
+  logo: "https://res.cloudinary.com/dtieuimsz/image/upload/v1776108000/WhatsApp_Image_2026-04-14_at_12.49.21_AM_hskw5q.jpg",
+
+  prizepool: 1900,
+
+  regFees: 100,
+
+  more: `<section>
+  <h2>Mini Carnival Zone</h2>
+
+  <div>
+
+    <div>
+      <h3>Event Overview</h3>
+      <ul>
+        <li>Venue: LHC, NIT Jamshedpur</li>
+        <li>Team Size: Individual Participation</li>
+        <li>Date: 17th April 2026</li>
+        <li>Time: 3:00 PM – 5:00 PM</li>
+        <li>Mode: Offline</li>
+        <li>Eligibility: Open to all registered participants</li>
+      </ul>
+    </div>
+
+    <div>
+      <h3>Event Team</h3>
+      <ul>
+        <li>Raj Singh - 9305360368</li>
+        <li>Aameya Devansh - 9234102388</li>
+        <li>Sankarsharn Rastogi - 8081252928</li>
+        <li>Anuj - 8273179879</li>
+        <li>Harsh Agarwal - 7061960920</li>
+        <li>President (Abhishek): 9798687024</li>
+        <li>Event Coordinators: Udit Pandey, Roshni Kumari, Anurag Sharma</li>
+      </ul>
+    </div>
+
+    <div>
+      <h3>Overview</h3>
+      <p>
+      The event is designed to test participants across three dimensions: knowledge, perception,
+      and decision-making under pressure. With progressively challenging rounds, participants must
+      rely on intelligence, observation, and strategic thinking.
+      </p>
+    </div>
+
+    <div>
+      <h3>Objective</h3>
+      <ul>
+        <li>Test logical reasoning and quick-thinking abilities</li>
+        <li>Evaluate psychological awareness and social deduction skills</li>
+        <li>Encourage strategic decision-making</li>
+        <li>Provide an engaging competitive platform</li>
+      </ul>
+    </div>
+
+    <div>
+      <h3>Event Format</h3>
+
+      <h4>Round 1: Quiz Screening</h4>
+      <ul>
+        <li>Logic and general knowledge quiz</li>
+        <li>Evaluation based on accuracy and speed</li>
+        <li>Top performers qualify</li>
+      </ul>
+
+      <h4>Round 2: Imposter Detection</h4>
+      <ul>
+        <li>Groups with one hidden imposter</li>
+        <li>Participants identify imposter</li>
+        <li>Voting elimination system</li>
+      </ul>
+
+      <h4>Round 3: Number Elimination</h4>
+      <ul>
+        <li>Participants choose numbers</li>
+        <li>Average calculated</li>
+        <li>Closest to average gets point</li>
+        <li>Highest score wins</li>
+      </ul>
+
+    </div>
+
+    <div>
+      <h3>Rules and Guidelines</h3>
+      <ul>
+        <li>Report before event start</li>
+        <li>All rounds elimination based</li>
+        <li>No unfair means allowed</li>
+        <li>Judges decision final</li>
+      </ul>
+    </div>
+
+  </div>
+
+</section>`,
+
+  rules: "Elimination based event. No unfair means allowed.",
+
+  minPart: 1,
+
+  maxPart: 1,
+
+  eventDate: new Date("2026-04-17"),
+
+  registerThroughForm: false,
+
+  linkToRegister: ""
+},
+
+{
+  name: "Debug and Discover",
+
+  description: "Fun analytical and problem-solving event with secret rounds and unconventional challenges.",
+
+  logo: "https://res.cloudinary.com/dtieuimsz/image/upload/v1776108112/WhatsApp_Image_2026-04-14_at_12.51.21_AM_le1bwy.jpg",
+
+  prizepool: 4800,
+
+  regFees: 100,
+
+  more: `<section>
+  <h2>Debug and Discover</h2>
+
+  <div>
+
+    <div>
+      <h3>Event Overview</h3>
+      <ul>
+        <li>Venue: LHC, NIT Jamshedpur</li>
+        <li>Date: 17th April 2026</li>
+        <li>Time: 5:00 PM – 6:30 PM</li>
+        <li>Team Size: 2-3 Members</li>
+        <li>Mode: Offline</li>
+        <li>Eligibility: Open to all registered participants</li>
+      </ul>
+    </div>
+
+    <div>
+      <h3>Event Team</h3>
+      <ul>
+        <li>Raj Singh - 9305360368</li>
+        <li>Aameya Devansh - 9234102388</li>
+        <li>Sankarsharn Rastogi - 8081252928</li>
+        <li>Anuj - 8273179879</li>
+        <li>Harsh Agarwal - 7061960920</li>
+      </ul>
+
+      <h4>Event Coordinators</h4>
+      <ul>
+        <li>Udit Pandey</li>
+        <li>Roshni Kumari</li>
+        <li>Anurag Sharma</li>
+      </ul>
+    </div>
+
+    <div>
+      <h3>Objective</h3>
+      <p>
+        To test live analytical and problem-solving skills. Instead of traditional competitive 
+        programming problems, participants will solve fun problems across different genres.
+      </p>
+    </div>
+
+    <div>
+      <h3>Event Format</h3>
+      <p>
+        The event format is kept secret to maximize engagement and excitement. 
+        Participants should come prepared for surprise challenges.
+      </p>
+    </div>
+
+    <div>
+      <h3>Rules and Guidelines</h3>
+      <ul>
+        <li>Rules will be announced during the event</li>
+        <li>Creative approaches encouraged</li>
+        <li>Organizers decision final</li>
+      </ul>
+    </div>
+
+    <div>
+      <h3>Registration Details</h3>
+      <ul>
+        <li>CSE - Must be SCSE member</li>
+        <li>External (Non-CSE) NITIAN Participant: Rs.100 per team</li>
+        <li>Non-NITIAN - Must have SCSE prime membership</li>
+      </ul>
+    </div>
+
+  </div>
+
+</section>`,
+
+  rules: "Rules will be announced during event.",
+
+  minPart: 2,
+
+  maxPart: 3,
+
+  eventDate: new Date("2026-04-17"),
+
+  registerThroughForm: true,
+
+  linkToRegister: ""
+},
+{
+  name: "Web Hackathon",
+
+  description: "Full-stack hackathon testing system design, security, and resource management under real-time constraints.",
+
+  logo: "https://res.cloudinary.com/dtieuimsz/image/upload/v1776108211/WhatsApp_Image_2026-04-14_at_12.52.26_AM_1_uotqzf.jpg",
+
+  prizepool: 14500,
+
+  regFees: 100,
+
+  more: `<section>
+  <h2>Web Hackathon</h2>
+
+  <div>
+
+    <div>
+      <h3>Event Overview</h3>
+      <ul>
+        <li>Venue: LHC, NIT Jamshedpur</li>
+        <li>Team Size: 2–4 Members</li>
+        <li>Date: 17th April 2026</li>
+        <li>Time: 6:30 PM – Next Day (till 5:00 PM)</li>
+        <li>Mode: Offline</li>
+        <li>Eligibility: Open to all registered participants</li>
+      </ul>
+    </div>
+
+    <div>
+      <h3>Event Team</h3>
+      <ul>
+        <li>Harsh Agarwal - 7061960920</li>
+        <li>Naveen - 9198511333</li>
+      </ul>
+    </div>
+
+    <div>
+      <h3>Overview</h3>
+      <p>
+      The event is designed to test developers across three dimensions: full-stack proficiency,
+      system security, and resource management. Participants must build functional applications
+      while navigating real-time constraints and evolving requirements.
+      </p>
+    </div>
+
+    <div>
+      <h3>Objective</h3>
+      <ul>
+        <li>Test architectural logic and scalable system design</li>
+        <li>Evaluate technical perception and security awareness</li>
+        <li>Encourage tactical trade-offs in development</li>
+        <li>Build production-ready web solutions</li>
+      </ul>
+    </div>
+
+    <div>
+      <h3>Rules and Guidelines</h3>
+      <ul>
+        <li>Problem statement revealed at start</li>
+        <li>Working prototype must be built within time</li>
+        <li>Bring laptops and required tools</li>
+        <li>Focus on innovation and practicality</li>
+        <li>Submit source code and documentation</li>
+        <li>Project presentation required</li>
+      </ul>
+    </div>
+
+    <div>
+      <h3>Judging Criteria</h3>
+      <ul>
+        <li>Innovation & Creativity</li>
+        <li>Functionality & Usability</li>
+        <li>Code Quality & Structure</li>
+        <li>Problem Relevance</li>
+        <li>Presentation Skills</li>
+        <li>Submission Time</li>
+      </ul>
+    </div>
+
+    <div>
+      <h3>Registration Details</h3>
+      <ul>
+        <li>CSE - Must be SCSE member</li>
+        <li>External (Non-CSE) NITIAN Participant: Rs.100 per team</li>
+        <li>Non-NITIAN - Must have SCSE prime membership</li>
+      </ul>
+    </div>
+
+  </div>
+
+</section>`,
+
+  rules: "Working prototype required within time limit.",
+
+  minPart: 2,
+
+  maxPart: 4,
+
+  eventDate: new Date("2026-04-17"),
+
+  registerThroughForm: false,
+
+  linkToRegister: ""
+},
+
+{
+  name: "Binary Blitz",
+
+  description: "Fast-paced 1v1 knockout coding contest testing speed and accuracy.",
+
+  logo: "https://res.cloudinary.com/dtieuimsz/image/upload/v1776108209/WhatsApp_Image_2026-04-14_at_12.52.57_AM_vonmiz.jpg",
+
+  prizepool: 4000,
+
+  regFees: 100,
+
+  more: `<section>
+  <h2>Binary Blitz</h2>
+
+  <div>
+    <h3>Event Overview</h3>
+    <ul>
+      <li>Date: 18th April 2026</li>
+      <li>Time: 9:00 AM – 11:00 AM</li>
+      <li>Team Size: Individual</li>
+      <li>Venue: LHC</li>
+    </ul>
+
+    <h3>Format</h3>
+    <ul>
+      <li>Preliminary Contest</li>
+      <li>1v1 Knockout</li>
+      <li>Cross Semifinals</li>
+      <li>Final + 3rd Place Match</li>
+    </ul>
+
+    <h3>Contacts</h3>
+    <ul>
+      <li>Tanishq Gupta - 6299354348</li>
+      <li>Vignesh Chaurasia - 9152657366</li>
+      <li>President (Abhishek): 9798687024</li>
+      <li>Event Coordinators:  Sujal Kumar, Vinay Ojha, Anuj</li>
+    </ul>
+
+  </div>
+</section>`,
+
+  rules: "First correct submission wins",
+
+  minPart: 1,
+
+  maxPart: 1,
+
+  eventDate: new Date("2026-04-18"),
+
+  registerThroughForm: true,
+
+  linkToRegister: ""
+},
+
+{
+  name: "Ideathon",
+
+  description: "Innovation based idea pitching competition solving real world problems.",
+
+  logo: "https://res.cloudinary.com/dtieuimsz/image/upload/v1776108310/WhatsApp_Image_2026-04-14_at_12.53.22_AM_wgfl87.jpg",
+
+  prizepool: 3500,
+
+  regFees: 50,
+
+  more: `<section>
+  <h2>Ideathon</h2>
+
+  <div>
+
+    <h3>Event Overview</h3>
+    <ul>
+      <li>Date: 18th April 2026</li>
+      <li>Time: 9:30 AM – 2:00 PM</li>
+      <li>Team Size: 1–4 Members</li>
+    </ul>
+
+    <h3>Rounds</h3>
+    <ul>
+      <li>Idea Submission</li>
+      <li>Final Pitch</li>
+    </ul>
+
+    <h3>Domains</h3>
+    <ul>
+      <li>Technology</li>
+      <li>Healthcare</li>
+      <li>Smart Cities</li>
+      <li>Education</li>
+      <li>FinTech</li>
+    </ul>
+
+
+    <h3>Contacts</h3>
+    <ul>
+      <li>Sankarsharn Rastogi - 8081252928</li>
+      <li>Aman Singh - 7348762674</li>
+      <li>President (Abhishek): 9798687024</li>
+      <li>Event Coordinators:Aameya Devansh, Srijan Swapnil, Anuj</li>
+    </ul>
+
+  </div>
+</section>`,
+
+  rules: "Original ideas only. Use of unfair means is prohibited.",
+
+  minPart: 1,
+
+  maxPart: 4,
+
+  eventDate: new Date("2026-04-18"),
+
+  registerThroughForm: false,
+
+  linkToRegister: ""
+},
+
+
+{
+  name: "BGMI Tournament",
+
+  description: "Competitive BGMI gaming tournament.",
+
+  logo: "https://res.cloudinary.com/dtieuimsz/image/upload/v1776108314/WhatsApp_Image_2026-04-14_at_12.54.30_AM_ghzai8.jpg",
+
+  prizepool: 3500,
+
+  regFees: 100,
+
+  more: `<section>
+  <h2>BGMI Tournament</h2>
+
+  <div>
+
+    <h3>Event Overview</h3>
+    <ul>
+      <li>Date: 18th April 2026</li>
+      <li>Time: 1:00 PM – 4:00 PM</li>
+      <li>Team Size: 1–4 Members</li>
+    </ul>
+
+  </div>
+
+  <div>
+      <h3>Event Format</h3>
+      <ul>
+        <li>Squad format (1–4 players)</li>
+        <li>Maps: Erangel, Miramar, Sanhok / Vikendi</li>
+        <li>Scheduled matches only</li>
+        <li>Final standings based on accumulated points</li>
+      </ul>
+    </div>
+
+     <div>
+      <h3>Event Team</h3>
+      <ul>
+        <li>Vignesh Chaurasia - 9152657366</li>
+        <li>Udit Pandey - 8806099180</li>
+      </ul>
+    </div>
+
+    <div>
+      <h3>Scoring System</h3>
+      <h4>Kill Points</h4>
+      <ul>
+        <li>Each kill = 1 point</li>
+      </ul>
+
+      <h4>Placement Points</h4>
+      <ul>
+        <li>1st Place – 10 Points</li>
+        <li>2nd Place – 6 Points</li>
+        <li>3rd Place – 5 Points</li>
+        <li>4th Place – 4 Points</li>
+        <li>5th Place – 3 Points</li>
+        <li>6th Place – 2 Points</li>
+        <li>7th–8th Place – 1 Point</li>
+        <li>9th–25th Place – 0 Points</li>
+      </ul>
+    </div>
+
+    <div>
+      <h3>Rules and Guidelines</h3>
+      <ul>
+        <li>Players must use their own mobile devices</li>
+        <li>Emulators prohibited</li>
+        <li>Join custom rooms on time</li>
+        <li>Submit IGN before tournament</li>
+        <li>No squad changes after registration</li>
+        <li>No hacking or unfair play</li>
+        <li>Judges decision final</li>
+      </ul>
+    </div>
+
+
+     
+
+</section>`,
+
+  rules: "Fair gameplay required",
+
+  minPart: 1,
+
+  maxPart: 4,
+
+  eventDate: new Date("2026-04-18"),
+
+  registerThroughForm: false,
+
+  linkToRegister: ""
+},
+
+{
+  name: "AI ML Hackathon",
+
+  description: "AI/ML solution presentation event focusing on building models from scratch.",
+
+  logo: "https://res.cloudinary.com/dtieuimsz/image/upload/v1776108432/WhatsApp_Image_2026-04-14_at_12.55.22_AM_iyat2t.jpg",
+
+  prizepool: 7800,
+
+  regFees: 100,
+
+  more: `<section>
+  <h2>AI ML Hackathon</h2>
+
+  <div>
+
+    <h3>Event Overview</h3>
+    <ul>
+      <li>Date: 18th April 2026</li>
+      <li>Time: 3:30 PM – 6:00 PM</li>
+      <li>Team Size: 1–3 Members</li>
+    </ul>
+
+    <h3>Format</h3>
+    <ul>
+      <li>Problem statement will release on 14th April 2026.</li>
+      <li> Two Problem statements will be provided</li>
+      <li>Participants may choose any one problem statement</li>
+      <li>Final evaluation will be based on presentation and implementation</li>
+      <li>Presentation duration - 10 minutes per team (flexible)</li>
+    </ul>
+
+    <h3>Contacts</h3>
+    <ul>
+      <li>Shivapreetham - 9845920244</li>
+      <li>Keshav Trivedi - 8401229069</li>
+      <li>Pransanjeet Reddy - 8401229069</li>
+      <li>President (Abhishek): 9798687024</li>
+      <li>Event Coordinators: Aameya Devansh, Srijan Swapnil, Anuj </li>
+    </ul>
+
+  </div>
+</section>`,
+
+  rules: "No pretrained models allowed. Build from scratch.",
+
+  minPart: 1,
+
+  maxPart: 3,
+
+  eventDate: new Date("2026-04-18"),
+
+  registerThroughForm: false,
+
+  linkToRegister: ""
+},
+
+{
+  name: "CodeZenith (CP Contest)",
+
+  description: "Competitive programming contest hosted on GFG.",
+
+  logo: "https://res.cloudinary.com/dtieuimsz/image/upload/v1776108441/WhatsApp_Image_2026-04-14_at_12.56.01_AM_ockyuw.jpg",
+
+  prizepool: 8000,
+
+  regFees: 200,
+
+  more: `<section>
+  <h2>CodeZenith</h2>
+
+  <div>
+
+    <h3>Event Overview</h3>
+    <ul>
+      <li>Date: 19th April 2026</li>
+      <li>Time: 8:30 AM – 12:30 PM</li>
+      <li>Team Size: 1–2 Members</li>
+    </ul>
+
+    <h3>Platform</h3>
+    <ul>
+      <li>GeeksforGeeks Contest</li>
+    </ul>
+
+    <h3>Contacts</h3>
+    <ul>
+      <li>Tanishq Gupta - 6299354348</li>
+      <li>Vignesh Chaurasia - 9152657366</li>
+      <li> Shivansh Singh - 9102535556</li>
+      <li>President (Abhishek): 9798687024</li>
+      <li> Event Coordinators: Sujal Kumar, Aman Singh, Harsh Agarwal</li>
+    </ul>
+
+  </div>
+</section>`,
+
+  rules: "No plagiarism",
+
+  minPart: 1,
+
+  maxPart: 2,
+
+  eventDate: new Date("2026-04-19"),
+
+  registerThroughForm: false,
+
+  linkToRegister: ""
+},
+
+{
+  name: "Movie Mania",
+
+  description: "Fun movie-based trivia and acting competition for cinephiles.",
+
+  logo: "https://res.cloudinary.com/dtieuimsz/image/upload/v1776108528/WhatsApp_Image_2026-04-14_at_12.56.43_AM_ljl8fi.jpg",
+
+  prizepool: 2000,
+
+  regFees: 50,
+
+  more: `<section>
+  <h2>Movie Mania</h2>
+
+  <div>
+
+    <h3>Event Overview</h3>
+    <ul>
+      <li>Date: 19th April 2026</li>
+      <li>Time: 2:00 PM – 5:00 PM</li>
+      <li>Team Size: 2 Members</li>
+      <li>Venue: LHC</li>
+    </ul>
+
+
+    <h3>Contacts</h3>
+    <ul>
+      <li>Aameya Devansh - 9234102388</li>
+      <li>Sankarsharn Rastogi - 8081252928</li>
+      <li>President (Abhishek): 9798687024</li>
+      <li>Event Coordinators: Srijan Swapnil, Anuj, Raj Singh, Roshni Kumari</li>
+    </ul>
+
+    <h3>Rounds</h3>
+    <ul>
+      <li>Movie Trivia Quiz</li>
+      <li>Dumb Charades (Taboo Twist)</li>
+      <li>Emotional Bonanza Acting</li>
+    </ul>
+
+  </div>
+</section>`,
+
+  rules: "No unfair means otherwise disqualification.",
+
+  minPart: 2,
+
+  maxPart: 2,
+
+  eventDate: new Date("2026-04-19"),
+
+  registerThroughForm: true,
+
+  linkToRegister: ""
+},
+
+{
+  name: "Paper Dance",
+
+  description: "Fun dance competition with shrinking paper challenge.",
+
+  logo: "https://res.cloudinary.com/dtieuimsz/image/upload/v1776108527/WhatsApp_Image_2026-04-14_at_12.57.56_AM_ptvq2z.jpg",
+
+  prizepool: 1900,
+
+  regFees: 0,
+
+  more: `<section>
+  <h2>Paper Dance</h2>
+
+  <div>
+
+    <h3>Event Overview</h3>
+    <ul>
+      <li>Date: 19th April 2026</li>
+      <li>Time: 4:30 PM onwards</li>
+      <li>Team Size: Couple</li>
+      <li>Venue: LHC</li>
+    </ul>
+
+    <h3>Contacts</h3>
+    <ul>
+      <li>Riya - 6232681526</li>
+      <li>Siya - 9310120759</li>
+      <li>Shreehari - 7033558339</li>
+      <li>President (Abhishek): 9798687024</li>
+    </ul>
+
+
+    <h3>Rounds</h3>
+    <ul>
+      <li>Random Dance</li>
+      <li>Paper Dance Final</li>
+    </ul>
+
+  </div>
+</section>`,
+
+  rules: "Couple participation irrespective of gender (Boy+Girl, Girl+Girl, Boy+Boy)",
+
+  minPart: 2,
+
+  maxPart: 2,
+
+  eventDate: new Date("2026-04-19"),
+
+  registerThroughForm: false,
+
+  linkToRegister: ""
+},
+
+{
+  name: "Golgappa Challenge",
+
+  description: "Fun eating challenge exclusively for girls.",
+
+  logo: "https://res.cloudinary.com/dtieuimsz/image/upload/v1776108599/WhatsApp_Image_2026-04-14_at_12.58.40_AM_qfpbgc.jpg",
+
+  prizepool: 1000,
+
+  regFees: 50,
+
+  more: `<section>
+  <h2>Golgappa Challenge</h2>
+
+  <div>
+
+    <h3>Event Overview</h3>
+    <ul>
+      <li>Date: 19th April 2026</li>
+      <li>Time: 5:00 PM – 6:00 PM</li>
+      <li>Team Size: Individual</li>
+      <li>Girls Only Event</li>
+    </ul>
+
+    <h3>Contacts</h3>
+    <ul>
+      <li>Shreehari - 7033558339</li>
+      <li>Sujal - 9693780078</li>
+      <li>President (Abhishek): 9798687024</li>
+    </ul>
+
+    <h3>Rounds</h3>
+    <ul>
+      <li>Musical Chair</li>
+      <li>Golgappa Eating Challenge</li>
+    </ul>
+
+  </div>
+</section>`,
+
+  rules: "Hygiene rules must be followed. Late entry not be permitted.",
+
+  minPart: 1,
+
+  maxPart: 1,
+
+  eventDate: new Date("2026-04-19"),
+
+  registerThroughForm: false,
+
+  linkToRegister: ""
+},
+
+{
+  name: "Social Media Challenge",
+
+  description: "Online reels and meme competition for social media engagement.",
+
+  logo: "https://res.cloudinary.com/dtieuimsz/image/upload/v1776108594/WhatsApp_Image_2026-04-14_at_12.59.32_AM_mga4yh.jpg",
+
+  prizepool: 2000,
+
+  regFees: 50,
+
+  more: `<section>
+  <h2>Social Media Challenge</h2>
+
+  <div>
+
+    <h3>Event Overview</h3>
+    <ul>
+      <li>Mode: Online</li>
+      <li>Platform: Instagram</li>
+      <li>Deadline: 18th April 2026, 11:59 PM</li>
+      <li>Eligibility: 1st Year B.Tech. Students Only</li>
+    </ul>
+
+    <h3>Tracks</h3>
+    <ul>
+      <li>Reels</li>
+      <li>Memes</li>
+    </ul>
+
+    <h3>Judging Criteria</h3>
+    <ul>
+      <li>Reach</li>
+      <li>Creativity</li>
+      <li>Originality</li>
+    </ul>
+
+    <h3>Contacts</h3>
+    <ul>
+      <li>Aameya Devansh - 9234102388</li>
+      <li>Anuj - 8273179879</li>
+      <li>President (Abhishek): 9798687024</li>
+    </ul>
+
+  </div>
+</section>`,
+
+  rules: "No vulgar content. Only for B.Tech. 1st years",
+
+  minPart: 1,
+
+  maxPart: 1,
+
+  eventDate: new Date("2026-04-18"),
+
+  registerThroughForm: false,
+
+  linkToRegister: ""
 }
-  
-];
+
+]
 
 export async function POST() {
   try {
