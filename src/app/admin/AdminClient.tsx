@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
+import { EventRegistrationChart, UserDistributionChart, PaymentStatusChart, EventTeamStatusChart, EventParticipantTypeChart } from "@/components/admin/Charts";
 
 type Payment = {
   _id: string; email: string; scseId: string; paymentProof: string;
@@ -7,7 +8,7 @@ type Payment = {
   status?: string; createdAt: string; paymentType?: string; expectedAmount?: number;
 };
 type Tab    = "pending" | "approved" | "rejected";
-type Panel  = "stats" | "payments" | "eventregs" | "search" | "goodies" | "announce" | "contacts" | "certificates";
+type Panel  = "stats" | "payments" | "eventregs" | "search" | "goodies" | "announce" | "contacts" | "certificates" | "eventdetails";
 
 const NAV: { key: Panel; icon: string; label: string }[] = [
   { key: "stats",     icon: "◈", label: "Stats"       },
@@ -83,6 +84,12 @@ export default function AdminClient({ payments, eventRegs, contacts, stats }: {
   const [annEvents, setAnnEvents] = useState<{name:string}[]>([]);
   const [annEventsLoading, setAnnEventsLoading] = useState(false);
 
+  // event details
+  const [selectedEvent, setSelectedEvent] = useState<string>("");
+  const [eventDetails, setEventDetails] = useState<any>(null);
+  const [eventDetailsLoading, setEventDetailsLoading] = useState(false);
+  const [eventDetailsError, setEventDetailsError] = useState("");
+
   const fetchAnnEvents = async () => {
     if (annEvents.length > 0) return; // already fetched
     setAnnEventsLoading(true);
@@ -142,6 +149,28 @@ export default function AdminClient({ payments, eventRegs, contacts, stats }: {
     link.click();
     URL.revokeObjectURL(url);
   };
+
+  const fetchEventDetails = async (eventName: string) => {
+    setEventDetailsLoading(true);
+    setEventDetailsError("");
+    setSelectedEvent(eventName);
+    try {
+      const res = await fetch(`/api/admin/event-details?eventName=${encodeURIComponent(eventName)}`);
+      const data = await res.json();
+      if (!res.ok) {
+        setEventDetailsError(data.error || "Failed to fetch event details");
+        return;
+      }
+      setEventDetails(data);
+      setPanel("eventdetails");
+    } catch (error) {
+      setEventDetailsError("Network error occurred");
+    } finally {
+      setEventDetailsLoading(false);
+    }
+  };
+
+
 
   // certificates
   const [certEvent,    setCertEvent]    = useState("");
@@ -299,13 +328,14 @@ export default function AdminClient({ payments, eventRegs, contacts, stats }: {
           </div>
           <div className="evt-table">
             <div className="evt-thead">
-              <span>EVENT</span><span>TEAMS</span><span>PARTICIPANTS</span>
+              <span>EVENT</span><span>TEAMS</span><span>PARTICIPANTS</span><span>ACTION</span>
             </div>
             {stats.eventRegsByName.map((e, i) => (
-              <div key={i} className="evt-row">
+              <div key={i} className="evt-row evt-clickable" onClick={() => fetchEventDetails(e._id)}>
                 <span className="evt-name">{e._id}</span>
                 <span className="evt-num">{e.count}</span>
                 <span className="evt-num" style={{color:"#00ffb3"}}>{e.participants}</span>
+                <span className="evt-action">👁 View Details</span>
               </div>
             ))}
           </div>
@@ -659,6 +689,64 @@ export default function AdminClient({ payments, eventRegs, contacts, stats }: {
 )}
   </div>
 </div>
+
+      {/* Charts Section */}
+      <div style={{ marginTop: 32 }}>
+        <div className="divider-row">
+          <span className="divider-lbl">// ANALYTICS & INSIGHTS</span>
+          <div className="divider-line" />
+        </div>
+        
+        <div className="charts-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24, marginBottom: 32 }}>
+          {/* User Distribution Chart */}
+          <div style={{
+            background: "#161b27", border: "1px solid #1e2535", borderRadius: 12,
+            padding: 20, display: "flex", flexDirection: "column"
+          }}>
+            <h3 style={{
+              fontSize: 14, fontWeight: 700, color: "#f1f5f9", marginBottom: 16,
+              letterSpacing: "0.5px", textAlign: "center"
+            }}>
+              User Distribution
+            </h3>
+            <UserDistributionChart totalUsers={stats.totalUsers} primeUsers={stats.primeUsers} />
+          </div>
+
+          {/* Payment Status Chart */}
+          <div style={{
+            background: "#161b27", border: "1px solid #1e2535", borderRadius: 12,
+            padding: 20, display: "flex", flexDirection: "column"
+          }}>
+            <h3 style={{
+              fontSize: 14, fontWeight: 700, color: "#f1f5f9", marginBottom: 16,
+              letterSpacing: "0.5px", textAlign: "center"
+            }}>
+              Payment Status Overview
+            </h3>
+            <PaymentStatusChart 
+              pendingPayments={stats.pendingPayments}
+              approvedPayments={localPayments.filter(p => p.status === "verified").length}
+              rejectedPayments={localPayments.filter(p => p.status === "rejected").length}
+            />
+          </div>
+        </div>
+
+        {/* Event Registration Chart */}
+        {stats.eventRegsByName.length > 0 && (
+          <div style={{
+            background: "#161b27", border: "1px solid #1e2535", borderRadius: 12,
+            padding: 20, marginBottom: 24
+          }}>
+            <h3 style={{
+              fontSize: 14, fontWeight: 700, color: "#f1f5f9", marginBottom: 20,
+              letterSpacing: "0.5px", textAlign: "center"
+            }}>
+              Event Registration Analytics
+            </h3>
+            <EventRegistrationChart data={stats.eventRegsByName} />
+          </div>
+        )}
+      </div>
 
     </div>
         )}
@@ -1227,6 +1315,195 @@ export default function AdminClient({ payments, eventRegs, contacts, stats }: {
           </div>
         )}
 
+        {/* EVENT DETAILS */}
+        {panel === "eventdetails" && (
+          <div className="content-panel">
+            <div className="page-header">
+              <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 8 }}>
+                <button 
+                  onClick={() => setPanel("stats")}
+                  style={{
+                    background: "transparent", border: "1px solid #334155", color: "#94a3b8",
+                    padding: "6px 12px", borderRadius: 6, cursor: "pointer", fontSize: 12,
+                    display: "flex", alignItems: "center", gap: 6, transition: "all 0.15s"
+                  }}
+                  onMouseEnter={e => {
+                    (e.currentTarget as HTMLButtonElement).style.borderColor = "#6366f1";
+                    (e.currentTarget as HTMLButtonElement).style.color = "#818cf8";
+                  }}
+                  onMouseLeave={e => {
+                    (e.currentTarget as HTMLButtonElement).style.borderColor = "#334155";
+                    (e.currentTarget as HTMLButtonElement).style.color = "#94a3b8";
+                  }}
+                >
+                  ← Back to Stats
+                </button>
+                <h1 className="page-title">◉ Event Registration Details</h1>
+              </div>
+              {selectedEvent && (
+                <p className="page-sub">Detailed breakdown for <span style={{color:"#818cf8",fontWeight:600}}>{selectedEvent}</span></p>
+              )}
+            </div>
+
+            {eventDetailsLoading && (
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "center", padding: "60px 20px" }}>
+                <span className="spin" style={{ width: 24, height: 24, borderWidth: 3 }} />
+                <span style={{ marginLeft: 12, color: "#64748b" }}>Loading event details...</span>
+              </div>
+            )}
+
+            {eventDetailsError && (
+              <div className="err-msg" style={{ margin: "20px 32px" }}>
+                ⚠ {eventDetailsError}
+              </div>
+            )}
+
+            {eventDetails && !eventDetailsLoading && (
+              <>
+                {/* Summary Stats */}
+                <div style={{ padding: "0 32px 24px" }}>
+                  <div className="stat-grid">
+                    {[
+                      { label: "Total Teams", value: eventDetails.summary.totalTeams, color: "#6366f1", icon: "👥" },
+                      { label: "Total Participants", value: eventDetails.summary.totalParticipants, color: "#22c55e", icon: "👤" },
+                      { label: "Confirmed Teams", value: eventDetails.summary.confirmedTeams, color: "#00ffb3", icon: "✓" },
+                      { label: "Pending Teams", value: eventDetails.summary.pendingTeams, color: "#f59e0b", icon: "⏳" },
+                      { label: "Prime Members", value: eventDetails.summary.totalPrimeMembers, color: "#8b5cf6", icon: "★" },
+                      { label: "NIT Students", value: eventDetails.summary.totalNitianMembers, color: "#06b6d4", icon: "🎓" },
+                      { label: "CSE Students", value: eventDetails.summary.totalCseMembers, color: "#ef4444", icon: "💻" },
+                      { label: "Verified Teams", value: eventDetails.summary.verifiedTeams, color: "#10b981", icon: "✔" },
+                    ].map(s => (
+                      <div key={s.label} className="scard" style={{"--sc": s.color} as any}>
+                        <div className="scard-icon">{s.icon}</div>
+                        <div className="scard-val">{s.value.toLocaleString()}</div>
+                        <div className="scard-label">{s.label}</div>
+                        <div className="scard-bar" />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Teams and Participants */}
+                <div style={{ padding: "0 32px" }}>
+                  <div className="divider-row">
+                    <span className="divider-lbl">// TEAMS & PARTICIPANTS</span>
+                    <div className="divider-line" />
+                  </div>
+
+                  <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+                    {eventDetails.registrations.map((reg: any, index: number) => (
+                      <div key={reg._id} className="team-card">
+                        <div className="team-header">
+                          <div className="team-info">
+                            <h3 className="team-name">{reg.teamName}</h3>
+                            <div className="team-meta">
+                              <span className={`status-badge status-${reg.registrationStatus}`}>
+                                {reg.registrationStatus.toUpperCase()}
+                              </span>
+                              <span className="team-stats">
+                                {reg.memberCount} member{reg.memberCount !== 1 ? 's' : ''}
+                                {reg.primeMembers > 0 && <span className="prime-count">• {reg.primeMembers} Prime</span>}
+                              </span>
+                            </div>
+                          </div>
+                          <div className="team-date">
+                            {new Date(reg.createdAt).toLocaleDateString()}
+                          </div>
+                        </div>
+
+                        <div className="members-grid">
+                          {reg.members.map((member: any, memberIndex: number) => (
+                            <div key={member.userID} className="member-card">
+                              <div className="member-header">
+                                <div className="member-avatar">
+                                  {member.fullName.split(" ").map((n: string) => n[0]).join("").slice(0, 2).toUpperCase()}
+                                </div>
+                                <div className="member-info">
+                                  <div className="member-name">{member.fullName}</div>
+                                  <div className="member-id">{member.userID}</div>
+                                </div>
+                                <div className="member-badges">
+                                  {member.isPrime && <span className="badge-prime">★ Prime</span>}
+                                  {member.isNitian && <span className="badge-nitian">🎓 NIT</span>}
+                                  {member.isFromCse && <span className="badge-cse">💻 CSE</span>}
+                                </div>
+                              </div>
+                              <div className="member-details">
+                                <div className="detail-row">
+                                  <span className="detail-label">Registration No:</span>
+                                  <span className="detail-value">{member.registrationNumber}</span>
+                                </div>
+                                <div className="detail-row">
+                                  <span className="detail-label">Email:</span>
+                                  <span className="detail-value">{member.email}</span>
+                                </div>
+                                <div className="detail-row">
+                                  <span className="detail-label">College:</span>
+                                  <span className="detail-value">{member.collegeName}</span>
+                                </div>
+                                {member.phone !== "N/A" && (
+                                  <div className="detail-row">
+                                    <span className="detail-label">Phone:</span>
+                                    <span className="detail-value">{member.phone}</span>
+                                  </div>
+                                )}
+                                {member.gender !== "N/A" && (
+                                  <div className="detail-row">
+                                    <span className="detail-label">Gender:</span>
+                                    <span className="detail-value">{member.gender}</span>
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Event Analytics Charts */}
+                <div style={{ padding: "0 32px 24px" }}>
+                  <div className="divider-row">
+                    <span className="divider-lbl">// EVENT ANALYTICS</span>
+                    <div className="divider-line" />
+                  </div>
+                  
+                  <div className="charts-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24, marginBottom: 24 }}>
+                    {/* Team Status Chart */}
+                    <div style={{
+                      background: "#161b27", border: "1px solid #1e2535", borderRadius: 12,
+                      padding: 20, display: "flex", flexDirection: "column"
+                    }}>
+                      <h3 style={{
+                        fontSize: 14, fontWeight: 700, color: "#f1f5f9", marginBottom: 16,
+                        letterSpacing: "0.5px", textAlign: "center"
+                      }}>
+                        Team Registration Status
+                      </h3>
+                      <EventTeamStatusChart summary={eventDetails.summary} />
+                    </div>
+
+                    {/* Participant Type Chart */}
+                    <div style={{
+                      background: "#161b27", border: "1px solid #1e2535", borderRadius: 12,
+                      padding: 20, display: "flex", flexDirection: "column"
+                    }}>
+                      <h3 style={{
+                        fontSize: 14, fontWeight: 700, color: "#f1f5f9", marginBottom: 16,
+                        letterSpacing: "0.5px", textAlign: "center"
+                      }}>
+                        Participant Demographics
+                      </h3>
+                      <EventParticipantTypeChart summary={eventDetails.summary} />
+                    </div>
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
+        )}
+
         {/* CERTIFICATES
         {panel === "certificates" && (
           <div className="content-panel">
@@ -1719,11 +1996,49 @@ export default function AdminClient({ payments, eventRegs, contacts, stats }: {
         .divider-lbl{font-size:11px;font-weight:600;letter-spacing:1px;color:#475569;white-space:nowrap;text-transform:uppercase;}
         .divider-line{flex:1;height:1px;background:#1e2535;}
         .evt-table{display:flex;flex-direction:column;border:1px solid #1e2535;border-radius:8px;overflow:hidden;}
-        .evt-thead{display:grid;grid-template-columns:1fr 100px 120px;padding:10px 16px;background:#1e2535;font-size:10px;font-weight:700;letter-spacing:1.5px;color:#64748b;text-transform:uppercase;}
-        .evt-row{display:grid;grid-template-columns:1fr 100px 120px;padding:12px 16px;border-top:1px solid #1e2535;transition:background 0.12s;}
+        .evt-thead{display:grid;grid-template-columns:1fr 100px 120px 120px;padding:10px 16px;background:#1e2535;font-size:10px;font-weight:700;letter-spacing:1.5px;color:#64748b;text-transform:uppercase;}
+        .evt-row{display:grid;grid-template-columns:1fr 100px 120px 120px;padding:12px 16px;border-top:1px solid #1e2535;transition:background 0.12s;}
         .evt-row:hover{background:#1a2030;}
+        .evt-clickable{cursor:pointer;}
+        .evt-clickable:hover{background:#1e2535;border-left:3px solid #6366f1;}
         .evt-name{font-size:13px;font-weight:500;color:#e2e8f0;}
         .evt-num{font-size:13px;font-weight:700;color:#818cf8;}
+        .evt-action{font-size:11px;font-weight:600;color:#6366f1;letter-spacing:0.5px;}
+
+        /* EVENT DETAILS STYLES */
+        .team-card{background:#161b27;border:1px solid #1e2535;border-radius:12px;overflow:hidden;margin-bottom:16px;}
+        .team-header{display:flex;justify-content:space-between;align-items:flex-start;padding:20px 24px 16px;border-bottom:1px solid #1e2535;background:#1a2032;}
+        .team-info{flex:1;}
+        .team-name{font-size:18px;font-weight:700;color:#f1f5f9;margin-bottom:8px;}
+        .team-meta{display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+        .team-stats{font-size:13px;color:#94a3b8;}
+        .prime-count{color:#8b5cf6;font-weight:600;}
+        .team-date{font-size:12px;color:#64748b;font-family:monospace;}
+        .status-badge{font-size:10px;font-weight:700;letter-spacing:1px;padding:4px 10px;border-radius:12px;text-transform:uppercase;}
+        .status-confirmed{background:rgba(34,197,94,0.15);color:#4ade80;border:1px solid rgba(34,197,94,0.3);}
+        .status-pending{background:rgba(245,158,11,0.15);color:#fbbf24;border:1px solid rgba(245,158,11,0.3);}
+        .status-verified{background:rgba(16,185,129,0.15);color:#10b981;border:1px solid rgba(16,185,129,0.3);}
+        .members-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:16px;padding:20px 24px;}
+        .member-card{background:#0f1117;border:1px solid #1e2535;border-radius:8px;overflow:hidden;}
+        .member-header{display:flex;align-items:center;gap:12px;padding:16px;border-bottom:1px solid #1e2535;}
+        .member-avatar{width:40px;height:40px;border-radius:50%;background:#312e81;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#a5b4fc;flex-shrink:0;}
+        .member-info{flex:1;min-width:0;}
+        .member-name{font-size:15px;font-weight:600;color:#f1f5f9;margin-bottom:2px;}
+        .member-id{font-size:12px;color:#6366f1;font-family:monospace;font-weight:600;}
+        .member-badges{display:flex;flex-direction:column;gap:4px;align-items:flex-end;}
+        .badge-prime,.badge-nitian,.badge-cse{font-size:9px;font-weight:700;padding:2px 6px;border-radius:4px;letter-spacing:0.5px;}
+        .badge-prime{background:rgba(139,92,246,0.15);color:#a78bfa;border:1px solid rgba(139,92,246,0.3);}
+        .badge-nitian{background:rgba(6,182,212,0.15);color:#22d3ee;border:1px solid rgba(6,182,212,0.3);}
+        .badge-cse{background:rgba(239,68,68,0.15);color:#f87171;border:1px solid rgba(239,68,68,0.3);}
+        .member-details{padding:14px 16px;}
+        .detail-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+        .detail-row:last-child{margin-bottom:0;}
+        .detail-label{font-size:11px;font-weight:600;color:#64748b;text-transform:uppercase;letter-spacing:0.5px;}
+        .detail-value{font-size:13px;color:#cbd5e1;font-weight:500;text-align:right;max-width:60%;word-break:break-all;}
+
+        /* Charts Grid */
+        .charts-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;}
+        @media(max-width:768px){.charts-grid{grid-template-columns:1fr;}}
 
         /* LIGHTBOX */
         .lb-back{position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.85);display:flex;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px);}
@@ -1751,7 +2066,15 @@ export default function AdminClient({ payments, eventRegs, contacts, stats }: {
           .form-stack{max-width:100%;}
           .tab-row{flex-wrap:wrap;}
           .ptab{flex:1 1 auto;justify-content:center;}
-          .evt-thead,.evt-row{grid-template-columns:1fr 60px 80px;font-size:11px;}
+          .evt-thead,.evt-row{grid-template-columns:1fr 50px 60px 80px;font-size:10px;}
+          .evt-action{font-size:9px;}
+          .members-grid{grid-template-columns:1fr;gap:12px;padding:16px;}
+          .member-header{flex-direction:column;align-items:flex-start;gap:8px;}
+          .member-badges{flex-direction:row;align-items:center;}
+          .team-header{flex-direction:column;align-items:flex-start;gap:12px;}
+          .team-meta{flex-direction:column;align-items:flex-start;gap:6px;}
+          .detail-row{flex-direction:column;align-items:flex-start;gap:4px;}
+          .detail-value{text-align:left;max-width:100%;}
           .mob-topbar{display:flex;align-items:center;gap:14px;padding:12px 16px;border-bottom:1px solid #1e2535;background:#161b27;position:sticky;top:0;z-index:10;}
           .mob-menu-btn{background:transparent;border:1px solid #2a3347;border-radius:6px;width:36px;height:36px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;cursor:pointer;flex-shrink:0;}
           .mob-menu-btn span{display:block;width:16px;height:2px;background:#94a3b8;border-radius:2px;}
