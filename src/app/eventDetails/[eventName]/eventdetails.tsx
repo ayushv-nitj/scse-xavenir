@@ -240,7 +240,7 @@ export default function RegisterEventPage() {
               {/* Stats grid */}
               <div className="stats-grid">
                 <StatCard accent="cyan"    label="PRIZE POOL" value={eventData.prizepool === 0 ? "GOODIES 🎁" : `₹${eventData.prizepool.toLocaleString("en-IN")}`}/>
-                <StatCard accent="magenta" label="REG FEES"   value={eventData.regFees === 0 ? "FREE" : `₹${eventData.regFees}`}/>
+                <StatCard accent="magenta" label="REG FEES"   value={eventData.regFees === 0 ? "FREE" : `₹${eventData.regFees} FOR NON-CSE`}/>
                 <StatCard accent="purple"  label="MIN TEAM"   value={`${eventData.minPart}`}/>
                 <StatCard accent="purple"  label="MAX TEAM"   value={`${eventData.maxPart}`}/>
               </div>
@@ -261,10 +261,10 @@ export default function RegisterEventPage() {
               </div>
 
              {/* Register button */}
-<div className="reg-wrap">
+              <div className="reg-wrap">
   {(() => {
     const isPast = eventData.eventDate
-      ? new Date(eventData.eventDate) < new Date(new Date().setHours(0,0,0,0))
+      ? new Date(eventData.eventDate) < new Date(new Date().setHours(0, 0, 0, 0))
       : false;
 
     if (isPast) {
@@ -279,9 +279,7 @@ export default function RegisterEventPage() {
 
     if (eventData.registerThroughForm && eventData.linkToRegister) {
       return (
-
         <a
-        
           href={eventData.linkToRegister}
           target="_blank"
           rel="noopener noreferrer"
@@ -294,41 +292,39 @@ export default function RegisterEventPage() {
       );
     }
 
-    if (!eventData.registerThroughForm && eventData.linkToRegister) {
-      /* Convert any Google Drive share URL → inline preview URL */
-      const driveMatch = eventData.linkToRegister.match(/\/d\/([a-zA-Z0-9_-]+)/);
-      const pdfHref = driveMatch
-        ? `https://drive.google.com/file/d/${driveMatch[1]}/preview`
-        : eventData.linkToRegister;
-
-      return (
-        <a
-          href={pdfHref}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="pdf-prob-btn"
-        >
-          <span className="ppb-pulse" />
-          <span className="ppb-badge">PDF</span>
-          <span className="ppb-left">
-            <span className="ppb-icon">📄</span>
-            <span className="ppb-texts">
-              <span className="ppb-label">PROBLEM STATEMENT</span>
-              <span className="ppb-sub">// CLICK TO VIEW PDF ↗</span>
-            </span>
-          </span>
-          <span className="ppb-arrow">↗</span>
-        </a>
-      );
-    }
+    const driveMatch = eventData.linkToRegister?.match(/\/d\/([a-zA-Z0-9_-]+)/);
+    const pdfHref = driveMatch
+      ? `https://drive.google.com/file/d/${driveMatch[1]}/preview`
+      : eventData.linkToRegister;
 
     return (
-      <RegisterForEvent
-        eventName={eventData.name}
-        maxPart={eventData.maxPart}
-        minPart={eventData.minPart}
-        regFees={eventData.regFees}
-      />
+      <>
+        {!eventData.registerThroughForm && pdfHref && (
+          
+            <a href={pdfHref}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="pdf-prob-btn"
+          >
+            <span className="ppb-pulse" />
+            <span className="ppb-badge">PDF</span>
+            <span className="ppb-left">
+              <span className="ppb-icon">📄</span>
+              <span className="ppb-texts">
+                <span className="ppb-label">PROBLEM STATEMENT</span>
+                <span className="ppb-sub">// CLICK TO VIEW PDF ↗</span>
+              </span>
+            </span>
+            <span className="ppb-arrow">↗</span>
+          </a>
+        )}
+        <RegisterForEvent
+          eventName={eventData.name}
+          maxPart={eventData.maxPart}
+          minPart={eventData.minPart}
+          regFees={eventData.regFees}
+        />
+      </>
     );
   })()}
 </div>
