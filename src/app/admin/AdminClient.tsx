@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
+import { EventRegistrationChart, UserDistributionChart, PaymentStatusChart, EventTeamStatusChart, EventParticipantTypeChart } from "@/components/admin/Charts";
 
 type Payment = {
   _id: string; email: string; scseId: string; paymentProof: string;
@@ -688,6 +689,64 @@ export default function AdminClient({ payments, eventRegs, contacts, stats }: {
 )}
   </div>
 </div>
+
+      {/* Charts Section */}
+      <div style={{ marginTop: 32 }}>
+        <div className="divider-row">
+          <span className="divider-lbl">// ANALYTICS & INSIGHTS</span>
+          <div className="divider-line" />
+        </div>
+        
+        <div className="charts-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24, marginBottom: 32 }}>
+          {/* User Distribution Chart */}
+          <div style={{
+            background: "#161b27", border: "1px solid #1e2535", borderRadius: 12,
+            padding: 20, display: "flex", flexDirection: "column"
+          }}>
+            <h3 style={{
+              fontSize: 14, fontWeight: 700, color: "#f1f5f9", marginBottom: 16,
+              letterSpacing: "0.5px", textAlign: "center"
+            }}>
+              User Distribution
+            </h3>
+            <UserDistributionChart totalUsers={stats.totalUsers} primeUsers={stats.primeUsers} />
+          </div>
+
+          {/* Payment Status Chart */}
+          <div style={{
+            background: "#161b27", border: "1px solid #1e2535", borderRadius: 12,
+            padding: 20, display: "flex", flexDirection: "column"
+          }}>
+            <h3 style={{
+              fontSize: 14, fontWeight: 700, color: "#f1f5f9", marginBottom: 16,
+              letterSpacing: "0.5px", textAlign: "center"
+            }}>
+              Payment Status Overview
+            </h3>
+            <PaymentStatusChart 
+              pendingPayments={stats.pendingPayments}
+              approvedPayments={localPayments.filter(p => p.status === "verified").length}
+              rejectedPayments={localPayments.filter(p => p.status === "rejected").length}
+            />
+          </div>
+        </div>
+
+        {/* Event Registration Chart */}
+        {stats.eventRegsByName.length > 0 && (
+          <div style={{
+            background: "#161b27", border: "1px solid #1e2535", borderRadius: 12,
+            padding: 20, marginBottom: 24
+          }}>
+            <h3 style={{
+              fontSize: 14, fontWeight: 700, color: "#f1f5f9", marginBottom: 20,
+              letterSpacing: "0.5px", textAlign: "center"
+            }}>
+              Event Registration Analytics
+            </h3>
+            <EventRegistrationChart data={stats.eventRegsByName} />
+          </div>
+        )}
+      </div>
 
     </div>
         )}
@@ -1402,6 +1461,44 @@ export default function AdminClient({ payments, eventRegs, contacts, stats }: {
                     ))}
                   </div>
                 </div>
+
+                {/* Event Analytics Charts */}
+                <div style={{ padding: "0 32px 24px" }}>
+                  <div className="divider-row">
+                    <span className="divider-lbl">// EVENT ANALYTICS</span>
+                    <div className="divider-line" />
+                  </div>
+                  
+                  <div className="charts-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24, marginBottom: 24 }}>
+                    {/* Team Status Chart */}
+                    <div style={{
+                      background: "#161b27", border: "1px solid #1e2535", borderRadius: 12,
+                      padding: 20, display: "flex", flexDirection: "column"
+                    }}>
+                      <h3 style={{
+                        fontSize: 14, fontWeight: 700, color: "#f1f5f9", marginBottom: 16,
+                        letterSpacing: "0.5px", textAlign: "center"
+                      }}>
+                        Team Registration Status
+                      </h3>
+                      <EventTeamStatusChart summary={eventDetails.summary} />
+                    </div>
+
+                    {/* Participant Type Chart */}
+                    <div style={{
+                      background: "#161b27", border: "1px solid #1e2535", borderRadius: 12,
+                      padding: 20, display: "flex", flexDirection: "column"
+                    }}>
+                      <h3 style={{
+                        fontSize: 14, fontWeight: 700, color: "#f1f5f9", marginBottom: 16,
+                        letterSpacing: "0.5px", textAlign: "center"
+                      }}>
+                        Participant Demographics
+                      </h3>
+                      <EventParticipantTypeChart summary={eventDetails.summary} />
+                    </div>
+                  </div>
+                </div>
               </>
             )}
           </div>
@@ -1938,6 +2035,10 @@ export default function AdminClient({ payments, eventRegs, contacts, stats }: {
         .detail-row:last-child{margin-bottom:0;}
         .detail-label{font-size:11px;font-weight:600;color:#64748b;text-transform:uppercase;letter-spacing:0.5px;}
         .detail-value{font-size:13px;color:#cbd5e1;font-weight:500;text-align:right;max-width:60%;word-break:break-all;}
+
+        /* Charts Grid */
+        .charts-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;}
+        @media(max-width:768px){.charts-grid{grid-template-columns:1fr;}}
 
         /* LIGHTBOX */
         .lb-back{position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.85);display:flex;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px);}
