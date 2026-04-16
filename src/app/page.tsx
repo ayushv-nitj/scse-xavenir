@@ -644,7 +644,7 @@ useEffect(() => {
             <span className="ht-eng glitch" data-text="& ENGINEERING">&amp; ENGINEERING</span>
           </h1>
 
-          <div className="hero-countdown">
+          {/* <div className="hero-countdown">
             <span className="hcd-label">// XAVENIR &apos;26 LAUNCHES IN</span>
             <div className="hcd-units">
               {[["d", countdown.d], ["h", countdown.h], ["m", countdown.m], ["s", countdown.s]].map(([u, v]) => (
@@ -654,7 +654,7 @@ useEffect(() => {
                 </div>
               ))}
             </div>
-          </div>
+          </div> */}
 
           <p className="hero-sub">
             <span>CODE</span> | <span>CREATE</span> | <span>CONQUER</span><br />
