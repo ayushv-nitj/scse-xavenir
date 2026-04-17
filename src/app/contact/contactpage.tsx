@@ -39,7 +39,7 @@ const contacts = [
     role: "Payment Related Query",
     phone: "+91 8936081707",
     email: "ayush7610jsr@gmail.com",
-    image: "https://res.cloudinary.com/dtieuimsz/image/upload/v1774474434/WhatsApp_Image_2026-03-26_at_3.03.23_AM_yi25nd.jpg",
+    image: "https://res.cloudinary.com/dtieuimsz/image/upload/v1776425034/Gemini_Generated_Image_nli1m0nli1m0nli1_hwmues.png",
     linkedin: "https://www.linkedin.com/in/ayush-verma-jsr25",
     tag: "PAYMENT.NODE",
     color: "var(--purple)",
