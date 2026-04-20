@@ -8,6 +8,7 @@ export interface EventRegistration extends Document {
   razorpay_payment_id: string;
   razorpay_signature: string;
   teamName: string;
+  position?: number;
 }
 
 const EventRegistrationSchema: Schema<EventRegistration> = new Schema(
@@ -40,6 +41,10 @@ const EventRegistrationSchema: Schema<EventRegistration> = new Schema(
     teamName: {
       type: String,
       required: [true, "Team name is required"],
+    },
+    position: {
+      type: Number,
+      required: false,
     },
   },
   { timestamps: true }

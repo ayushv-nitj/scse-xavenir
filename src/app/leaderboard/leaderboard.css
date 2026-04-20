@@ -1,0 +1,661 @@
+/* ══════════════════════════════════════════════════════
+   LEADERBOARD PAGE - CYBERPUNK THEME
+   ══════════════════════════════════════════════════════ */
+
+.leaderboard-page {
+  min-height: 100vh;
+  padding-top: 70px;
+  background: 
+    linear-gradient(rgba(0, 5, 30, 0.4), rgba(0, 5, 30, 0.6)),
+    url('/trophy.png') center center/cover no-repeat,
+    var(--dark);
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* ── BACKGROUND ELEMENTS (subtle overlay effects) ── */
+.lb-grid-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(0, 245, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 245, 255, 0.02) 1px, transparent 1px);
+  background-size: 50px 50px;
+  animation: gridMove 20s linear infinite;
+}
+
+@keyframes gridMove {
+  from { background-position: 0 0; }
+  to { background-position: 50px 50px; }
+}
+
+.lb-scanlines {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(
+    to bottom,
+    transparent 50%,
+    rgba(0, 245, 255, 0.01) 50%
+  );
+  background-size: 100% 4px;
+  animation: scanlineMove 8s linear infinite;
+}
+
+@keyframes scanlineMove {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(4px); }
+}
+
+.lb-noise-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0.02;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' /%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' /%3E%3C/svg%3E");
+}
+
+.lb-corner-glow {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(0, 245, 255, 0.04) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+  animation: glowPulse 4s ease-in-out infinite;
+}
+
+@keyframes glowPulse {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.6; }
+}
+
+.lb-blob {
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(80px);
+  z-index: 0;
+  pointer-events: none;
+}
+
+.lb-blob-1 {
+  width: 400px;
+  height: 400px;
+  background: rgba(0, 245, 255, 0.03);
+  top: 20%;
+  left: -10%;
+  animation: blobFloat1 12s ease-in-out infinite;
+}
+
+.lb-blob-2 {
+  width: 350px;
+  height: 350px;
+  background: rgba(191, 0, 255, 0.03);
+  bottom: 10%;
+  right: -10%;
+  animation: blobFloat2 15s ease-in-out infinite;
+}
+
+@keyframes blobFloat1 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(30px, -30px) scale(1.1); }
+}
+
+@keyframes blobFloat2 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(-30px, 30px) scale(1.1); }
+}
+
+/* ── HERO SECTION ── */
+.leaderboard-hero {
+  position: relative;
+  padding: 2rem 2rem 1.5rem;
+  text-align: center;
+  background: linear-gradient(180deg, rgba(0, 5, 30, 0.7) 0%, rgba(0, 5, 30, 0.5) 100%);
+  border-bottom: 1px solid rgba(0, 245, 255, 0.2);
+  backdrop-filter: blur(8px);
+  z-index: 2;
+}
+
+.lb-hero-content {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.lb-title {
+  font-family: "Orbitron", monospace;
+  font-size: clamp(2rem, 5vw, 3rem);
+  font-weight: 900;
+  line-height: 1.1;
+  margin-bottom: 1rem;
+}
+
+.lb-glitch {
+  display: inline-block;
+  color: #e0e0ff;
+  text-shadow: 
+    0 0 20px rgba(0, 245, 255, 0.6),
+    0 0 40px rgba(0, 245, 255, 0.4),
+    2px 2px 0 rgba(255, 0, 128, 0.3),
+    -2px -2px 0 rgba(0, 245, 255, 0.3);
+  position: relative;
+  animation: glitchText 3s ease-in-out infinite;
+}
+
+@keyframes glitchText {
+  0%, 90%, 100% {
+    text-shadow: 
+      0 0 20px rgba(0, 245, 255, 0.6),
+      0 0 40px rgba(0, 245, 255, 0.4),
+      2px 2px 0 rgba(255, 0, 128, 0.3),
+      -2px -2px 0 rgba(0, 245, 255, 0.3);
+  }
+  92% {
+    text-shadow: 
+      0 0 30px rgba(0, 245, 255, 0.8),
+      0 0 60px rgba(0, 245, 255, 0.6),
+      4px 0 0 rgba(255, 0, 128, 0.5),
+      -4px 0 0 rgba(0, 245, 255, 0.5);
+    transform: translateX(2px);
+  }
+  94% {
+    text-shadow: 
+      0 0 30px rgba(0, 245, 255, 0.8),
+      0 0 60px rgba(0, 245, 255, 0.6),
+      -4px 0 0 rgba(255, 0, 128, 0.5),
+      4px 0 0 rgba(0, 245, 255, 0.5);
+    transform: translateX(-2px);
+  }
+}
+
+/* ── MAIN CONTAINER ── */
+.leaderboard-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 1.5rem 2rem;
+  position: relative;
+  z-index: 2;
+}
+
+/* ── LOADING STATE ── */
+.lb-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  padding: 5rem 2rem;
+  color: var(--cyan);
+  font-family: "Share Tech Mono", monospace;
+  letter-spacing: 2px;
+}
+
+.lb-spinner {
+  width: 50px;
+  height: 50px;
+  border: 3px solid rgba(0, 245, 255, 0.2);
+  border-top-color: var(--cyan);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ── EVENT SELECTOR ── */
+.event-selector {
+  margin-bottom: 2rem;
+}
+
+.es-label {
+  font-family: "Share Tech Mono", monospace;
+  font-size: 0.7rem;
+  letter-spacing: 3px;
+  color: var(--cyan);
+  margin-bottom: 1rem;
+  text-transform: uppercase;
+}
+
+.event-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 0.8rem;
+}
+
+.event-card {
+  background: rgba(0, 5, 30, 0.6);
+  border: 1px solid rgba(0, 245, 255, 0.3);
+  padding: 0.8rem 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  font-family: "Rajdhani", sans-serif;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  backdrop-filter: blur(8px);
+}
+
+.event-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(0, 245, 255, 0.1), transparent);
+  transition: left 0.5s;
+}
+
+.event-card:hover::before {
+  left: 100%;
+}
+
+.event-card:hover {
+  border-color: var(--cyan);
+  box-shadow: 0 0 20px rgba(0, 245, 255, 0.3);
+  transform: translateY(-2px);
+}
+
+.event-card-active {
+  background: rgba(0, 245, 255, 0.15);
+  border-color: var(--cyan);
+  box-shadow: 0 0 25px rgba(0, 245, 255, 0.4), inset 0 0 30px rgba(0, 245, 255, 0.1);
+}
+
+.ec-name {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #e0e0ff;
+  letter-spacing: 0.5px;
+}
+
+.ec-count {
+  font-family: "Share Tech Mono", monospace;
+  font-size: 0.7rem;
+  color: var(--cyan);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+/* ── WINNERS SECTION ── */
+.winners-section {
+  animation: fadeInUp 0.6s ease;
+  background: rgba(0, 5, 30, 0.3);
+  padding: 1.5rem;
+  border-radius: 15px;
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(0, 245, 255, 0.15);
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.ws-header {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.ws-title {
+  font-family: "Orbitron", monospace;
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  font-weight: 700;
+  color: var(--cyan);
+  text-shadow: 0 0 20px rgba(0, 245, 255, 0.5);
+  margin-bottom: 0;
+}
+
+.ws-divider {
+  width: 80px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+  margin: 0.5rem auto 0;
+  box-shadow: 0 0 10px var(--cyan);
+}
+
+/* ── PODIUM LAYOUTS ── */
+.podium-container {
+  margin-top: 1.5rem;
+}
+
+.podium-single {
+  display: flex;
+  justify-content: center;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.podium-double {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.podium-triple {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  align-items: end;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.podium-item {
+  animation: podiumRise 0.8s ease;
+}
+
+.podium-first {
+  animation-delay: 0.2s;
+}
+
+.podium-second {
+  animation-delay: 0s;
+}
+
+.podium-third {
+  animation-delay: 0.4s;
+}
+
+@keyframes podiumRise {
+  from {
+    opacity: 0;
+    transform: translateY(50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ── WINNER CARD ── */
+.winner-card {
+  background: rgba(0, 5, 30, 0.7);
+  border: 2px solid;
+  padding: 1.2rem;
+  backdrop-filter: blur(12px);
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.3s ease;
+}
+
+.winner-card:hover {
+  transform: translateY(-5px);
+}
+
+.winner-card-first {
+  padding: 1.5rem;
+  transform: scale(1.05);
+}
+
+.winner-card-first:hover {
+  transform: scale(1.08) translateY(-5px);
+}
+
+/* Position Badge */
+.wc-position-badge {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 20px currentColor, inset 0 0 20px rgba(255, 255, 255, 0.2);
+  animation: badgePulse 2s ease-in-out infinite;
+  z-index: 10;
+}
+
+@keyframes badgePulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 20px currentColor, inset 0 0 20px rgba(255, 255, 255, 0.2);
+  }
+  50% {
+    transform: scale(1.1);
+    box-shadow: 0 0 30px currentColor, inset 0 0 30px rgba(255, 255, 255, 0.3);
+  }
+}
+
+.wc-badge-number {
+  font-family: "Orbitron", monospace;
+  font-size: 1.5rem;
+  font-weight: 900;
+  color: #000;
+  text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+}
+
+/* Special styling for Mr. Xavenir (Gold) */
+.winner-card-mr-xavenir {
+  background: rgba(255, 215, 0, 0.08);
+  border: 2px solid #ffd700;
+  box-shadow: 
+    0 0 20px rgba(255, 215, 0, 0.3), 
+    inset 0 0 40px rgba(255, 215, 0, 0.1) !important;
+}
+
+.winner-card-mr-xavenir:hover {
+  box-shadow: 
+    0 0 25px rgba(255, 215, 0, 0.4), 
+    inset 0 0 45px rgba(255, 215, 0, 0.12) !important;
+}
+
+/* Special styling for Miss Xavenir (Reddish Pink) */
+.winner-card-miss-xavenir {
+  background: rgba(255, 20, 147, 0.08);
+  border: 2px solid #ff1493;
+  box-shadow: 
+    0 0 20px rgba(255, 20, 147, 0.3), 
+    inset 0 0 40px rgba(255, 20, 147, 0.1) !important;
+}
+
+.winner-card-miss-xavenir:hover {
+  box-shadow: 
+    0 0 25px rgba(255, 20, 147, 0.4), 
+    inset 0 0 45px rgba(255, 20, 147, 0.12) !important;
+}
+
+.wc-position {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 0.8rem;
+  font-family: "Orbitron", monospace;
+  font-weight: 700;
+  letter-spacing: 2px;
+}
+
+.wc-medal {
+  font-size: 1.5rem;
+}
+
+.wc-rank {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+}
+
+.wc-team-name {
+  font-family: "Orbitron", monospace;
+  font-size: 1.2rem;
+  font-weight: 900;
+  margin-bottom: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  text-shadow: 0 0 15px currentColor;
+}
+
+.winner-card-first .wc-team-name {
+  font-size: 1.4rem;
+}
+
+.wc-divider {
+  height: 2px;
+  margin-bottom: 1rem;
+  box-shadow: 0 0 10px currentColor;
+}
+
+.wc-members {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.wc-members-label {
+  font-family: "Share Tech Mono", monospace;
+  font-size: 0.65rem;
+  letter-spacing: 2px;
+  color: rgba(200, 220, 255, 0.6);
+  text-transform: uppercase;
+  margin-bottom: 0.3rem;
+}
+
+.wc-member {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.8rem;
+  padding: 0.6rem;
+  background: rgba(0, 0, 0, 0.3);
+  border-left: 2px solid rgba(0, 245, 255, 0.3);
+  transition: all 0.3s ease;
+}
+
+.wc-member:hover {
+  background: rgba(0, 245, 255, 0.05);
+  border-left-color: var(--cyan);
+  transform: translateX(5px);
+}
+
+.wc-member-icon {
+  width: 28px;
+  height: 28px;
+  border: 1px solid;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "Orbitron", monospace;
+  font-weight: 700;
+  font-size: 0.75rem;
+  flex-shrink: 0;
+}
+
+.wc-member-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.wc-member-name {
+  font-family: "Rajdhani", sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #e0e0ff;
+  letter-spacing: 0.5px;
+}
+
+.wc-member-id {
+  font-family: "Share Tech Mono", monospace;
+  font-size: 0.7rem;
+  color: var(--cyan);
+  letter-spacing: 1px;
+}
+
+.wc-member-college {
+  font-family: "Rajdhani", sans-serif;
+  font-size: 0.8rem;
+  color: rgba(200, 220, 255, 0.6);
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 900px) {
+  .podium-triple {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .podium-first {
+    order: -1;
+  }
+
+  .winner-card-first {
+    transform: scale(1);
+  }
+
+  .winner-card-first:hover {
+    transform: scale(1.02) translateY(-5px);
+  }
+
+  .leaderboard-hero {
+    padding: 1.5rem 1rem 1rem;
+  }
+
+  .leaderboard-container {
+    padding: 1.5rem 1rem;
+  }
+
+  .event-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .wc-team-name {
+    font-size: 1rem;
+  }
+
+  .winner-card-first .wc-team-name {
+    font-size: 1.2rem;
+  }
+
+  .winner-card,
+  .winner-card-first {
+    padding: 1rem;
+  }
+
+  .wc-member {
+    flex-direction: row;
+    gap: 0.6rem;
+  }
+
+  .wc-member-icon {
+    align-self: flex-start;
+  }
+  
+  .leaderboard-container {
+    padding: 1rem 0.8rem;
+  }
+  
+  .wc-position-badge {
+    width: 40px;
+    height: 40px;
+    top: -8px;
+    right: -8px;
+  }
+  
+  .wc-badge-number {
+    font-size: 1.2rem;
+  }
+}
