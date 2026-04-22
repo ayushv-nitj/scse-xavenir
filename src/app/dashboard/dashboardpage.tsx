@@ -433,9 +433,20 @@ export default function Dashboard() {
                                   Your previous T-shirt payment was rejected.
                                 </p>
                               )}
-                              <Link href="/payreg?type=tshirt_only" className="db-btn-primary" style={{ width: '100%', display: 'block', textAlign: 'center' }}>
-                                <span>// PAY FOR T-SHIRT</span>
-                              </Link>
+                              <button 
+                                disabled 
+                                className="db-btn-primary" 
+                                style={{ 
+                                  width: '100%', 
+                                  display: 'block', 
+                                  textAlign: 'center',
+                                  opacity: 0.5,
+                                  cursor: 'not-allowed',
+                                  pointerEvents: 'none'
+                                }}
+                              >
+                                <span>// PAY FOR T-SHIRT (DISABLED)</span>
+                              </button>
                             </div>
                           )}
                         </>
@@ -524,9 +535,18 @@ export default function Dashboard() {
                               <p style={{ color: "#00ff88", fontSize: "0.85rem", fontFamily: "'Rajdhani',sans-serif" }}>SELECT OPTION:</p>
                               {user?.isNitian ? (
                                 <>
-                                  <Link href="/payreg?type=reg_with_tshirt" className="db-btn-primary" style={{ textAlign: 'center' }}>
-                                    <span> PAY WITH T-SHIRT</span>
-                                  </Link>
+                                  <button 
+                                    disabled 
+                                    className="db-btn-primary" 
+                                    style={{ 
+                                      textAlign: 'center',
+                                      opacity: 0.5,
+                                      cursor: 'not-allowed',
+                                      pointerEvents: 'none'
+                                    }}
+                                  >
+                                    <span> PAY WITH T-SHIRT (DISABLED)</span>
+                                  </button>
                                   <Link href="/payreg?type=reg_without_tshirt" className="db-btn-primary" style={{ textAlign: 'center' }}>
                                     <span> PAY WITHOUT T-SHIRT</span>
                                   </Link>
