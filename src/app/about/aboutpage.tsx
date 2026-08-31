@@ -287,7 +287,7 @@ const MEMBERS: Member[] = [
 // ── Replace these with real web team members ──────────
 const WEB_TEAM: WebMember[] = [
   { name: "Ayush Verma",             role: "Web Lead",  img: "https://res.cloudinary.com/dtieuimsz/image/upload/v1774474434/WhatsApp_Image_2026-03-26_at_3.03.23_AM_yi25nd.jpg", github: "https://github.com/ayushv-nitj", linkedin: "https://www.linkedin.com/in/ayush-verma-jsr25" },
-  { name: "Priyanshu Raj",           role: "Web Lead",  img: "/web-team-photo/IMG_20260326_022402 - Priyanshu Raj.jpg", github: "https://github.com/priyanshuraj-dev", linkedin: "https://www.linkedin.com/in/priyanshuraj-nitjsr/" },
+  { name: "Priyanshu Raj",           role: "Web Lead",  img: "https://res.cloudinary.com/dvclqxxzs/image/upload/v1788181337/WhatsApp_Image_2026-08-27_at_8.55.13_PM_e9edkb.jpg", github: "https://github.com/priyanshuraj-dev", linkedin: "https://www.linkedin.com/in/priyanshuraj-nitjsr/" },
   { name: "Yashita ",           role: "Web Team",  img: "https://res.cloudinary.com/dtieuimsz/image/upload/v1774812629/yashita_xnmoou.jpg", github: "https://github.com/yashita7002-hub", linkedin: "https://www.linkedin.com/in/yashita-07981b394" },
   { name: "Vivek Mishra",            role: "Web Team",  img: "/web-team-photo/WhatsApp Image 2026-03-26 -Vivek Mishra.jpeg", github: "https://github.com/vivekrtx-lang", linkedin: "https://www.linkedin.com/in/vivek-mishra-9735a3386" },
   { name: "Deeptanshu Singh Negi",   role: "Web Team",  img: "/web-team-photo/IMG-20260215-WA0048 - Deeptanshu Singh Negi.jpg", github: "https://github.com/deeptanshu-glitch", linkedin: "https://www.linkedin.com/in/deeptanshu-singh-negi" },
