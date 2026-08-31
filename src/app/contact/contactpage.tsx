@@ -29,7 +29,7 @@ const contacts = [
     role: "Registration Related Query",
     phone: "+91 8789633693",
     email: "priyanshuraj979837@gmail.com",
-    image: "https://res.cloudinary.com/dnelqkopx/image/upload/v1787844018/WhatsApp_Image_2026-08-27_at_8.44.55_PM_eylbdg.jpg",
+    image: "https://res.cloudinary.com/dvclqxxzs/image/upload/v1788181337/WhatsApp_Image_2026-08-27_at_8.55.13_PM_e9edkb.jpg",
     linkedin: "https://www.linkedin.com/in/priyanshuraj-nitjsr/",
     tag: "REGISTER.NODE",
     color: "var(--cyan)",
